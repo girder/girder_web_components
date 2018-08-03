@@ -9,6 +9,8 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "axios": "^0.18.0",
+    "js-cookie": "^2.2.0",
     "vue": "^2.5.16"
   },
   "devDependencies": {
@@ -32,7 +34,10 @@
       "plugin:vue/essential",
       "@vue/airbnb"
     ],
-    "rules": {},
+    "rules": {
+      "no-underscore-dangle": 0,
+      "import/prefer-default-export": 0
+    },
     "parserOptions": {
       "parser": "babel-eslint"
     }
