@@ -1,34 +1,23 @@
-import axios from 'axios';
+import axios_ from 'axios';
 import cookies from 'js-cookie';
 
+/**
+ * This is a subclass of axios that is meant to add Girder-specific helper functionality.
+ */
 export default class RestClient {
-  constructor(apiRoot = '/api/v1', { useCookie = true }) {
-    this._axios = axios.create();
-    this._axios.defaults.baseURL = apiRoot;
+  constructor({ apiRoot = '/api/v1', token = cookies.get('girderToken'), axios = axios_.create() } = {}) {
+    Object.assign(this, axios, {
+      apiRoot,
+      token,
+    });
 
-    if (useCookie) {
-      this.token = cookies.get('girderToken');
-    }
-  }
-
-  /**
-   * Use this to make Web API requests.
-   * @returns An Object with the same API as axios.
-   */
-  get request() {
-    return this._axios;
-  }
-
-  get token() {
-    return this._token;
-  }
-
-  set token(val) {
-    this._token = val;
-    if (val) {
-      this._axios.defaults.headers.common['Girder-Token'] = val;
-    } else {
-      delete this._axios.default.headers.common['Girder-Token'];
-    }
+    this.interceptors.request.use(config => ({
+      ...config,
+      baseURL: this.apiRoot,
+      headers: {
+        'Girder-Token': this.token,
+        ...config.headers,
+      },
+    }));
   }
 }
