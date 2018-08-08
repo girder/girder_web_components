@@ -1,6 +1,6 @@
 <template lang="pug">
 v-app#app
-  upload(:parent="folder")
+  upload(:dest="folder")
 </template>
 
 <script>
@@ -10,7 +10,7 @@ import RestClient from './rest';
 export default {
   name: 'app',
   provide: {
-    girderRest: new RestClient(),
+    girderRest: new RestClient({ apiRoot: 'http://localhost:8080/api/v1' }),
   },
   components: { Upload },
   data: () => ({

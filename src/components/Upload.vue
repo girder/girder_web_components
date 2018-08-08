@@ -10,8 +10,8 @@
     slot(name="header")
       .title.px-3
         v-avatar.mr-2(color="blue-grey lighten-4")
-          v-icon {{ ResourceIcons[parent._modelType.toUpperCase()] }}
-        span {{ parent.name }}
+          v-icon {{ ResourceIcons[dest._modelType.toUpperCase()] }}
+        span {{ dest.name }}
 
   slot(name="dropzone")
     .dropzone-wrapper(
@@ -76,13 +76,13 @@ export default {
       default: false,
       type: Boolean,
     },
+    dest: {
+      required: true,
+      type: Object,
+    },
     multiple: {
       default: true,
       type: Boolean,
-    },
-    parent: {
-      required: true,
-      type: Object,
     },
   },
   data: () => ({
@@ -154,7 +154,7 @@ export default {
               // eslint-disable-next-line no-await-in-loop
               file.result = await file.upload.resume();
             } else {
-              file.upload = new Upload(this.girderRest, file.file, this.parent, { progress });
+              file.upload = new Upload(this.girderRest, file.file, this.dest, { progress });
               // eslint-disable-next-line no-await-in-loop
               file.result = await file.upload.start();
             }
