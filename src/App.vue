@@ -6,10 +6,14 @@
 </template>
 
 <script>
+import RestClient from './rest';
 import HelloWorld from './components/HelloWorld.vue';
 
 export default {
   name: 'app',
+  provide: {
+    girderRest: new RestClient(),
+  },
   components: {
     HelloWorld,
   },
