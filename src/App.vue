@@ -1,22 +1,25 @@
-<template>
-  <div id="app">
-    <img src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+<template lang="pug">
+v-app#app
+  upload(:parent="folder")
 </template>
 
 <script>
+import Upload from './components/Upload.vue';
 import RestClient from './rest';
-import HelloWorld from './components/HelloWorld.vue';
 
 export default {
   name: 'app',
   provide: {
     girderRest: new RestClient(),
   },
-  components: {
-    HelloWorld,
-  },
+  components: { Upload },
+  data: () => ({
+    folder: {
+      _id: 'foo',
+      _modelType: 'folder',
+      name: 'Parent folder',
+    },
+  }),
 };
 </script>
 
@@ -25,7 +28,4 @@ export default {
   font-family 'Avenir', Helvetica, Arial, sans-serif
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale
-  text-align center
-  color #2c3e50
-  margin-top 60px
 </style>

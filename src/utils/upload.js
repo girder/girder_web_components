@@ -15,7 +15,7 @@ export default class Upload {
    * argument with either ``"indeterminate": true``, or numeric ``current`` and ``total`` fields.
    * @param opts.params {Object} Additional parameters to pass on the upload init request.
    */
-  constructor($rest, file, parent, { progress = () => null, params = {} }) {
+  constructor($rest, file, parent, { progress = () => null, params = {} } = {}) {
     Object.assign(this, {
       $rest, file, params, parent, progress, upload: null, offset: 0,
     });
