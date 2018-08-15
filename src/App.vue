@@ -1,28 +1,64 @@
 <template lang="pug">
 v-app#app
-  upload(:dest="folder")
+  upload(v-if="folder", :dest="folder")
+  v-form.pa-4(v-if="!girderRest.user")
+    v-text-field(v-model="username", label="Username or email")
+    v-text-field(v-model="password", label="Password", type="password")
+    v-alert(:value="error") {{ error }}
+    v-btn(@click="login") Login
 </template>
 
 <script>
 import Upload from './components/Upload.vue';
-import RestClient from './rest';
 
 export default {
   name: 'app',
-  provide: {
-    girderRest: new RestClient({
-      apiRoot: 'http://localhost:8080/api/v1',
-      token: 'RePfMXAYhvMKWvEvHImFmGjNMNNNJzmAXrHIdmhY9BawrZY8L75Sg9SvGg0gpoQI',
-    }),
-  },
+  inject: ['girderRest'],
   components: { Upload },
   data: () => ({
-    folder: {
-      _id: '5b4653b137887950fdd207d1',
-      _modelType: 'folder',
-      name: 'Public',
-    },
+    error: null,
+    folder: null,
+    password: '',
+    username: '',
   }),
+  methods: {
+    _errMsgFromResp(response) {
+      if (response) {
+        this.error = response.data.message;
+      } else {
+        this.error = `Could not connect to server: ${this.girderRest.apiRoot}`;
+      }
+    },
+    async login() {
+      this.error = null;
+
+      try {
+        await this.girderRest.login(this.username, this.password);
+        this.username = '';
+        this.password = '';
+        await this.fetchFolder();
+      } catch ({ response }) {
+        this._errMsgFromResp(response);
+      }
+    },
+    async fetchFolder() {
+      try {
+        [this.folder] = (await this.girderRest.get('folder', {
+          params: {
+            parentType: 'user',
+            parentId: this.girderRest.user._id,
+          },
+        })).data;
+      } catch ({ response }) {
+        this._errMsgFromResp(response);
+      }
+    },
+  },
+  mounted() {
+    if (this.girderRest.user) {
+      this.fetchFolder();
+    }
+  },
 };
 </script>
 
