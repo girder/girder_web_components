@@ -1,6 +1,6 @@
 <template lang="pug">
 v-app#app
-  upload(v-if="folder", :dest="folder", :closeable="closeable", :multiple="multiple")
+  girder-upload(v-if="folder", :dest="folder", :closeable="closeable", :multiple="multiple")
   v-form.pa-4(v-if="!girderRest.user")
     v-text-field(v-model="username", label="Username or email")
     v-text-field(v-model="password", label="Password", type="password")
@@ -9,12 +9,12 @@ v-app#app
 </template>
 
 <script>
-import Upload from './components/Upload.vue';
+import GirderUpload from './components/Upload.vue';
 
 export default {
   name: 'app',
   inject: ['girderRest'],
-  components: { Upload },
+  components: { GirderUpload },
   data: () => ({
     closeable: false,
     error: null,
