@@ -64,6 +64,10 @@ export default class Upload {
   }
 
   async resume() {
+    if (!this.upload) {
+      return this.start();
+    }
+
     this.progress({ indeterminate: true });
 
     if (this.upload.behavior && uploadBehaviors[this.upload.behavior]) {
