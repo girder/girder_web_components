@@ -22,7 +22,7 @@ export default class Upload {
     chunkLen = UPLOAD_CHUNK_SIZE,
   } = {}) {
     Object.assign(this, {
-      $rest, file, params, parent, progress, chunkLen, upload: null, offset: 0,
+      $rest, file, params, parent, progress, chunkLen, upload: null, offset: 0, behavior: null,
     });
   }
 
@@ -63,7 +63,8 @@ export default class Upload {
     }))).data;
 
     if (this.upload.behavior && uploadBehaviors[this.upload.behavior]) {
-      return new uploadBehaviors[this.upload.behavior](this).start();
+      this.behavior = new uploadBehaviors[this.upload.behavior](this);
+      return this.behavior.start();
     }
     return this._sendChunks();
   }
@@ -75,8 +76,8 @@ export default class Upload {
 
     this.progress({ indeterminate: true });
 
-    if (this.upload.behavior && uploadBehaviors[this.upload.behavior]) {
-      return new uploadBehaviors[this.upload.behavior](this).resume();
+    if (this.behavior) {
+      return this.behavior.resume();
     }
     this.offset = (await this.$rest.get(`file/offset?uploadId=${this.upload._id}`)).data.offset;
     return this._sendChunks();
