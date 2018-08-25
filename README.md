@@ -1,26 +1,17 @@
-# girder-lib
+# Girder web component library
 
-## Project setup
-```
-yarn
-```
+## For developers
+### Project setup
+    yarn
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+#### Compile and hot-reload for development
+    yarn serve
 
-### Compiles and minifies for production
-```
-yarn build
-```
+#### Build the library for production
+    yarn build
 
-### Lints and fixes files
-```
-yarn lint
-```
+### Lint and fix source code
+    yarn lint
 
-### Run your unit tests
-```
-yarn test:unit
-```
+### Run unit tests
+    yarn test:unit
