@@ -21,7 +21,7 @@ export default class S3Upload {
       partEl.appendChild(etagEl);
       root.appendChild(partEl);
     });
-    return new window.XMLSerializer().serializeToString(root);
+    return root.outerHTML;
   }
 
   async _multiChunkUpload() {

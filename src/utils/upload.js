@@ -14,10 +14,15 @@ export default class Upload {
    * @param opts.progress {Function} A progress callback for the upload. It will receive an Object
    * argument with either ``"indeterminate": true``, or numeric ``current`` and ``total`` fields.
    * @param opts.params {Object} Additional parameters to pass on the upload init request.
+   * @param opts.chunkLen {Number} Chunk size for sending the file (integer number of bytes).
    */
-  constructor($rest, file, parent, { progress = () => null, params = {} } = {}) {
+  constructor($rest, file, parent, {
+    progress = () => null,
+    params = {},
+    chunkLen = UPLOAD_CHUNK_SIZE,
+  } = {}) {
     Object.assign(this, {
-      $rest, file, params, parent, progress, upload: null, offset: 0,
+      $rest, file, params, parent, progress, chunkLen, upload: null, offset: 0, behavior: null,
     });
   }
 
@@ -29,7 +34,7 @@ export default class Upload {
     });
 
     while (this.offset < this.file.size) {
-      const end = Math.min(this.offset + UPLOAD_CHUNK_SIZE, this.file.size);
+      const end = Math.min(this.offset + this.chunkLen, this.file.size);
       const blob = this.file.slice(this.offset, end);
       const url = `file/chunk?offset=${this.offset}&uploadId=${this.upload._id}`;
       // eslint-disable-next-line no-await-in-loop
@@ -58,7 +63,8 @@ export default class Upload {
     }))).data;
 
     if (this.upload.behavior && uploadBehaviors[this.upload.behavior]) {
-      return new uploadBehaviors[this.upload.behavior](this).start();
+      this.behavior = new uploadBehaviors[this.upload.behavior](this);
+      return this.behavior.start();
     }
     return this._sendChunks();
   }
@@ -70,8 +76,8 @@ export default class Upload {
 
     this.progress({ indeterminate: true });
 
-    if (this.upload.behavior && uploadBehaviors[this.upload.behavior]) {
-      return new uploadBehaviors[this.upload.behavior](this).resume();
+    if (this.behavior) {
+      return this.behavior.resume();
     }
     this.offset = (await this.$rest.get(`file/offset?uploadId=${this.upload._id}`)).data.offset;
     return this._sendChunks();
