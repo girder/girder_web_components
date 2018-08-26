@@ -7,7 +7,6 @@ import RestClient from './rest';
 const girderRest = new RestClient({ apiRoot: 'http://localhost:8080/api/v1' });
 
 Vue.use(Vuetify);
-Vue.config.productionTip = false;
 
 girderRest.fetchUser().then(() => {
   new Vue({
