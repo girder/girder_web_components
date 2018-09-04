@@ -20,7 +20,7 @@ export default class NotificationBus extends Vue {
    */
   constructor($rest, {
     EventSource = window.EventSource,
-    pollingInterval = [500, 5000, 500],
+    pollingInterval = [500, 5000, 1000],
     withCredentials = true,
     useEventSource = false,
     since = new Date(),
@@ -88,7 +88,7 @@ export default class NotificationBus extends Vue {
     }
   }
 
-  _poll(interval = this.pollingInterval[1]) {
+  _poll(interval = 0) {
     const [min, max, step] = this.pollingInterval;
     let nextInterval;
 
@@ -97,7 +97,9 @@ export default class NotificationBus extends Vue {
         const { data } = await this.$rest.get(`/notification?since=${this.since.toISOString()}`);
         data.forEach(this._emitNotification.bind(this));
         if (data.length) {
-          nextInterval = Math.max(interval - step, min);
+          nextInterval = min;
+        } else if (interval === 0) {
+          nextInterval = max;
         } else {
           nextInterval = Math.min(interval + step, max);
         }
@@ -111,5 +113,6 @@ export default class NotificationBus extends Vue {
 
   _stopPolling() {
     clearTimeout(this._poller);
+    this._poller = null;
   }
 }
