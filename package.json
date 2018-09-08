@@ -1,5 +1,5 @@
 {
-  "name": "girder",
+  "name": "@girder/components",
   "version": "3.0.0-alpha.1",
   "license": "Apache-2.0",
   "main": "dist/girder.umd.min.js",
