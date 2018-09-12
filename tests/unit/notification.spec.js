@@ -87,4 +87,18 @@ describe('NotificationBus', () => {
     bus._eventSource.onerror();
     expect(error.calledOnce).to.be.true;
   });
+
+  it('listens to RestClient login/logout', () => {
+    const bus = new NotificationBus(rc);
+    const dumbBus = new NotificationBus(rc, { listenToRestClient: false });
+    mock.onGet(/notification/).reply(200, []);
+
+    expect(bus.connected).to.be.false;
+    expect(dumbBus.connected).to.be.false;
+    rc.$emit('login', { _id: '123' });
+    expect(bus.connected).to.be.true;
+    expect(dumbBus.connected).to.be.false;
+    rc.$emit('logout');
+    expect(bus.connected).to.be.false;
+  });
 });
