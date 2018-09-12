@@ -9,6 +9,8 @@ export default class NotificationBus extends Vue {
    * @param opts {Object} options for this instance.
    * @param opts.EventSource {Object} A window.EventSource compliant interface. You should not
    *     override this in normal usage, it's mostly exposed for injection in testing.
+   * @param opts.listenToRestClient {boolean} If true, binds to the login and logout events
+   *     of the RestClient instance to automatically enable and disable the stream.
    * @param opts.pollingInterval {Number[]} An array of three numbers: minimum polling interval,
    *     maximum polling interval, and step value, all in milliseconds. The polling rate will
    *     fluctuate linearly between the min and max based on whether messages have been received
@@ -20,15 +22,21 @@ export default class NotificationBus extends Vue {
    */
   constructor($rest, {
     EventSource = window.EventSource,
+    listenToRestClient = true,
     pollingInterval = [500, 5000, 1000],
-    withCredentials = true,
-    useEventSource = false,
     since = new Date(),
+    useEventSource = false,
+    withCredentials = true,
   } = {}) {
     super();
     Object.assign(this, {
       $rest, EventSource, pollingInterval, since, useEventSource, withCredentials,
     });
+
+    if (listenToRestClient) {
+      $rest.$on('login', () => { this.connect(); });
+      $rest.$on('logout', () => { this.disconnect(); });
+    }
   }
 
   _emitNotification(notification) {
