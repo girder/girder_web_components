@@ -35,8 +35,9 @@
 
     slot(name="progress")
       div(v-if="uploading")
-        v-subheader.
-          {{ formatSize(totalProgress) }} / {{ formatSize(totalSize) }} ({{ totalProgressPercent }}%)
+        v-subheader
+          | {{ formatSize(totalProgress) }} / {{ formatSize(totalSize) }}
+          | ({{ totalProgressPercent }}%)
         v-progress-linear(:value="totalProgressPercent", height="20")
 
     slot(name="files")
@@ -47,8 +48,9 @@
             v-list-tile-avatar
               v-btn(v-if="file.status === 'pending'", icon, @click="files.splice(i, 1)")
                 v-icon close
-              v-progress-circular(v-if="file.status === 'uploading'", color="primary", :rotate="-90",
-                  :value="progressPercent(file.progress)", :indeterminate="file.progress.indeterminate")
+              v-progress-circular(v-if="file.status === 'uploading'", color="primary",
+                  :rotate="-90", :value="progressPercent(file.progress)",
+                  :indeterminate="file.progress.indeterminate")
               v-icon(v-if="file.status === 'done'", color="success", large) check
               v-icon(v-if="file.status === 'error'", color="error", large) warning
             v-list-tile-content
