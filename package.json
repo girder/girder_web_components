@@ -1,6 +1,7 @@
 {
-  "name": "girder-lib",
-  "version": "0.1.0",
+  "name": "@girder/components",
+  "version": "3.0.0-alpha.1",
+  "license": "Apache-2.0",
   "main": "dist/girder.umd.min.js",
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -48,6 +49,12 @@
       "parser": "babel-eslint"
     }
   },
+  "files": [
+    "/dist/",
+    "/src/",
+    "/babel.config.js",
+    "/vue.config.js"
+  ],
   "postcss": {
     "plugins": {
       "autoprefixer": {}
