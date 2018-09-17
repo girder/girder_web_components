@@ -1,6 +1,7 @@
 import axios_ from 'axios';
 import cookies from 'js-cookie';
 import { stringify } from 'qs';
+import Vue from 'vue';
 
 function setCookieFromAuth(auth) {
   cookies.set('girderToken', auth.token, { expires: new Date(auth.expires) });
@@ -9,13 +10,15 @@ function setCookieFromAuth(auth) {
 /**
  * This is a subclass of axios that is meant to add Girder-specific helper functionality.
  */
-export default class RestClient {
+export default class RestClient extends Vue {
   constructor({
     apiRoot = '/api/v1',
     token = cookies.get('girderToken'),
     axios = axios_.create(),
     cors = true,
   } = {}) {
+    super();
+
     Object.assign(this, axios, {
       apiRoot,
       cors,
@@ -51,6 +54,7 @@ export default class RestClient {
     if (this.cors) {
       setCookieFromAuth(resp.data.authToken);
     }
+    this.$emit('login', this.user);
     return resp;
   }
 
@@ -68,6 +72,7 @@ export default class RestClient {
       this.token = null;
       this.user = null;
       cookies.remove('girderToken');
+      this.$emit('logout');
     }
   }
 
@@ -89,6 +94,8 @@ export default class RestClient {
     if (this.cors) {
       setCookieFromAuth(resp.data.authToken);
     }
+    this.$emit('register', this.user);
+    this.$emit('login', this.user);
     return resp;
   }
 }
