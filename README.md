@@ -38,7 +38,7 @@ Or import specific components from the `src` directory:
     </template>
     
     <script>
-    import GirderUpload from '@girder/components/src/components/Upload.vue';
+    import { Upload as GirderUpload } from '@girder/components/src/components';
     
     export default {
       components: { GirderUpload },
@@ -46,6 +46,15 @@ Or import specific components from the `src` directory:
     };
     </script>
 
+> **Note:** When importing components from the source tree, you should import
+  them from `index.js` rather than importing the `.vue` files yourself, as the
+  latter is prone to break if files get moved in future releases. For example:
+  ```
+  import { Upload as GirderUpload } from '@girder/components/src/components';  // Good
+  import GirderUpload from '@girder/components/src/components/Upload.vue'; // Unsafe -- may move in future
+  ```
+  > Files and symbols that do not appear in an index.js should be considered private and it
+  is unsafe to use them in downstream projects since they are not part of the supported API surface.
 
 ## For developers
 ### Project setup
