@@ -1,6 +1,6 @@
 <template lang="pug">
 v-app#app
-  girder-upload(v-if="folder", :dest="folder", :closeable="closeable", :multiple="multiple")
+  girder-upload(v-if="folder", :dest="folder", :multiple="multiple")
   v-form.pa-4(v-if="!girderRest.user")
     v-text-field(v-model="username", label="Username or email")
     v-text-field(v-model="password", label="Password", type="password")
@@ -16,7 +16,6 @@ export default {
   inject: ['girderRest'],
   components: { GirderUpload },
   data: () => ({
-    closeable: false,
     error: null,
     folder: null,
     multiple: true,

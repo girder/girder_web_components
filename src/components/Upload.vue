@@ -1,17 +1,19 @@
 <template lang="pug">
-.upload-wrapper
-  slot(name="toolbar")
-    v-toolbar(dense, dark, color="success")
-      v-toolbar-title Upload
-      v-spacer
-      v-btn(v-if="closeable", icon, flat, @click="$emit('close')")
-        v-icon close
-  .px-0.py-2
-    slot(name="header")
-      .title.px-3
-        v-avatar.mr-2(color="blue-grey lighten-4")
-          v-icon {{ ResourceIcons[dest._modelType.toUpperCase()] }}
-        span {{ dest.name }}
+v-card.upload-wrapper(flat)
+  slot(name="header")
+    v-card-title(primary-title)
+      div
+        div(class="headline")
+          | Upload to
+          = " "
+          span.font-weight-bold {{ dest.name }}
+        .grey--text {{ statusMessage }}
+
+  v-progress-linear(v-if="uploading" :value="totalProgressPercent", height="20")
+
+  v-card-actions(v-show="files.length && !errorMessage && !uploading")
+    v-btn(flat, @click="files = []") Clear all
+    v-btn(flat, color="primary", @click="start") Start upload
 
   slot(name="dropzone")
     .dropzone-wrapper(
@@ -22,45 +24,29 @@
         .title.mt-3 {{ dropzoneMessage }}
       input.file-input(type="file", :multiple="multiple", @change="filesChanged")
 
-  .pb-2.px-3(v-show="files.length && !errorMessage")
-    div(v-show="!uploading")
-      v-subheader {{ statusMessage }}
-      v-btn(color="warning", @click="files = []")
-        v-icon.mr-1 close
-        | Clear all
-      v-btn(color="success", @click="start")
-        v-icon.mr-1 play_arrow
-        | Start upload
-
   div(v-if="errorMessage")
-    v-alert(:value="true", type="error")
-      span.body-2.mr-2 {{ errorMessage }}
-      v-btn(v-if="!uploading", color="purple darken-1", dark, @click="start")
-        v-icon.mr-1 replay
-        | Resume upload
-
-  slot(name="progress")
-    div(v-if="uploading")
-      .subheading.px-3.
-        {{ formatSize(totalProgress) }} / {{ formatSize(totalSize) }} ({{ totalProgressPercent }}%)
-      v-progress-linear(:value="totalProgressPercent", height="20")
+    v-alert(:value="true", dark, type="error") {{ errorMessage }}
+      v-btn(v-if="!uploading", dark, outline, @click="start") Resume upload
 
   slot(name="files")
-    v-list.file-list.pb-4(v-show="files.length", dense)
-      v-list-tile.file-tile(v-for="(file, i) in files", :key="file.file.name", avatar,
-          :class="`status-${file.status}`")
-        v-list-tile-avatar
-          v-btn.mx-0(v-if="file.status === 'pending'", icon, @click="files.splice(i, 1)")
-            v-icon close
-          v-progress-circular(v-if="file.status === 'uploading'", color="primary", :rotate="-90",
-              :value="progressPercent(file.progress)", :indeterminate="file.progress.indeterminate")
-          v-icon(v-if="file.status === 'done'", color="success", large) check
-          v-icon(v-if="file.status === 'error'", color="error", large) warning
-        v-list-tile-content
-          v-list-tile-title {{ file.file.name }}
-          v-list-tile-sub-title
-            span(v-if="file.progress.current") {{ formatSize(file.progress.current ) }} /&nbsp;
-            span {{ formatSize(file.file.size) }}
+    v-list(v-show="files.length", dense)
+      div(v-for="(file, i) in files", :key="file.file.name")
+        v-divider(v-if="i > 0")
+        v-list-tile.file-tile(avatar, :class="`status-${file.status}`")
+          v-list-tile-avatar
+            v-btn(v-if="file.status === 'pending'", icon, @click="files.splice(i, 1)")
+              v-icon close
+            v-progress-circular(v-if="file.status === 'uploading'", color="primary",
+                :rotate="-90", :value="progressPercent(file.progress)",
+                :indeterminate="file.progress.indeterminate")
+            v-icon(v-if="file.status === 'done'", color="success", large) check
+            v-icon(v-if="file.status === 'error'", color="error", large) warning
+          v-list-tile-content
+            v-list-tile-title {{ file.file.name }}
+            v-list-tile-sub-title
+              span(v-if="file.progress.current") {{ formatSize(file.progress.current ) }} /&nbsp;
+              span {{ formatSize(file.file.size) }}
+
 </template>
 
 <script>
@@ -72,10 +58,6 @@ export default {
   mixins: [sizeFormatter],
   inject: ['girderRest'],
   props: {
-    closeable: {
-      default: false,
-      type: Boolean,
-    },
     dest: {
       required: true,
       type: Object,
@@ -101,6 +83,10 @@ export default {
       return 'Drag a file here or click to select one';
     },
     statusMessage() {
+      if (this.uploading) {
+        return `${this.formatSize(this.totalProgress)} / ${this.formatSize(this.totalSize)} ` +
+          `(${this.totalProgressPercent}}%)`;
+      }
       return `${this.files.length} selected (${this.formatSize(this.totalSize)} total)`;
     },
     totalProgress() {
@@ -245,7 +231,5 @@ $img = linear-gradient(
     overflow hidden
 
 .upload-wrapper
-  display flex
-  flex-direction column
   height 100%
 </style>
