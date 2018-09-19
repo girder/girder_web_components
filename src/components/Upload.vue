@@ -1,8 +1,8 @@
 <template lang="pug">
 v-card.upload-wrapper(flat)
-  v-card-title(primary-title)
-    div
-      slot(name="toolbar")
+  slot(name="header")
+    v-card-title(primary-title)
+      div
         div(class="headline")
           | Upload to
           = " "
