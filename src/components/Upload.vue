@@ -4,7 +4,9 @@ v-card.upload-wrapper
     div
       slot(name="toolbar")
         div(class="headline")
-          | Upload to {{ dest.name }}
+          | Upload to
+          = " "
+          span.font-weight-bold {{ dest.name }}
         span.grey--text {{ statusMessage }}
     v-spacer
     v-btn(v-if="closeable", icon, flat, @click="$emit('close')")
