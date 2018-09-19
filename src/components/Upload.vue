@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.upload-wrapper
+v-card.upload-wrapper(flat)
   v-card-title(primary-title)
     div
       slot(name="toolbar")
@@ -7,10 +7,7 @@ v-card.upload-wrapper
           | Upload to
           = " "
           span.font-weight-bold {{ dest.name }}
-        span.grey--text {{ statusMessage }}
-    v-spacer
-    v-btn(v-if="closeable", icon, flat, @click="$emit('close')")
-      v-icon close
+        .grey--text {{ statusMessage }}
 
   v-progress-linear(v-if="uploading" :value="totalProgressPercent", height="20")
 
