@@ -1,15 +1,20 @@
 <template lang="pug">
-.upload-wrapper
-  slot(name="toolbar")
-    v-toolbar(dense, dark, flat, color="primary")
-      v-icon cloud_upload
-      v-toolbar-title Upload to
-        v-avatar
-          v-icon {{ ResourceIcons[dest._modelType.toUpperCase()] }}
-        | {{ dest.name }}
-      v-spacer
-      v-btn(v-if="closeable", icon, flat, @click="$emit('close')")
-        v-icon close
+v-card.upload-wrapper
+  v-card-title(primary-title)
+    div
+      slot(name="toolbar")
+        div(class="headline")
+          | Upload to {{ dest.name }}
+        span.grey--text {{ statusMessage }}
+    v-spacer
+    v-btn(v-if="closeable", icon, flat, @click="$emit('close')")
+      v-icon close
+
+  v-progress-linear(v-if="uploading" :value="totalProgressPercent", height="20")
+
+  v-card-actions(v-show="files.length && !errorMessage && !uploading")
+    v-btn(flat, @click="files = []") Clear all
+    v-btn(flat, color="primary", @click="start") Start upload
 
   slot(name="dropzone")
     .dropzone-wrapper(
@@ -17,47 +22,32 @@
         @dragleave="dropzoneClass = null", @drop="dropzoneClass = null")
       .dropzone-message
         v-icon(size="50px") attach_file
-        .title {{ dropzoneMessage }}
+        .title.mt-3 {{ dropzoneMessage }}
       input.file-input(type="file", :multiple="multiple", @change="filesChanged")
 
-  v-card
-    div(v-show="files.length && !errorMessage")
-      div(v-show="!uploading")
-        v-subheader {{ statusMessage }}
-        v-btn(@click="files = []") Clear all
-        v-btn(color="primary", @click="start") Start upload
+  div(v-if="errorMessage")
+    v-alert(:value="true", dark, type="error") {{ errorMessage }}
+      v-btn(v-if="!uploading", dark, outline, @click="start") Resume upload
 
-    div(v-if="errorMessage")
-      v-alert(:value="true", type="error") {{ errorMessage }}
-        v-btn(v-if="!uploading", color="purple darken-1", dark, @click="start")
-          v-icon replay
-          | Resume upload
+  slot(name="files")
+    v-list(v-show="files.length", dense)
+      div(v-for="(file, i) in files", :key="file.file.name")
+        v-divider(v-if="i > 0")
+        v-list-tile.file-tile(avatar, :class="`status-${file.status}`")
+          v-list-tile-avatar
+            v-btn(v-if="file.status === 'pending'", icon, @click="files.splice(i, 1)")
+              v-icon close
+            v-progress-circular(v-if="file.status === 'uploading'", color="primary",
+                :rotate="-90", :value="progressPercent(file.progress)",
+                :indeterminate="file.progress.indeterminate")
+            v-icon(v-if="file.status === 'done'", color="success", large) check
+            v-icon(v-if="file.status === 'error'", color="error", large) warning
+          v-list-tile-content
+            v-list-tile-title {{ file.file.name }}
+            v-list-tile-sub-title
+              span(v-if="file.progress.current") {{ formatSize(file.progress.current ) }} /&nbsp;
+              span {{ formatSize(file.file.size) }}
 
-    slot(name="progress")
-      div(v-if="uploading")
-        v-subheader
-          | {{ formatSize(totalProgress) }} / {{ formatSize(totalSize) }}
-          | ({{ totalProgressPercent }}%)
-        v-progress-linear(:value="totalProgressPercent", height="20")
-
-    slot(name="files")
-      v-list(v-show="files.length", dense)
-        div(v-for="(file, i) in files", :key="file.file.name")
-          v-divider(v-if="i > 0")
-          v-list-tile.file-tile(avatar, :class="`status-${file.status}`")
-            v-list-tile-avatar
-              v-btn(v-if="file.status === 'pending'", icon, @click="files.splice(i, 1)")
-                v-icon close
-              v-progress-circular(v-if="file.status === 'uploading'", color="primary",
-                  :rotate="-90", :value="progressPercent(file.progress)",
-                  :indeterminate="file.progress.indeterminate")
-              v-icon(v-if="file.status === 'done'", color="success", large) check
-              v-icon(v-if="file.status === 'error'", color="error", large) warning
-            v-list-tile-content
-              v-list-tile-title {{ file.file.name }}
-              v-list-tile-sub-title
-                span(v-if="file.progress.current") {{ formatSize(file.progress.current ) }} /&nbsp;
-                span {{ formatSize(file.file.size) }}
 </template>
 
 <script>
@@ -98,6 +88,10 @@ export default {
       return 'Drag a file here or click to select one';
     },
     statusMessage() {
+      if (this.uploading) {
+        return `${this.formatSize(this.totalProgress)} / ${this.formatSize(this.totalSize)} ` +
+          `(${this.totalProgressPercent}}%)`;
+      }
       return `${this.files.length} selected (${this.formatSize(this.totalSize)} total)`;
     },
     totalProgress() {
@@ -242,7 +236,5 @@ $img = linear-gradient(
     overflow hidden
 
 .upload-wrapper
-  display flex
-  flex-direction column
   height 100%
 </style>
