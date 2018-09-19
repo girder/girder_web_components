@@ -58,10 +58,6 @@ export default {
   mixins: [sizeFormatter],
   inject: ['girderRest'],
   props: {
-    closeable: {
-      default: false,
-      type: Boolean,
-    },
     dest: {
       required: true,
       type: Object,
