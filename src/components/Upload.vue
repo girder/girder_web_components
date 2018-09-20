@@ -20,7 +20,7 @@ v-card.upload-wrapper(flat)
         v-if="!files.length", :class="dropzoneClass", @dragenter="dropzoneClass = 'animate'",
         @dragleave="dropzoneClass = null", @drop="dropzoneClass = null")
       .dropzone-message
-        v-icon(size="50px") attach_file
+        v-icon(size="50px") fa-file-upload
         .title.mt-3 {{ dropzoneMessage }}
       input.file-input(type="file", :multiple="multiple", @change="filesChanged")
 
@@ -30,17 +30,18 @@ v-card.upload-wrapper(flat)
 
   slot(name="files")
     v-list(v-show="files.length", dense)
-      div(v-for="(file, i) in files", :key="file.file.name")
+      .file-tile(v-for="(file, i) in files", :key="file.file.name",
+          :class="`status-${file.status}`")
         v-divider(v-if="i > 0")
-        v-list-tile.file-tile(avatar, :class="`status-${file.status}`")
+        v-list-tile(avatar)
           v-list-tile-avatar
             v-btn(v-if="file.status === 'pending'", icon, @click="files.splice(i, 1)")
-              v-icon close
+              v-icon fa-times
             v-progress-circular(v-if="file.status === 'uploading'", color="primary",
                 :rotate="-90", :value="progressPercent(file.progress)",
                 :indeterminate="file.progress.indeterminate")
-            v-icon(v-if="file.status === 'done'", color="success", large) check
-            v-icon(v-if="file.status === 'error'", color="error", large) warning
+            v-icon(v-if="file.status === 'done'", color="success", large) fa-check
+            v-icon(v-if="file.status === 'error'", color="error", large) fa-exclamation-triangle
           v-list-tile-content
             v-list-tile-title {{ file.file.name }}
             v-list-tile-sub-title
