@@ -1,5 +1,5 @@
 <template lang="pug">
-v-app#app
+v-app.app
   girder-upload(v-if="folder", :dest="folder", :multiple="multiple")
   v-form.pa-4(v-if="!girderRest.user")
     v-text-field(v-model="username", label="Username or email")
@@ -64,7 +64,7 @@ export default {
 </script>
 
 <style lang="stylus">
-#app
+.app
   font-family 'Avenir', Helvetica, Arial, sans-serif
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale

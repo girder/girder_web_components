@@ -3,13 +3,13 @@ v-card.upload-wrapper(flat)
   slot(name="header")
     v-card-title(primary-title)
       div
-        div(class="headline")
+        .headline
           | Upload to
           = " "
           span.font-weight-bold {{ dest.name }}
         .grey--text {{ statusMessage }}
 
-  v-progress-linear(v-if="uploading" :value="totalProgressPercent", height="20")
+  v-progress-linear(v-if="uploading", :value="totalProgressPercent", height="20")
 
   v-card-actions(v-show="files.length && !errorMessage && !uploading")
     v-btn(flat, @click="files = []") Clear all
@@ -47,7 +47,6 @@ v-card.upload-wrapper(flat)
             v-list-tile-sub-title
               span(v-if="file.progress.current") {{ formatSize(file.progress.current ) }} /&nbsp;
               span {{ formatSize(file.file.size) }}
-
 </template>
 
 <script>
