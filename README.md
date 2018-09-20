@@ -15,7 +15,6 @@ into your page by including the following tags:
 
     <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
     <script src="https://unpkg.com/@girder/components"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
     <link rel="stylesheet" href="https://unpkg.com/@girder/components/dist/girder.css">
 
 This will expose all the library's components under the global variable `girder`, e.g.
