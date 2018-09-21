@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuetify from 'vuetify';
 import '@mdi/font/css/materialdesignicons.min.css';
 import 'vuetify/dist/vuetify.min.css';
+import Authentication from './Authentication/';
 import Upload from './Upload.vue';
 
 Vue.use(Vuetify, {
@@ -17,4 +18,7 @@ Vue.use(Vuetify, {
   },
 });
 
-export { Upload };
+export {
+  Upload,
+  Authentication,
+};
