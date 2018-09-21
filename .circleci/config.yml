@@ -16,4 +16,6 @@ jobs:
           paths:
             - ~/.cache/yarn
       - run: yarn lint --no-fix
-      - run: yarn test:unit
+      - run: yarn test:unit --coverage --coverageReporters html
+      - store_artifacts:
+          path: coverage/

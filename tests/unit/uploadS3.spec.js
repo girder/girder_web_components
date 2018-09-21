@@ -1,6 +1,5 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { expect } from 'chai';
 import RestClient from '@/rest';
 import Upload from '@/utils/upload';
 
@@ -65,20 +64,16 @@ describe('S3 upload behavior', () => {
     s3Mock.reset();
   });
 
-  after(() => {
-    s3Mock.restore();
-  });
-
   it('successfully upload a single chunk upload', async () => {
     mock.onPost('file').replyOnce(200, S3_SINGLE_CHUNK_RESP);
     mock.onPost('file/completion').replyOnce(200, { _id: '789' });
     s3Mock.onPut(S3_SINGLE_CHUNK_RESP.s3.request.url).replyOnce(({ headers }) => {
-      expect(headers).to.have.own.property('x-amz-acl').that.equals('private');
+      expect(headers['x-amz-acl']).toBe('private');
       return [200];
     });
 
     const upload = new Upload(rc, blob, { _id: '123', _modelType: 'folder' });
-    expect((await upload.start())._id).to.equal('789');
+    expect((await upload.start())._id).toBe('789');
   });
 
   it('fail and resume a single-chunk upload', async () => {
@@ -95,8 +90,8 @@ describe('S3 upload behavior', () => {
     } catch (e) {
       error = e;
     }
-    expect(error).to.be.an('Error');
-    expect((await upload.resume())._id).to.equal('789');
+    expect(error).toBeInstanceOf(Error);
+    expect((await upload.resume())._id).toBe('789');
   });
 
   it('fail and resume a multipart upload', async () => {
@@ -128,9 +123,10 @@ describe('S3 upload behavior', () => {
       const doc = new window.DOMParser().parseFromString(data, headers['Content-Type']);
       const parts = doc.querySelectorAll('CompleteMultipartUpload > Part > PartNumber');
       const etags = doc.querySelectorAll('CompleteMultipartUpload > Part > ETag');
-      expect(parts.length).to.equal(etags.length).to.equal(2);
-      expect([...parts].map(el => el.textContent)).to.eql(['1', '2']);
-      expect([...etags].map(el => el.textContent)).to.eql(['etag1', 'etag2']);
+      expect(parts.length).toBe(etags.length);
+      expect(etags.length).toBe(2);
+      expect([...parts].map(el => el.textContent)).toEqual(['1', '2']);
+      expect([...etags].map(el => el.textContent)).toEqual(['etag1', 'etag2']);
 
       finalized = true;
       return [200];
@@ -138,9 +134,9 @@ describe('S3 upload behavior', () => {
 
     let error = null;
     const expectError = (request) => {
-      expect(error).to.be.an('Error');
-      expect(error.config.url).to.equal(request.url);
-      expect(error.config.method.toLowerCase()).to.equal(request.method.toLowerCase());
+      expect(error).toBeInstanceOf(Error);
+      expect(error.config.url).toBe(request.url);
+      expect(error.config.method.toLowerCase()).toBe(request.method.toLowerCase());
       error = null;
     };
 
@@ -166,7 +162,7 @@ describe('S3 upload behavior', () => {
     expectError(S3_MULTIPART_FINALIZE_RESP);
 
     // This one will now succeed
-    expect((await upload.resume())._id).to.equal('789');
-    expect(finalized).to.equal(true);
+    expect((await upload.resume())._id).toBe('789');
+    expect(finalized).toBe(true);
   });
 });
