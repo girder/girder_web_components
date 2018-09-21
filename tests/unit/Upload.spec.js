@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import RestClient from '@/rest';
@@ -20,6 +19,6 @@ describe('Upload.vue', () => {
       },
       provide: { girderRest: new RestClient() },
     });
-    expect(wrapper.text()).to.include('The parent folder');
+    expect(wrapper.text()).toEqual(expect.stringContaining('The parent folder'));
   });
 });
