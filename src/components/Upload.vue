@@ -51,7 +51,6 @@ v-card.upload-wrapper(flat)
 
 <script>
 import { sizeFormatter } from '../utils/mixins';
-import { ResourceIcons } from '../constants';
 import Upload from '../utils/upload';
 
 export default {
@@ -73,7 +72,6 @@ export default {
     errorMessage: null,
     files: [],
     uploading: false,
-    ResourceIcons,
   }),
   computed: {
     dropzoneMessage() {
