@@ -27,10 +27,9 @@
     "axios-mock-adapter": "^1.15.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
-    "pug": "^2.0.3",
-    "pug-plain-loader": "^1.0.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
+    "vue-cli-plugin-pug": "^1.0.7",
     "vue-template-compiler": "^2.5.16"
   },
   "eslintConfig": {
