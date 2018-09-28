@@ -7,10 +7,11 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib --name girder src/index.js",
     "lint": "vue-cli-service lint",
+    "lint:pug": "pug-lint-vue src",
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.3.1",
+    "@mdi/font": "^2.8.94",
     "axios": "^0.18.0",
     "js-cookie": "^2.2.0",
     "qs": "^6.5.2",
@@ -27,6 +28,7 @@
     "axios-mock-adapter": "^1.15.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
+    "pug-lint-vue": "^0.1.3",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "vue-cli-plugin-pug": "^1.0.7",
@@ -79,6 +81,39 @@
     "plugins": {
       "autoprefixer": {}
     }
+  },
+  "pugLintConfig": {
+    "disallowAttributeConcatenation": true,
+    "disallowAttributeInterpolation": true,
+    "disallowClassAttributeWithStaticValue": true,
+    "disallowDuplicateAttributes": true,
+    "disallowHtmlText": true,
+    "disallowIdAttributeWithStaticValue": true,
+    "disallowIdLiterals": true,
+    "disallowMultipleLineBreaks": true,
+    "disallowSpacesInsideAttributeBrackets": true,
+    "disallowStringConcatenation": true,
+    "disallowTrailingSpaces": true,
+    "maximumLineLength": 100,
+    "requireClassLiteralsBeforeAttributes": true,
+    "requireClassLiteralsBeforeIdLiterals": true,
+    "requireIdLiteralsBeforeAttributes": true,
+    "requireLineFeedAtFileEnd": true,
+    "requireLowerCaseAttributes": true,
+    "requireLowerCaseTags": true,
+    "requireSpaceAfterCodeOperator": true,
+    "requireStrictEqualityOperators": true,
+    "validateAttributeQuoteMarks": "\"",
+    "validateAttributeSeparator": {
+      "separator": ", ",
+      "multiLineSeparator": ",\n    "
+    },
+    "validateDivTags": true,
+    "validateExtensions": true,
+    "validateIndentation": 2,
+    "validateLineBreaks": "LF",
+    "validateSelfClosingTags": true,
+    "validateTemplateString": true
   },
   "browserslist": [
     "> 1%",
