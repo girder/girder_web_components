@@ -14,7 +14,7 @@
         label='Username or e-mail'
         autofocus
         :rules="nonEmptyRules"
-        prepend-icon='fa-user'
+        prepend-icon='$vuetify.icons.user'
         type='text'
       )
       v-text-field(
@@ -22,13 +22,15 @@
         type='password'
         label='Password'
         :rules="nonEmptyRules"
-        prepend-icon='fa-lock'
+        prepend-icon='$vuetify.icons.lock'
       )
       .submit-area
         v-btn(type='submit'
           color='primary'
           :disabled='inProgress'
-          :loading='inProgress') Login
+          :loading='inProgress')
+          v-icon.aligned $vuetify.icons.login
+          span Login
         v-btn(flat color='primary' @click='forgotPasswordAction') Forgot Password?
   v-divider
   oauth(ref='oauth' :providers='oauthProviders')

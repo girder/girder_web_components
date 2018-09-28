@@ -1,5 +1,5 @@
 <template lang="pug">
-v-flex.pa-2(xs-12)
+v-flex.pa-2(xs-12)#girder-authentication-component
   v-card
     v-tabs(v-model='activeTab', color='primary', slider-color='yellow', dark)
       v-tab(key='login') Log In
@@ -74,14 +74,22 @@ export default {
 </script>
 
 <style lang="stylus">
+#girder-authentication-component
+  .no-decorate
+    text-decoration none
+  .v-btn
+    margin-left 0px
+    margin-right 16px
+  .v-icon.aligned
+    font-size 18px
+    vertical-align middle
+    padding-bottom 2px
+</style>
+
+<style lang="stylus" scoped>
 .v-alert.error
   margin 0px
   padding 10px 16px
 .v-alert__icon
   margin-right 8px
-.no-decorate
-  text-decoration none
-.v-btn
-  margin-left 0px
-  margin-right 16px
 </style>

@@ -2,10 +2,10 @@
 .oauth-widget(v-if='providers.length')
   //- v-divider
   v-container
-    h4 Or {{verb}} with OAuth
+    h4.ml-0 Or {{verb}} with OAuth
     a(v-for='provider in providers' :key='provider.id' :href='provider.url' class='no-decorate')
       v-btn(:dark='iconMap[provider.id].dark' :color='provider.id')
-        v-icon {{ iconName(provider.id) }}
+        v-icon.aligned {{ $vuetify.icons[iconMap[provider.id].icon] }}
         span &nbsp; {{ provider.name }}
 </template>
 
@@ -13,26 +13,26 @@
 const iconMap = {
   github: {
     dark: true,
-    icon: 'fab fa-github',
+    icon: 'github',
   },
   google: {
     dark: true,
-    icon: 'fab fa-google',
+    icon: 'google',
   },
   linkedin: {
-    icon: 'fab fa-linkedin',
+    icon: 'linkedin',
     dark: true,
   },
   bitbucket: {
-    icon: 'fab fa-bitbucket',
+    icon: 'bitbucket',
     dark: false,
   },
   box: {
-    icon: 'fas fa-archive',
+    icon: 'box_com',
     dark: true,
   },
   globus: {
-    icon: 'fas fa-globe',
+    icon: 'globus',
     dark: true,
   },
 };
@@ -54,36 +54,19 @@ export default {
       iconMap,
     };
   },
-  methods: {
-    iconName(providerId) {
-      return `${iconMap[providerId].icon}`;
-    },
-  },
 };
 </script>
 
 <style lang="stylus" scoped>
-.oauthIcon {
-  font-size: 20px;
-}
+.v-btn.google
+  background-color #3367d6 !important
 
-h4 {
-  margin-left: 0px;
-}
+.v-btn.linkedin
+  background-color #283e4a !important
 
-.v-btn.google {
-  background-color: #3367d6 !important;
-}
+.v-btn.box
+  background-color #0071f7 !important
 
-.v-btn.linkedin {
-  background-color: #283e4a !important;
-}
-
-.v-btn.box {
-  background-color: #0071f7 !important;
-}
-
-.v-btn.globus {
-  background-color: #335a95 !important;
-}
+.v-btn.globus
+  background-color #335a95 !important
 </style>
