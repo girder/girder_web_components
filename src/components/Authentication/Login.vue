@@ -1,39 +1,37 @@
 <template lang="pug">
 .login-widget
   v-alert(
-    dismissible
-    transition='scale-transition',
-    v-for='err in alerts.errors'
-    :key='err'
-    :value='!!err'
-    type='error') {{ err }}
-  form(@submit.prevent='login' ref='login')
+      dismissible,
+      transition="scale-transition",
+      v-for="err in alerts.errors",
+      :key="err",
+      :value="!!err",
+      type="error") {{ err }}
+  form(@submit.prevent="login", ref="login")
     v-container
       v-text-field(
-        v-model='username'
-        label='Username or e-mail'
-        autofocus
-        :rules="nonEmptyRules"
-        prepend-icon='$vuetify.icons.user'
-        type='text'
-      )
+          v-model="username",
+          label="Username or e-mail",
+          autofocus,
+          :rules="nonEmptyRules",
+          prepend-icon="$vuetify.icons.user",
+          type="text")
       v-text-field(
-        v-model='password'
-        type='password'
-        label='Password'
-        :rules="nonEmptyRules"
-        prepend-icon='$vuetify.icons.lock'
-      )
+          v-model="password",
+          type="password",
+          label="Password",
+          :rules="nonEmptyRules",
+          prepend-icon="$vuetify.icons.lock")
       .submit-area
-        v-btn(type='submit'
-          color='primary'
-          :disabled='inProgress'
-          :loading='inProgress')
+        v-btn(type="submit",
+            color="primary",
+            :disabled="inProgress",
+            :loading="inProgress")
           v-icon.aligned $vuetify.icons.login
-          span Login
-        v-btn(flat color='primary' @click='forgotPasswordAction') Forgot Password?
+          span &nbsp; Login
+        v-btn(flat, color="primary", @click="forgotPasswordAction") Forgot Password?
   v-divider
-  oauth(ref='oauth' :providers='oauthProviders')
+  oauth(ref="oauth", :providers="oauthProviders")
 </template>
 
 <script>

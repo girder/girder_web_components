@@ -1,20 +1,19 @@
 <template lang="pug">
-v-flex.pa-2(xs-12)#girder-authentication-component
+v-flex.pa-2.girder-authentication-component(xs-12)
   v-card
-    v-tabs(v-model='activeTab', color='primary', slider-color='yellow', dark)
-      v-tab(key='login') Log In
-      v-tab(key='registration' v-if='register') Register
-      v-tab-item(key='login-box')
-        login(
-          ref='loginForm'
-          :oauth-providers='oauthProviders'
-          :forgot-password-url='forgotPasswordUrl'
-          :forgot-password-route='forgotPasswordRoute'
-          @forgotpassword='$emit("forgotpassword")')
-      v-tab-item(key='registration-box' v-if='register')
+    v-tabs(v-model="activeTab", color="primary", slider-color="yellow", dark)
+      v-tab(key="login") Log In
+      v-tab(key="registration", v-if="register") Register
+      v-tab-item(key="login-box")
+        login(ref="loginForm",
+            :oauth-providers="oauthProviders",
+            :forgot-password-url="forgotPasswordUrl",
+            :forgot-password-route="forgotPasswordRoute",
+            @forgotpassword="$emit('forgotpassword')")
+      v-tab-item(key="registration-box", v-if="register")
         registration(
-          ref='registerForm'
-          :oauth-providers='oauthProviders')
+            ref="registerForm",
+            :oauth-providers="oauthProviders")
 </template>
 
 <script>
@@ -74,7 +73,7 @@ export default {
 </script>
 
 <style lang="stylus">
-#girder-authentication-component
+.girder-authentication-component
   .no-decorate
     text-decoration none
   .v-btn

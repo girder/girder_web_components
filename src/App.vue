@@ -1,12 +1,12 @@
 <template lang="pug">
-v-app#app
-  girder-upload(v-if="folder" :dest="folder", :multiple="multiple")
-  v-layout(v-else justify-center)
-    v-flex(xs12 sm10 md8 lg6)
+v-app.app
+  girder-upload(v-if="folder", :dest="folder", :multiple="multiple")
+  v-layout(v-else, justify-center)
+    v-flex(xs12, sm10, md8, lg6)
       girder-auth(
-        :register="true"
-        :oauth="true"
-        :forgot-password-url="forgotPasswordUrl")
+          :register="true",
+          :oauth="true",
+          :forgot-password-url="forgotPasswordUrl")
 </template>
 
 <script>

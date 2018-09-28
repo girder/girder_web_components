@@ -1,49 +1,49 @@
 <template lang="pug">
 .register-widget
   v-alert(
-    dismissible
-    v-for='err in alerts.errors'
-    :key='err'
-    :value='true'
-    type='error') {{ err }}
-  form(@submit.prevent='register' ref='register')
+      dismissible,
+      v-for="err in alerts.errors",
+      :key="err",
+      :value="true",
+      type="error") {{ err }}
+  form(@submit.prevent="register", ref="register")
     v-container
       v-text-field(
-        v-model='username'
-        label='Username'
-        :rules='nonEmptyRules'
-        type='text'
-        autofocus)
+          v-model="username",
+          label="Username",
+          :rules="nonEmptyRules",
+          type="text",
+          autofocus)
       v-text-field(
-        v-model='email'
-        label='Email'
-        :rules='nonEmptyRules'
-        type='email')
+          v-model="email",
+          label="Email",
+          :rules="nonEmptyRules",
+          type="email")
       v-text-field(
-        v-model='firstName'
-        label='First name'
-        :rules='nonEmptyRules'
-        type='text')
+          v-model="firstName",
+          label="First name",
+          :rules="nonEmptyRules",
+          type="text")
       v-text-field(
-        v-model='lastName'
-        label='Last name'
-        :rules='nonEmptyRules'
-        type='text')
+          v-model="lastName",
+          label="Last name",
+          :rules="nonEmptyRules",
+          type="text")
       v-text-field(
-        v-model='password'
-        type='password'
-        label='Password'
-        :rules='nonEmptyRules')
+          v-model="password",
+          type="password",
+          label="Password",
+          :rules="nonEmptyRules")
       v-text-field(
-        v-model='retypePassword'
-        type='password'
-        label='Retype password'
-        :rules='nonEmptyRules')
-      v-btn(type='submit'
-        color='primary'
-        :loading='inProgress') Register
+          v-model="retypePassword",
+          type="password",
+          label="Retype password",
+          :rules="nonEmptyRules")
+      v-btn(type="submit",
+          color="primary",
+          :loading="inProgress") Register
   v-divider
-  oauth(ref='oauth' verb='register' :providers='oauthProviders')
+  oauth(ref="oauth", verb="register", :providers="oauthProviders")
 </template>
 
 <script>

@@ -1,10 +1,11 @@
 <template lang="pug">
-.oauth-widget(v-if='providers.length')
-  //- v-divider
+.oauth-widget(v-if="providers.length")
   v-container
     h4.ml-0 Or {{verb}} with OAuth
-    a(v-for='provider in providers' :key='provider.id' :href='provider.url' class='no-decorate')
-      v-btn(:dark='iconMap[provider.id].dark' :color='provider.id')
+    a.no-decorate(v-for="provider in providers",
+        :key="provider.id",
+        :href="provider.url")
+      v-btn(:dark="iconMap[provider.id].dark", :color="provider.id")
         v-icon.aligned {{ $vuetify.icons[iconMap[provider.id].icon] }}
         span &nbsp; {{ provider.name }}
 </template>
