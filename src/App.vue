@@ -9,7 +9,7 @@ v-app#app
 </template>
 
 <script>
-import GirderUpload from './components/Upload.vue';
+import { Upload as GirderUpload } from './components';
 
 export default {
   name: 'app',

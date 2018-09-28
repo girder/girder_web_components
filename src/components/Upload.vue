@@ -3,13 +3,13 @@ v-card.upload-wrapper(flat)
   slot(name="header")
     v-card-title(primary-title)
       div
-        div(class="headline")
+        .headline
           | Upload to
           = " "
           span.font-weight-bold {{ dest.name }}
         .grey--text {{ statusMessage }}
 
-  v-progress-linear(v-if="uploading" :value="totalProgressPercent", height="20")
+  v-progress-linear(v-if="uploading", :value="totalProgressPercent", height="20")
 
   v-card-actions(v-show="files.length && !errorMessage && !uploading")
     v-btn(flat, @click="files = []") Clear all
@@ -20,7 +20,7 @@ v-card.upload-wrapper(flat)
         v-if="!files.length", :class="dropzoneClass", @dragenter="dropzoneClass = 'animate'",
         @dragleave="dropzoneClass = null", @drop="dropzoneClass = null")
       .dropzone-message
-        v-icon(size="50px") fa-file-upload
+        v-icon(size="50px") $vuetify.icons.fileUpload
         .title.mt-3 {{ dropzoneMessage }}
       input.file-input(type="file", :multiple="multiple", @change="filesChanged")
 
@@ -36,23 +36,21 @@ v-card.upload-wrapper(flat)
         v-list-tile(avatar)
           v-list-tile-avatar
             v-btn(v-if="file.status === 'pending'", icon, @click="files.splice(i, 1)")
-              v-icon fa-times
+              v-icon $vuetify.icons.close
             v-progress-circular(v-if="file.status === 'uploading'", color="primary",
                 :rotate="-90", :value="progressPercent(file.progress)",
                 :indeterminate="file.progress.indeterminate")
-            v-icon(v-if="file.status === 'done'", color="success", large) fa-check
-            v-icon(v-if="file.status === 'error'", color="error", large) fa-exclamation-triangle
+            v-icon(v-if="file.status === 'done'", color="success", large) $vuetify.icons.complete
+            v-icon(v-if="file.status === 'error'", color="error", large) $vuetify.icons.error
           v-list-tile-content
             v-list-tile-title {{ file.file.name }}
             v-list-tile-sub-title
               span(v-if="file.progress.current") {{ formatSize(file.progress.current ) }} /&nbsp;
               span {{ formatSize(file.file.size) }}
-
 </template>
 
 <script>
 import { sizeFormatter } from '../utils/mixins';
-import { ResourceIcons } from '../constants';
 import Upload from '../utils/upload';
 
 export default {
@@ -74,7 +72,6 @@ export default {
     errorMessage: null,
     files: [],
     uploading: false,
-    ResourceIcons,
   }),
   computed: {
     dropzoneMessage() {
