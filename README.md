@@ -54,6 +54,50 @@ Or import specific components from the `src` directory:
   ```
   > Files and symbols that do not appear in an index.js should be considered private and it
   is unsafe to use them in downstream projects since they are not part of the supported API surface.
+  
+### Using the Vue component library
+
+Before you use the components, you'll need to do a little bit of boilerplate configuration to
+install the Vue plugin associated with this library and instantiate a ``RestClient`` for interaction
+with the Girder server. That REST client must be passed via ``provide`` to an ancestor component
+of any components from this library, which is often most convenient to do at the root component
+of your application.
+
+```javascript
+import Girder, { RestClient } from '@girder/components';
+
+// Install the Vue plugin that lets us use the components
+Vue.use(Girder);
+
+// Create a REST client to communicate with Girder server
+const girderRest = new RestClient();
+
+// Example: fetch currently logged in Girder user, then start the app
+girderRest.fetchUser().then(() => {
+  new Vue({
+    render: h => h(App),
+    provide: { girderRest },
+  }).$mount('#app');
+});
+```
+
+If your downstream application is also using Vuetify, there is no need to instantiate it yourself
+as Girder's Vue plugin will do it for you. However, if you need to pass your own configuration
+options when installing the ``Vuetify`` plugin, do so *before* installing the Girder Vue plugin,
+and make sure your configuration extends Girder's own Vuetify config options, e.g.:
+
+```javascript
+import Girder, { utils } from '@girder/components';
+
+const vuetifyConfig = _.merge(utils.vuetifyConfig, {
+  icons: {
+    'myCustomIcon': 'mdi-custom-icon'
+  }
+});
+
+Vue.use(Vuetify, vuetifyConfig);
+Vue.use(Girder);
+```
 
 ## For developers
 ### Project setup
