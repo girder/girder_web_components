@@ -27,12 +27,12 @@
             color="primary",
             :disabled="inProgress",
             :loading="inProgress")
-          v-icon.aligned(left) $vuetify.icons.login
+          v-icon(left) $vuetify.icons.login
           | Login
         v-spacer
         v-btn(flat, color="primary", @click="forgotPasswordAction") Forgot Password?
   v-divider(v-if="oauthProviders.length")
-  oauth(ref="oauth", v-if="oauthProviders.length", :providers="oauthProviders")
+  oauth(v-if="oauthProviders.length", :providers="oauthProviders")
 </template>
 
 <script>

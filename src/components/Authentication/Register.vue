@@ -44,8 +44,7 @@
           color="primary",
           :loading="inProgress") Register
   v-divider(v-if="oauthProviders.length")
-  oauth(ref="oauth",
-      v-if="oauthProviders.length",
+  oauth(v-if="oauthProviders.length",
       verb="register",
       :providers="oauthProviders")
 </template>

@@ -4,20 +4,20 @@ v-container.oauth-widget
   v-btn.ml-0.mr-3(v-for="provider in providers",
       :key="provider.id",
       :dark="iconMap[provider.id].dark",
-      :color="provider.id",
+      :color="iconMap[provider.id].color",
       :href="provider.url")
-    v-icon.aligned(left) {{ $vuetify.icons[iconMap[provider.id].icon] }}
+    v-icon(left) {{ $vuetify.icons[iconMap[provider.id].icon] }}
     | {{ provider.name }}
 </template>
 
 <script>
 const iconMap = {
   github: { dark: true, icon: 'github' },
-  google: { dark: true, icon: 'google' },
-  linkedin: { dark: true, icon: 'linkedin' },
+  google: { dark: true, icon: 'google', color: '#3367d6' },
+  linkedin: { dark: true, icon: 'linkedin', color: '#283e4a' },
   bitbucket: { dark: false, icon: 'bitbucket' },
-  box: { dark: true, icon: 'box_com' },
-  globus: { dark: true, icon: 'globus' },
+  box: { dark: true, icon: 'box_com', color: '#0071f7' },
+  globus: { dark: true, icon: 'globus', color: '#335a95' },
 };
 export default {
   props: {
@@ -39,15 +39,3 @@ export default {
   },
 };
 </script>
-
-<style lang="stylus" scoped>
-.v-btn
-  &.google
-    background-color #3367d6 !important
-  &.linkedin
-    background-color #283e4a !important
-  &.box
-    background-color #0071f7 !important
-  &.globus
-    background-color #335a95 !important
-</style>

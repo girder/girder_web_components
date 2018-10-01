@@ -5,19 +5,17 @@
       v-tab(key="login") Log In
       v-tab(key="registration", v-if="register") Register
       v-tab-item(key="login-box")
-        login(ref="loginForm",
-            :oauth-providers="oauthProviders",
+        girder-login(:oauth-providers="oauthProviders",
             :forgot-password-url="forgotPasswordUrl",
             :forgot-password-route="forgotPasswordRoute",
             @forgotpassword="$emit('forgotpassword')")
       v-tab-item(key="registration-box", v-if="register")
-        registration(ref="registerForm",
-            :oauth-providers="oauthProviders")
+        girder-registration(:oauth-providers="oauthProviders")
 </template>
 
 <script>
-import Login from './Login.vue';
-import Registration from './Register.vue';
+import GirderLogin from './Login.vue';
+import GirderRegistration from './Register.vue';
 
 export default {
   inject: ['girderRest'],
@@ -44,8 +42,8 @@ export default {
     },
   },
   components: {
-    Login,
-    Registration,
+    GirderLogin,
+    GirderRegistration,
   },
   data() {
     return {
