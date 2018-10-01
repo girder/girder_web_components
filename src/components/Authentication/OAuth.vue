@@ -1,7 +1,7 @@
 <template lang="pug">
 v-container.oauth-widget
   h4 Or {{ verb }} with OAuth
-  v-btn.ml-0.mr-3.no-decorate(v-for="provider in providers",
+  v-btn.ml-0.mr-3(v-for="provider in providers",
       :key="provider.id",
       :dark="iconMap[provider.id].dark",
       :color="provider.id",
@@ -41,18 +41,13 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.no-decorate
-  text-decoration none
-
-.v-btn.google
-  background-color #3367d6 !important
-
-.v-btn.linkedin
-  background-color #283e4a !importan
-
-.v-btn.box
-  background-color #0071f7 !important
-
-.v-btn.globus
-  background-color #335a95 !important
+.v-btn
+  &.google
+    background-color #3367d6 !important
+  &.linkedin
+    background-color #283e4a !important
+  &.box
+    background-color #0071f7 !important
+  &.globus
+    background-color #335a95 !important
 </style>

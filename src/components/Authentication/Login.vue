@@ -22,13 +22,14 @@
           label="Password",
           :rules="nonEmptyRules",
           prepend-icon="$vuetify.icons.lock")
-      .submit-area
+      v-layout(row)
         v-btn.ml-0(type="submit",
             color="primary",
             :disabled="inProgress",
             :loading="inProgress")
           v-icon.aligned(left) $vuetify.icons.login
           | Login
+        v-spacer
         v-btn(flat, color="primary", @click="forgotPasswordAction") Forgot Password?
   v-divider(v-if="oauthProviders.length")
   oauth(ref="oauth", v-if="oauthProviders.length", :providers="oauthProviders")
@@ -101,10 +102,3 @@ export default {
   },
 };
 </script>
-
-<style lang="stylus" scoped>
-.submit-area
-  display flex
-  justify-content space-between
-  box-sizing border-box
-</style>
