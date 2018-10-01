@@ -30,15 +30,13 @@ export default {
       type: Boolean,
       default: false,
     },
-    /* A full URL to be used as an anchor href to an external page.
-     * Overrides forgotPasswordRoute.
-     */
+    /* A full URL to be used as an anchor href to an external page. */
     forgotPasswordUrl: {
       type: String,
     },
-    /* A vue-router route path.  Must use object form. */
+    /* A vue-router route path. */
     forgotPasswordRoute: {
-      type: Object,
+      type: [ Object, String ],
     },
   },
   components: {
