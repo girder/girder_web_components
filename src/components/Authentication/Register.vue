@@ -43,7 +43,11 @@
       v-btn(type="submit",
           color="primary",
           :loading="inProgress") Register
-  oauth(ref="oauth", v-if="oauthProviders.length", verb="register", :providers="oauthProviders")
+  v-divider(v-if="oauthProviders.length")
+  oauth(ref="oauth",
+      v-if="oauthProviders.length",
+      verb="register",
+      :providers="oauthProviders")
 </template>
 
 <script>

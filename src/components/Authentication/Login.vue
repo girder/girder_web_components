@@ -30,6 +30,7 @@
           v-icon.aligned(left) $vuetify.icons.login
           | Login
         v-btn(flat, color="primary", @click="forgotPasswordAction") Forgot Password?
+  v-divider(v-if="oauthProviders.length")
   oauth(ref="oauth", v-if="oauthProviders.length", :providers="oauthProviders")
 </template>
 

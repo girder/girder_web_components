@@ -1,15 +1,13 @@
 <template lang="pug">
-.oauth-widget
-  v-divider
-  v-container
-    h4 Or {{ verb }} with OAuth
-    v-btn.no-decorate(v-for="provider in providers",
-        :key="provider.id",
-        :dark="iconMap[provider.id].dark",
-        :color="provider.id",
-        :href="provider.url")
-      v-icon.aligned(left) {{ $vuetify.icons[iconMap[provider.id].icon] }}
-      | {{ provider.name }}
+v-container.oauth-widget
+  h4 Or {{ verb }} with OAuth
+  v-btn.no-decorate(v-for="provider in providers",
+      :key="provider.id",
+      :dark="iconMap[provider.id].dark",
+      :color="provider.id",
+      :href="provider.url")
+    v-icon.aligned(left) {{ $vuetify.icons[iconMap[provider.id].icon] }}
+    | {{ provider.name }}
 </template>
 
 <script>
