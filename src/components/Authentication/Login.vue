@@ -30,7 +30,9 @@
           v-icon(left) $vuetify.icons.login
           | Login
         v-spacer
-        v-btn(flat, color="primary", @click="forgotPasswordAction") Forgot Password?
+        v-btn(
+            flat, color="primary", :to="forgotPasswordRoute", :href="forgotPasswordUrl",
+            @click="$emit('forgotPassword')") Forgot Password?
   v-divider(v-if="oauthProviders.length")
   oauth(v-if="oauthProviders.length", :providers="oauthProviders")
 </template>
@@ -71,15 +73,6 @@ export default {
     };
   },
   methods: {
-    forgotPasswordAction() {
-      if (this.forgotPasswordUrl) {
-        window.location = this.forgotPasswordUrl;
-      } else if (this.forgotPasswordRoute && '$router' in this) {
-        this.$router.push(this.forgotPasswordRoute);
-      }
-      this.$emit('forgotpassword');
-    },
-
     async login() {
       if (!this.$refs.login.validate()) {
         return;
