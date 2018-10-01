@@ -35,10 +35,6 @@ export default class RestClient extends Vue {
     }));
   }
 
-  get url() {
-    return new URL(this.apiRoot);
-  }
-
   async login(username, password) {
     try {
       await this.logout();
@@ -87,17 +83,6 @@ export default class RestClient extends Vue {
       this.token = null;
     }
     return this.user;
-  }
-
-  async fetchOauth(redirect = window.location.href, list = true) {
-    try {
-      const resp = await this.get('oauth/provider', {
-        params: { redirect, list },
-      });
-      return resp;
-    } catch (_) {
-      return { data: [] };
-    }
   }
 
   async register(login, email, firstName, lastName, password, admin = false) {
