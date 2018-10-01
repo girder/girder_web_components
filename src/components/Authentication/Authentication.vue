@@ -36,7 +36,7 @@ export default {
     },
     /* A vue-router route path. */
     forgotPasswordRoute: {
-      type: [ Object, String ],
+      type: [Object, String],
     },
   },
   components: {
