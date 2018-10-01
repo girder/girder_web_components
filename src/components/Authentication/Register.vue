@@ -1,14 +1,14 @@
 <template lang="pug">
 .register-widget
-  v-alert(
+  v-alert.mt-0(
       dismissible,
       transition="scale-transition",
       v-for="err in alerts.errors",
       :key="err",
       :value="true",
       type="error") {{ err }}
-  v-form(@submit.prevent="register", ref="register")
-    v-container
+  v-container
+    v-form(@submit.prevent="register", ref="register")
       v-text-field(
           v-model="login",
           label="Username",
@@ -40,7 +40,7 @@
           type="password",
           label="Retype password",
           :rules="retypeMustMatchPasswordRules")
-      v-btn(type="submit",
+      v-btn.ml-0(type="submit",
           color="primary",
           :loading="inProgress") Register
   v-divider(v-if="oauthProviders.length")

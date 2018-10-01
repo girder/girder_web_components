@@ -1,7 +1,7 @@
 <template lang="pug">
 v-container.oauth-widget
   h4 Or {{ verb }} with OAuth
-  v-btn.no-decorate(v-for="provider in providers",
+  v-btn.ml-0.mr-3.no-decorate(v-for="provider in providers",
       :key="provider.id",
       :dark="iconMap[provider.id].dark",
       :color="provider.id",

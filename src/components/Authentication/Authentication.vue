@@ -67,20 +67,3 @@ export default {
   },
 };
 </script>
-
-<style lang="stylus">
-.girder-authentication-component
-  .v-btn
-    margin-left 0px
-    margin-right 16px
-  .v-icon.aligned.v-icon--left
-    margin-right 8px;
-  .v-form .container
-    padding-left: 24px;
-  .v-alert.error
-    margin 0px
-    padding 10px 16px
-  .v-alert__icon
-    margin-right 8px
-    margin-left 8px
-</style>

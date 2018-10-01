@@ -1,14 +1,14 @@
 <template lang="pug">
 .login-widget
-  v-alert(
+  v-alert.mt-0(
       dismissible,
       transition="scale-transition",
       v-for="err in alerts.errors",
       :key="err",
       :value="!!err",
       type="error") {{ err }}
-  v-form(@submit.prevent="login", ref="login")
-    v-container
+  v-container
+    v-form(@submit.prevent="login", ref="login")
       v-text-field(
           v-model="username",
           label="Username or e-mail",
@@ -23,7 +23,7 @@
           :rules="nonEmptyRules",
           prepend-icon="$vuetify.icons.lock")
       .submit-area
-        v-btn(type="submit",
+        v-btn.ml-0(type="submit",
             color="primary",
             :disabled="inProgress",
             :loading="inProgress")
