@@ -2,14 +2,15 @@
 .register-widget
   v-alert(
       dismissible,
+      transition="scale-transition",
       v-for="err in alerts.errors",
       :key="err",
       :value="true",
       type="error") {{ err }}
-  form(@submit.prevent="register", ref="register")
+  v-form(@submit.prevent="register", ref="register")
     v-container
       v-text-field(
-          v-model="username",
+          v-model="login",
           label="Username",
           :rules="nonEmptyRules",
           type="text",
@@ -21,12 +22,12 @@
           type="email")
       v-text-field(
           v-model="firstName",
-          label="First name",
+          label="First Name",
           :rules="nonEmptyRules",
           type="text")
       v-text-field(
           v-model="lastName",
-          label="Last name",
+          label="Last Name",
           :rules="nonEmptyRules",
           type="text")
       v-text-field(
@@ -38,12 +39,11 @@
           v-model="retypePassword",
           type="password",
           label="Retype password",
-          :rules="nonEmptyRules")
+          :rules="retypeMustMatchPasswordRules")
       v-btn(type="submit",
           color="primary",
           :loading="inProgress") Register
-  v-divider
-  oauth(ref="oauth", verb="register", :providers="oauthProviders")
+  oauth(ref="oauth", v-if="oauthProviders.length", verb="register", :providers="oauthProviders")
 </template>
 
 <script>
@@ -57,9 +57,16 @@ export default {
       default: () => [],
     },
   },
+  components: {
+    Oauth,
+  },
   data() {
+    const nonEmptyRules = [v => !!v || 'Item is required'];
+    const retypeMustMatchPasswordRules = nonEmptyRules.concat([
+      v => v === this.password || 'Passwords must match',
+    ]);
     return {
-      username: '',
+      login: '',
       email: '',
       firstName: '',
       lastName: '',
@@ -70,63 +77,35 @@ export default {
       alerts: {
         errors: [],
       },
-      nonEmptyRules: [
-        v => !!v || 'Item is required',
-      ],
+      nonEmptyRules,
+      retypeMustMatchPasswordRules,
     };
   },
-  components: {
-    Oauth,
-  },
-  watch: {
-    password() {
-      this.validatePasswordsMatch();
-    },
-    retypePassword() {
-      this.validatePasswordsMatch();
-    },
-  },
   methods: {
-    listify: v => (v ? [v] : []),
-    reset() {
-      this.username = '';
-      this.email = '';
-      this.firstName = '';
-      this.lastName = '';
-      this.password = '';
-      this.retypePassword = '';
-    },
-    validatePasswordsMatch() {
-      if (this.password === this.retypePassword) {
-        this.retypePasswordErrors = [];
-      } else {
-        this.retypePasswordErrors = ['Passwords do not match'];
-      }
-    },
     async register() {
       if (!this.$refs.register.validate()) {
-        return null;
+        return;
       }
       this.inProgress = true;
-      let resp;
+      this.alerts.errors.length = 0;
       try {
-        resp = await this.girderRest.register(
-          this.username, this.email,
-          this.firstName, this.lastName, this.password,
+        await this.girderRest.register(
+          this.login,
+          this.email,
+          this.firstName,
+          this.lastName,
+          this.password,
         );
       } catch (err) {
-        this.inProgress = false;
         if (!err.response || err.response.status !== 400) {
+          this.alerts.errors.push('Unknown error.');
           throw err;
         } else {
-          this.alerts.errors.length = 0;
-          this.alerts.errors.push(err.response.data.message || 'Unknown error.');
+          this.alerts.errors.push(err.response.data.message || 'Invalid registration.');
         }
-        return null;
+      } finally {
+        this.inProgress = false;
       }
-      this.alerts.errors.length = 0;
-      this.inProgress = false;
-      return resp;
     },
   },
 };

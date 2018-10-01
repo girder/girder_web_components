@@ -7,7 +7,7 @@
       :key="err",
       :value="!!err",
       type="error") {{ err }}
-  form(@submit.prevent="login", ref="login")
+  v-form(@submit.prevent="login", ref="login")
     v-container
       v-text-field(
           v-model="username",
@@ -27,11 +27,10 @@
             color="primary",
             :disabled="inProgress",
             :loading="inProgress")
-          v-icon.aligned $vuetify.icons.login
-          span &nbsp; Login
+          v-icon.aligned(left) $vuetify.icons.login
+          | Login
         v-btn(flat, color="primary", @click="forgotPasswordAction") Forgot Password?
-  v-divider
-  oauth(ref="oauth", :providers="oauthProviders")
+  oauth(ref="oauth", v-if="oauthProviders.length", :providers="oauthProviders")
 </template>
 
 <script>
@@ -75,29 +74,28 @@ export default {
         window.location = this.forgotPasswordUrl;
       } else if (this.forgotPasswordRoute && '$router' in this) {
         this.$router.push(this.forgotPasswordRoute);
-      } else {
-        this.$emit('forgotpassword');
       }
+      this.$emit('forgotpassword');
     },
-    async login() {
-      this.inProgress = true;
-      this.alerts.errors.length = 0;
 
-      let resp;
+    async login() {
+      if (!this.$refs.login.validate()) {
+        return;
+      }
+      this.alerts.errors.length = 0;
+      this.inProgress = true;
       try {
-        resp = await this.girderRest.login(this.username, this.password);
+        await this.girderRest.login(this.username, this.password);
       } catch (err) {
-        this.inProgress = false;
         if (!err.response || err.response.status !== 401) {
+          this.alerts.errors.push('Unknown error.');
           throw err;
         } else {
-          this.alerts.errors.length = 0;
-          this.alerts.errors.push(err.response.data.message || 'Unknown error.');
+          this.alerts.errors.push(err.response.data.message || 'Unauthorized.');
         }
-        return null;
+      } finally {
+        this.inProgress = false;
       }
-      this.inProgress = false;
-      return resp;
     },
   },
 };

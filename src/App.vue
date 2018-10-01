@@ -1,5 +1,5 @@
 <template lang="pug">
-v-app.app
+v-app.app(v-if="ready")
   girder-upload(v-if="folder", :dest="folder", :multiple="multiple")
   v-layout(v-else, justify-center)
     v-flex(xs12, sm10, md8, lg6)
@@ -24,10 +24,11 @@ export default {
   },
   data() {
     return {
+      ready: false,
       error: null,
       folder: null,
       multiple: true,
-      forgotPasswordUrl: `${this.girderRest.url.origin}/#?dialog=resetpassword`,
+      forgotPasswordUrl: '/#?dialog=resetpassword',
     };
   },
   methods: {
@@ -51,12 +52,12 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     if (this.girderRest.user) {
-      this.fetchFolder();
+      await this.fetchFolder();
     }
+    this.ready = true;
     this.girderRest.$on('login', () => {
-      this.girderRest.fetchUser();
       this.fetchFolder();
     });
   },

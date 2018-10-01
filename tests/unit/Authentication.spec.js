@@ -37,7 +37,7 @@ describe('Authentication', () => {
   });
 
   it('fetches Oauth Providers if Oauth is enabled', (done) => {
-    const fetchOauth = () => Promise.resolve({
+    const get = () => Promise.resolve({
       data: [{
         id: 'foo',
         name: 'bar',
@@ -51,7 +51,7 @@ describe('Authentication', () => {
         oauth: true,
         forgetPasswordLink: 'https://example.com/',
       },
-      provide: { girderRest: { fetchOauth } },
+      provide: { girderRest: { get } },
     });
     wrapper.vm.$nextTick(() => {
       expect(wrapper.vm.oauthProviders.length).toBe(1);

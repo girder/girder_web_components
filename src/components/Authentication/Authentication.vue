@@ -1,5 +1,5 @@
 <template lang="pug">
-v-flex.pa-2.girder-authentication-component(xs-12)
+.girder-authentication-component
   v-card
     v-tabs(v-model="activeTab", color="primary", slider-color="yellow", dark)
       v-tab(key="login") Log In
@@ -11,8 +11,7 @@ v-flex.pa-2.girder-authentication-component(xs-12)
             :forgot-password-route="forgotPasswordRoute",
             @forgotpassword="$emit('forgotpassword')")
       v-tab-item(key="registration-box", v-if="register")
-        registration(
-            ref="registerForm",
+        registration(ref="registerForm",
             :oauth-providers="oauthProviders")
 </template>
 
@@ -23,23 +22,25 @@ import Registration from './Register.vue';
 export default {
   inject: ['girderRest'],
   props: {
+    /* Enable registration from this component? */
     register: {
       type: Boolean,
       default: false,
-      note: 'Enable registration from this component?',
     },
+    /* Enable OAuth login from this component? */
     oauth: {
       type: Boolean,
       default: false,
-      note: 'Enable OAuth login from this component?',
     },
+    /* A full URL to be used as an anchor href to an external page.
+     * Overrides forgotPasswordRoute.
+     */
     forgotPasswordUrl: {
       type: String,
-      note: 'A full URL to be used as an anchor href to an external page.  Overrides forgotPasswordRoute.',
     },
+    /* A vue-router route path.  Must use object form. */
     forgotPasswordRoute: {
       type: Object,
-      note: 'A vue-router route path.  Must use object form.',
     },
   },
   components: {
@@ -49,24 +50,19 @@ export default {
   data() {
     return {
       activeTab: null,
-      loginInProgress: false,
-      registerInProgress: false,
-      loginErrors: null,
-      registerErrors: null,
       oauthProviders: [],
     };
   },
   async mounted() {
     if (this.oauth) {
-      const resp = await this.girderRest.fetchOauth();
-      this.oauthProviders = [];
-      resp.data.forEach((provider) => {
-        this.oauthProviders.push({
-          id: provider.id,
-          name: provider.name,
-          url: provider.url,
-        });
-      });
+      try {
+        this.oauthProviders = (await this.girderRest.get('oauth/provider', {
+          params: {
+            redirect: window.location.href,
+            list: true,
+          },
+        })).data;
+      } catch (e) { /* use default=[] */ }
     }
   },
 };
@@ -74,21 +70,16 @@ export default {
 
 <style lang="stylus">
 .girder-authentication-component
-  .no-decorate
-    text-decoration none
   .v-btn
     margin-left 0px
     margin-right 16px
-  .v-icon.aligned
-    font-size 18px
-    vertical-align middle
-    padding-bottom 2px
-</style>
-
-<style lang="stylus" scoped>
-.v-alert.error
-  margin 0px
-  padding 10px 16px
-.v-alert__icon
-  margin-right 8px
+  .v-icon.aligned.v-icon--left
+    margin-right 8px;
+  .v-form .container
+    padding-left: 24px;
+  .v-alert.error
+    margin 0px
+    padding 10px 16px
+  .v-alert__icon
+    margin-right 8px
 </style>

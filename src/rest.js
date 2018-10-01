@@ -90,10 +90,14 @@ export default class RestClient extends Vue {
   }
 
   async fetchOauth(redirect = window.location.href, list = true) {
-    const resp = await this.get('oauth/provider', {
-      params: { redirect, list },
-    });
-    return resp;
+    try {
+      const resp = await this.get('oauth/provider', {
+        params: { redirect, list },
+      });
+      return resp;
+    } catch (_) {
+      return { data: [] };
+    }
   }
 
   async register(login, email, firstName, lastName, password, admin = false) {
