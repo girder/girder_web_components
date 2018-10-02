@@ -1,6 +1,9 @@
 <template lang="pug">
-v-app.app
-  girder-upload(v-if="folder", :dest="folder", :multiple="multiple")
+v-app.app(v-if="ready")
+  v-layout(justify-center v-if="folder")
+    v-flex(sm10 md8)
+      girder-file-browser(:initial="fileBrowserInitial")
+  //- girder-upload(v-if="folder", :dest="folder", :multiple="multiple")
   v-layout(v-else, justify-center)
     v-flex(xs12, sm10, md8, lg6)
       girder-auth(
@@ -13,6 +16,7 @@ v-app.app
 import {
   Upload as GirderUpload,
   Authentication as GirderAuth,
+  FileBrowser as GirderFileBrowser,
 } from './components';
 
 export default {
@@ -21,12 +25,16 @@ export default {
   components: {
     GirderUpload,
     GirderAuth,
+    GirderFileBrowser,
   },
   data() {
     return {
+      ready: false,
       error: null,
+      folder: null,
       multiple: true,
       forgotPasswordUrl: '/#?dialog=resetpassword',
+      fileBrowserInitial: {},
     };
   },
   asyncComputed: {
