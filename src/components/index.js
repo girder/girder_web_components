@@ -7,4 +7,3 @@ export {
   Upload,
   Authentication,
 };
-

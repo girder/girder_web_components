@@ -28,11 +28,11 @@ This will expose all the library's components under the global variable `girder`
 
 #### Girder RestClient
 
-Many components in this library will require a `girder.RestClient` named `girderRest` through provide/inject.  
+Many components in this library will require a `RestClient` named `girderRest` through provide/inject.  
 The client can be provided through any common ancestor.  For example:
 
 ```javascript
-import girder from '@girder/components';
+import * as girder from '@girder/components';
 // apiRoot should point to your girder instance
 const restClient = new girder.RestClient({ apiRoot: 'http://localhost:8080/api/v1' });
 
@@ -50,7 +50,7 @@ If you're building your own downstream application, you can include individual c
 Either import the full UMD module:
 
 ```javascript
-import girder from '@girder/components';
+import Girder, * as girder from '@girder/components';
 ```
 
 Or import specific components from the `src` directory:
@@ -80,6 +80,54 @@ export default {
 > ```
 > Files and symbols that do not appear in an index.js should be considered private and it
 > is unsafe to use them in downstream projects since they are not part of the supported API surface.
+
+Before you use the components, you'll need to do a little bit of boilerplate configuration to
+install the Vue plugin associated with this library and instantiate a ``RestClient`` for interaction
+with the Girder server. That REST client must be passed via ``provide`` to an ancestor component
+of any components from this library, which is often most convenient to do at the root component
+of your application.
+
+```javascript
+import Girder, { RestClient } from '@girder/components';
+
+// Install the Vue plugin that lets us use the components
+Vue.use(Girder);
+
+// Create a REST client to communicate with Girder server
+const girderRest = new RestClient();
+
+// Example: fetch currently logged in Girder user, then start the app
+girderRest.fetchUser().then(() => {
+  new Vue({
+    render: h => h(App),
+    provide: { girderRest },
+  }).$mount('#app');
+});
+```
+
+> **Note:** If importing this library's UMD bundle via a ``<script>`` tag, the incantation for
+> installing the Vue plugin is slightly different:
+> ```javascript
+> Vue.use(girder.default);
+> ```
+
+If your downstream application is also using Vuetify, there is no need to instantiate it yourself
+as Girder's Vue plugin will do it for you. However, if you need to pass your own configuration
+options when installing the ``Vuetify`` plugin, do so *before* installing the Girder Vue plugin,
+and make sure your configuration extends Girder's own Vuetify config options, e.g.:
+
+```javascript
+import Girder, { utils } from '@girder/components';
+
+const vuetifyConfig = _.merge(utils.vuetifyConfig, {
+  icons: {
+    'myCustomIcon': 'mdi-custom-icon'
+  }
+});
+
+Vue.use(Vuetify, vuetifyConfig);
+Vue.use(Girder);
+```
 
 ## For developers
 
