@@ -5,6 +5,7 @@ import RestClient from '@/rest';
 import Authentication from '@/components/Authentication/Authentication.vue';
 import Register from '@/components/Authentication/Register.vue';
 import Oauth from '@/components/Authentication/OAuth.vue';
+import { flushPromises } from './utils';
 
 const localVue = createLocalVue();
 localVue.use(Vuetify);
@@ -44,10 +45,8 @@ describe('Authentication', () => {
     expect(wrapper.contains(Register)).toBe(true);
   });
 
-// https://github.com/girder/girder_web_components/pull/17#discussion_r222040969
-/*
   it('fetches Oauth Providers if Oauth is enabled', async () => {
-    mock.onGet(/oauth/).replyOnce(200, [{
+    mock.onGet(/oauth\/provider/).replyOnce(200, [{
       id: 'test',
       name: 'Test OAuth Provider',
       url: 'https://testprovider.com/',
@@ -61,10 +60,7 @@ describe('Authentication', () => {
       },
       provide: { girderRest },
     });
-    await wrapper.vm.$nextTick();
-    await wrapper.vm.$nextTick();
-    await wrapper.vm.$nextTick();
+    await flushPromises();
     expect(wrapper.vm.oauthProviders.length).toBe(1);
   });
-*/
 });
