@@ -34,11 +34,11 @@
             flat, color="primary", :to="forgotPasswordRoute", :href="forgotPasswordUrl",
             @click="$emit('forgotPassword')") Forgot Password?
   v-divider(v-if="oauthProviders.length")
-  oauth(v-if="oauthProviders.length", :providers="oauthProviders")
+  girder-oauth(v-if="oauthProviders.length", :providers="oauthProviders")
 </template>
 
 <script>
-import Oauth from './OAuth.vue';
+import GirderOauth from './OAuth.vue';
 
 export default {
   inject: ['girderRest'],
@@ -57,7 +57,7 @@ export default {
     },
   },
   components: {
-    Oauth,
+    GirderOauth,
   },
   data() {
     return {

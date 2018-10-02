@@ -1,3 +1,4 @@
+import MockAdapter from 'axios-mock-adapter';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuetify from 'vuetify';
 import RestClient from '@/rest';
@@ -9,6 +10,13 @@ const localVue = createLocalVue();
 localVue.use(Vuetify);
 
 describe('Authentication', () => {
+  const girderRest = new RestClient();
+  const mock = new MockAdapter(girderRest);
+
+  afterEach(() => {
+    mock.reset();
+  });
+
   it('does not render children when toggled off', () => {
     const wrapper = shallowMount(Authentication, {
       localVue,
@@ -17,7 +25,7 @@ describe('Authentication', () => {
         oauth: false,
         forgetPasswordLink: 'https://example.com/',
       },
-      provide: { girderRest: new RestClient() },
+      provide: { girderRest: {} },
     });
     expect(wrapper.contains(Register)).toBe(false);
     expect(wrapper.contains(Oauth)).toBe(false);
@@ -31,19 +39,17 @@ describe('Authentication', () => {
         oauth: false,
         forgetPasswordLink: 'https://example.com/',
       },
-      provide: { girderRest: new RestClient() },
+      provide: { girderRest: {} },
     });
     expect(wrapper.contains(Register)).toBe(true);
   });
 
-  it('fetches Oauth Providers if Oauth is enabled', (done) => {
-    const get = () => Promise.resolve({
-      data: [{
-        id: 'foo',
-        name: 'bar',
-        url: 'https://example.com/',
-      }],
-    });
+  it('fetches Oauth Providers if Oauth is enabled', async () => {
+    mock.onGet(/oauth/).replyOnce(200, [{
+      id: 'test',
+      name: 'Test OAuth Provider',
+      url: 'https://testprovider.com/',
+    }]);
     const wrapper = shallowMount(Authentication, {
       localVue,
       propsData: {
@@ -51,11 +57,11 @@ describe('Authentication', () => {
         oauth: true,
         forgetPasswordLink: 'https://example.com/',
       },
-      provide: { girderRest: { get } },
+      provide: { girderRest },
     });
-    wrapper.vm.$nextTick(() => {
-      expect(wrapper.vm.oauthProviders.length).toBe(1);
-      done();
-    });
+    await wrapper.vm.$nextTick();
+    await wrapper.vm.$nextTick();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.oauthProviders.length).toBe(1);
   });
 });

@@ -44,13 +44,13 @@
           color="primary",
           :loading="inProgress") Register
   v-divider(v-if="oauthProviders.length")
-  oauth(v-if="oauthProviders.length",
+  girder-oauth(v-if="oauthProviders.length",
       verb="register",
       :providers="oauthProviders")
 </template>
 
 <script>
-import Oauth from './OAuth.vue';
+import GirderOauth from './OAuth.vue';
 
 export default {
   inject: ['girderRest'],
@@ -61,13 +61,14 @@ export default {
     },
   },
   components: {
-    Oauth,
+    GirderOauth,
   },
   data() {
     const nonEmptyRules = [v => !!v || 'Item is required'];
-    const retypeMustMatchPasswordRules = nonEmptyRules.concat([
+    const retypeMustMatchPasswordRules = [
+      ...nonEmptyRules,
       v => v === this.password || 'Passwords must match',
-    ]);
+    ];
     return {
       login: '',
       email: '',

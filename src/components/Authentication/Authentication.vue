@@ -1,16 +1,15 @@
 <template lang="pug">
-.girder-authentication-component
-  v-card
-    v-tabs(v-model="activeTab", color="primary", slider-color="yellow", dark)
-      v-tab(key="login") Log In
-      v-tab(key="registration", v-if="register") Register
-      v-tab-item(key="login-box")
-        girder-login(:oauth-providers="oauthProviders",
-            :forgot-password-url="forgotPasswordUrl",
-            :forgot-password-route="forgotPasswordRoute",
-            @forgotpassword="$emit('forgotpassword')")
-      v-tab-item(key="registration-box", v-if="register")
-        girder-registration(:oauth-providers="oauthProviders")
+v-card.girder-authentication-component
+  v-tabs(v-model="activeTab", color="primary", slider-color="yellow", dark)
+    v-tab(key="login") Log In
+    v-tab(key="registration", v-if="register") Register
+    v-tab-item(key="login-box")
+      girder-login(:oauth-providers="oauthProviders",
+          :forgot-password-url="forgotPasswordUrl",
+          :forgot-password-route="forgotPasswordRoute",
+          @forgotpassword="$emit('forgotpassword')")
+    v-tab-item(key="registration-box", v-if="register")
+      girder-registration(:oauth-providers="oauthProviders")
 </template>
 
 <script>
