@@ -91,7 +91,7 @@ export default {
         return;
       }
       this.inProgress = true;
-      this.alerts.errors.length = 0;
+      this.alerts.errors = [];
       try {
         await this.girderRest.register(
           this.login,

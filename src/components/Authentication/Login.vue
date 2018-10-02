@@ -77,7 +77,7 @@ export default {
       if (!this.$refs.login.validate()) {
         return;
       }
-      this.alerts.errors.length = 0;
+      this.alerts.errors = [];
       this.inProgress = true;
       try {
         await this.girderRest.login(this.username, this.password);
