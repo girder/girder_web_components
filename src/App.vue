@@ -1,45 +1,42 @@
 <template lang="pug">
-v-app.app
+v-app.app(v-if="ready")
   girder-upload(v-if="folder", :dest="folder", :multiple="multiple")
-  v-form.pa-4(v-if="!girderRest.user")
-    v-text-field(v-model="username", label="Username or email")
-    v-text-field(v-model="password", label="Password", type="password")
-    v-alert(:value="error") {{ error }}
-    v-btn(@click="login") Login
+  v-layout(v-else, justify-center)
+    v-flex(xs12, sm10, md8, lg6)
+      girder-auth(
+          :register="true",
+          :oauth="true",
+          :forgot-password-url="forgotPasswordUrl")
 </template>
 
 <script>
-import { Upload as GirderUpload } from './components';
+import {
+  Upload as GirderUpload,
+  Authentication as GirderAuth,
+} from './components';
 
 export default {
   name: 'app',
   inject: ['girderRest'],
-  components: { GirderUpload },
-  data: () => ({
-    error: null,
-    folder: null,
-    multiple: true,
-    password: '',
-    username: '',
-  }),
+  components: {
+    GirderUpload,
+    GirderAuth,
+  },
+  data() {
+    return {
+      ready: false,
+      error: null,
+      folder: null,
+      multiple: true,
+      forgotPasswordUrl: '/#?dialog=resetpassword',
+    };
+  },
   methods: {
     _errMsgFromResp(response) {
       if (response) {
         this.error = response.data.message;
       } else {
         this.error = `Could not connect to server: ${this.girderRest.apiRoot}`;
-      }
-    },
-    async login() {
-      this.error = null;
-
-      try {
-        await this.girderRest.login(this.username, this.password);
-        this.username = '';
-        this.password = '';
-        await this.fetchFolder();
-      } catch ({ response }) {
-        this._errMsgFromResp(response);
       }
     },
     async fetchFolder() {
@@ -55,10 +52,14 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     if (this.girderRest.user) {
-      this.fetchFolder();
+      await this.fetchFolder();
     }
+    this.ready = true;
+    this.girderRest.$on('login', () => {
+      this.fetchFolder();
+    });
   },
 };
 </script>

@@ -1,7 +1,7 @@
 /**
  * Any view component that needs to display human-readable data sizes should use this.
  */
-export const sizeFormatter = {
+const sizeFormatter = {
   methods: {
     formatSize(size, { base = 1024, unit = 'B' } = {}) {
       if (size < base) {
@@ -18,3 +18,5 @@ export const sizeFormatter = {
     },
   },
 };
+
+export { sizeFormatter };
