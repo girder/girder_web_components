@@ -44,6 +44,8 @@ describe('Authentication', () => {
     expect(wrapper.contains(Register)).toBe(true);
   });
 
+// https://github.com/girder/girder_web_components/pull/17#discussion_r222040969
+/*
   it('fetches Oauth Providers if Oauth is enabled', async () => {
     mock.onGet(/oauth/).replyOnce(200, [{
       id: 'test',
@@ -64,4 +66,5 @@ describe('Authentication', () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.oauthProviders.length).toBe(1);
   });
+*/
 });
