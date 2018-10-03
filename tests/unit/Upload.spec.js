@@ -1,10 +1,9 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuetify from 'vuetify';
+import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
 import Upload from '@/components/Upload.vue';
+import { girderVue } from './utils';
 
-const localVue = createLocalVue();
-localVue.use(Vuetify);
+const localVue = girderVue();
 
 describe('Upload.vue', () => {
   it('renders destination name', () => {
