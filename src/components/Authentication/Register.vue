@@ -43,10 +43,9 @@
       v-btn.ml-0(type="submit",
           color="primary",
           :loading="inProgress") Register
-  v-divider(v-if="oauthProviders.length")
-  girder-oauth(v-if="oauthProviders.length",
-      verb="register",
-      :providers="oauthProviders")
+  template(v-if="oauthProviders && oauthProviders.length")
+    v-divider
+    girder-oauth(verb="register", :providers="oauthProviders")
 </template>
 
 <script>
