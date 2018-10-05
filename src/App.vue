@@ -1,5 +1,5 @@
 <template lang="pug">
-v-app.app(v-if="ready")
+v-app.app
   girder-upload(v-if="folder", :dest="folder", :multiple="multiple")
   v-layout(v-else, justify-center)
     v-flex(xs12, sm10, md8, lg6)
@@ -24,42 +24,31 @@ export default {
   },
   data() {
     return {
-      ready: false,
       error: null,
-      folder: null,
       multiple: true,
       forgotPasswordUrl: '/#?dialog=resetpassword',
     };
   },
-  methods: {
-    _errMsgFromResp(response) {
-      if (response) {
-        this.error = response.data.message;
-      } else {
-        this.error = `Could not connect to server: ${this.girderRest.apiRoot}`;
+  asyncComputed: {
+    async folder() {
+      if (this.girderRest.user) {
+        try {
+          return (await this.girderRest.get('folder', {
+            params: {
+              parentType: 'user',
+              parentId: this.girderRest.user._id,
+            },
+          })).data[0];
+        } catch ({ response }) {
+          if (response) {
+            this.error = response.data.message;
+          } else {
+            this.error = `Could not connect to server: ${this.girderRest.apiRoot}`;
+          }
+        }
       }
+      return null;
     },
-    async fetchFolder() {
-      try {
-        [this.folder] = (await this.girderRest.get('folder', {
-          params: {
-            parentType: 'user',
-            parentId: this.girderRest.user._id,
-          },
-        })).data;
-      } catch ({ response }) {
-        this._errMsgFromResp(response);
-      }
-    },
-  },
-  async mounted() {
-    if (this.girderRest.user) {
-      await this.fetchFolder();
-    }
-    this.ready = true;
-    this.girderRest.$on('login', () => {
-      this.fetchFolder();
-    });
   },
 };
 </script>

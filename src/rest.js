@@ -17,12 +17,16 @@ export default class RestClient extends Vue {
     axios = axios_.create(),
     cors = true,
   } = {}) {
-    super();
+    super({
+      data: {
+        user: null,
+        token,
+      },
+    });
 
     Object.assign(this, axios, {
       apiRoot,
       cors,
-      token,
     });
 
     this.interceptors.request.use(config => ({
