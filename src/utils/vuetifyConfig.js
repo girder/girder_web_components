@@ -3,16 +3,29 @@
  * that downstreams who are using Vuetify can merge their own Vuetify config options prior to
  * installing the GirderVue plugin.
  */
+
+import colors from 'vuetify/es5/util/colors';
+
 export default {
+  theme: {
+    primary: colors.blue,
+    secondary: colors.blueGrey,
+    accent: colors.blue,
+    error: colors.red,
+  },
   iconfont: 'mdi',
   icons: {
     bitbucket: 'mdi-bitbucket',
     box_com: 'mdi-package',
+    chevron: 'mdi-chevron-right',
     collection: 'mdi-file-tree',
     file: 'mdi-file',
+    fileNew: 'mdi-file-plus',
     fileUpload: 'mdi-file-upload',
     folder: 'mdi-folder',
+    folderNew: 'mdi-folder-plus',
     github: 'mdi-github-circle',
+    globe: 'mdi-earth',
     globus: 'mdi-earth',
     google: 'mdi-google',
     group: 'mdi-account-multiple',
