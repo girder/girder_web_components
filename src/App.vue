@@ -16,7 +16,7 @@ import {
 } from './components';
 
 export default {
-  name: 'app',
+  name: 'App',
   inject: ['girderRest'],
   components: {
     GirderUpload,

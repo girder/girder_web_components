@@ -18,6 +18,10 @@ import GirderRegistration from './Register.vue';
 
 export default {
   inject: ['girderRest'],
+  components: {
+    GirderLogin,
+    GirderRegistration,
+  },
   props: {
     /* Enable registration from this component? */
     register: {
@@ -32,15 +36,13 @@ export default {
     /* A full URL to be used as an anchor href to an external page. */
     forgotPasswordUrl: {
       type: String,
+      default: null,
     },
     /* A vue-router route path. */
     forgotPasswordRoute: {
       type: [Object, String],
+      default: null,
     },
-  },
-  components: {
-    GirderLogin,
-    GirderRegistration,
   },
   data() {
     return {
