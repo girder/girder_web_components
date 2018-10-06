@@ -1,14 +1,12 @@
 import MockAdapter from 'axios-mock-adapter';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuetify from 'vuetify';
+import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
 import Authentication from '@/components/Authentication/Authentication.vue';
 import Register from '@/components/Authentication/Register.vue';
 import Oauth from '@/components/Authentication/OAuth.vue';
-import { flushPromises } from './utils';
+import { flushPromises, girderVue } from './utils';
 
-const localVue = createLocalVue();
-localVue.use(Vuetify);
+const localVue = girderVue();
 
 describe('Authentication', () => {
   const girderRest = new RestClient();

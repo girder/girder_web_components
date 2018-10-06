@@ -16,6 +16,7 @@
     "js-cookie": "^2.2.0",
     "qs": "^6.5.2",
     "vue": "^2.5.16",
+    "vue-async-computed": "^3.4.1",
     "vuetify": "^1.1.9"
   },
   "devDependencies": {
@@ -68,7 +69,8 @@
       ".+\\.js$": "babel-jest"
     },
     "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1"
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "\\.css$": "<rootDir>/tests/mocks/stub.js"
     },
     "snapshotSerializers": [
       "jest-serializer-vue"

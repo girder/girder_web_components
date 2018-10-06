@@ -45,20 +45,25 @@ export default {
   data() {
     return {
       activeTab: null,
-      oauthProviders: [],
     };
   },
-  async mounted() {
-    if (this.oauth) {
-      try {
-        this.oauthProviders = (await this.girderRest.get('oauth/provider', {
-          params: {
-            redirect: window.location.href,
-            list: true,
-          },
-        })).data;
-      } catch (e) { /* use default=[] */ }
-    }
+  asyncComputed: {
+    async oauthProviders() {
+      if (this.oauth) {
+        try {
+          return (await this.girderRest.get('oauth/provider', {
+            params: {
+              redirect: window.location.href,
+              list: true,
+            },
+          })).data;
+        } catch (e) {
+          return [];
+        }
+      } else {
+        return [];
+      }
+    },
   },
 };
 </script>
