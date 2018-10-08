@@ -53,14 +53,14 @@ import GirderOauth from './OAuth.vue';
 
 export default {
   inject: ['girderRest'],
+  components: {
+    GirderOauth,
+  },
   props: {
     oauthProviders: {
       type: Array,
       default: () => [],
     },
-  },
-  components: {
-    GirderOauth,
   },
   data() {
     const nonEmptyRules = [v => !!v || 'Item is required'];
