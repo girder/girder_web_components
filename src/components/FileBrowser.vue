@@ -190,8 +190,8 @@ export default {
     requireSession() {
       if (!this.login || !this.location) {
         throw new Error('File Browser expects an active session and a defined location.');
-      };
-    }
+      }
+    },
   },
 };
 </script>

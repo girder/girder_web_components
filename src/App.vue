@@ -43,7 +43,7 @@ export default {
   asyncComputed: {
     folder: {
       default: undefined,
-      async get () {
+      async get() {
         if (this.girderRest.user) {
           try {
             return (await this.girderRest.get('folder', {
@@ -62,7 +62,7 @@ export default {
         }
         return null;
       },
-    }
+    },
   },
   computed: {
     loginDialog() { return this.folder === null; },
@@ -80,10 +80,10 @@ export default {
   methods: {
     initializeLocation() {
       if (this.girderRest.user) {
-        return { type: 'user', id: this.girderRest.user._id }
+        return { type: 'user', id: this.girderRest.user._id };
       }
       return null;
-    }
+    },
   },
   mounted() {
     this.location = this.initializeLocation();
