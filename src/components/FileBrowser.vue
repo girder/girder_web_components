@@ -168,7 +168,7 @@ export default {
       }
       return { folderId: this.location.id, limit, offset };
     },
-    loading() { return this.rowsLoading || this.breadcrumbLoading ? 'accent' : false; },
+    loading() { return this.rowsLoading || this.breadcrumbLoading; },
     login() { return this.girderRest.user ? this.girderRest.user.login : ''; },
     totalItems() { return this.counts.nFolders + this.counts.nItems; },
   },
@@ -204,7 +204,7 @@ v-data-table.girder-file-browser-component.elevation-1(
     :pagination.sync="pagination",
     :items="rows",
     :total-items="totalItems",
-    :loading="loading",
+    :loading="loading ? 'accent' : false",
     item-key="id")
 
   //- Header Slot

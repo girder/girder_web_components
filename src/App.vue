@@ -1,6 +1,6 @@
 <template lang="pug">
-v-app.app(v-if="folder !== undefined")
-  v-dialog(v-model="loginDialog", width="50%", persistent)
+v-app.app
+  v-dialog(v-model="loggedOut", width="50%", persistent)
     girder-auth(
         :register="true",
         :oauth="true",
@@ -10,7 +10,7 @@ v-app.app(v-if="folder !== undefined")
         :dest="uploadDest",
         multiple="multiple",
         @done="refresh++")
-  girder-file-browser(v-if="folder",
+  girder-file-browser(v-if="!loggedOut && location",
       :location.sync="location",
       :refresh="refresh",
       @click:newitem="uploader = true")
@@ -41,31 +41,28 @@ export default {
     };
   },
   asyncComputed: {
-    folder: {
-      default: undefined,
-      async get() {
-        if (this.girderRest.user) {
-          try {
-            return (await this.girderRest.get('folder', {
-              params: {
-                parentType: 'user',
-                parentId: this.girderRest.user._id,
-              },
-            })).data[0];
-          } catch ({ response }) {
-            if (response) {
-              this.error = response.data.message;
-            } else {
-              this.error = `Could not connect to server: ${this.girderRest.apiRoot}`;
-            }
+    async folder () {
+      if (this.girderRest.user) {
+        try {
+          return (await this.girderRest.get('folder', {
+            params: {
+              parentType: 'user',
+              parentId: this.girderRest.user._id,
+            },
+          })).data[0];
+        } catch ({ response }) {
+          if (response) {
+            this.error = response.data.message;
+          } else {
+            this.error = `Could not connect to server: ${this.girderRest.apiRoot}`;
           }
         }
-        return null;
-      },
+      }
+      return null;
     },
   },
   computed: {
-    loginDialog() { return this.folder === null; },
+    loggedOut() { return this.girderRest.user === null; },
     uploadDest() {
       if (this.location.type === 'folder') {
         return {
