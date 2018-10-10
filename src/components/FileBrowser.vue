@@ -15,10 +15,6 @@ export default {
       type: Object,
       required: true,
     },
-    refresh: {
-      type: Number,
-      default: 0,
-    },
     selectEnabled: {
       type: Boolean,
       default: true,
@@ -51,13 +47,13 @@ export default {
         page: 1,
       },
       selected: [],
+      refreshCounter_: 0, // https://github.com/girder/girder_web_components/issues/39
     };
   },
   asyncComputed: {
     breadcrumb: {
       default: { root: {}, path: [] },
       async get() {
-        this.requireSession();
         this.breadcrumbLoading = true;
         const breadcrumb = { root: {}, path: [] };
         let { id, type } = this.location;
@@ -86,7 +82,6 @@ export default {
     counts: {
       default: { nFolders: 0, nItems: 0 },
       async get() {
-        this.requireSession();
         const endpoint = `${this.location.type}/${this.location.id}/details`;
         const { data } = (await this.girderRest.get(endpoint));
         return {
@@ -104,7 +99,6 @@ export default {
     rows: {
       default: [],
       async get() {
-        this.requireSession();
         const request = async (gr, endpoint, params) => {
           if (params === null) return [];
           const resp = await gr.get(endpoint, { params });
@@ -131,7 +125,7 @@ export default {
           this.itemParams,
           this.counts,
           this.location,
-          this.refresh,
+          this.refreshCounter_,
         ];
       },
     },
@@ -144,7 +138,7 @@ export default {
       }
     },
     selected(newval) {
-      this.$emit('update:selected', newval);
+      this.$emit('selection-changed', newval);
     },
   },
   computed: {
@@ -169,7 +163,6 @@ export default {
       return { folderId: this.location.id, limit, offset };
     },
     loading() { return this.rowsLoading || this.breadcrumbLoading; },
-    login() { return this.girderRest.user ? this.girderRest.user.login : ''; },
     totalItems() { return this.counts.nFolders + this.counts.nItems; },
   },
   methods: {
@@ -187,10 +180,8 @@ export default {
         this.$emit('update:location', { type, id, name });
       }
     },
-    requireSession() {
-      if (!this.login || !this.location) {
-        throw new Error('File Browser expects an active session and a defined location.');
-      }
+    refresh() {
+      this.refreshCounter_ += 1;
     },
   },
 };
@@ -222,7 +213,7 @@ v-data-table.girder-file-browser-component.elevation-1(
           v-icon.mdi-24px(slot="divider", color="accent") {{ $vuetify.icons.chevron }}
           v-breadcrumbs-item(@click.native="changeLocation(breadcrumb.root)")
             v-icon.mdi-24px(color="accent") {{ $vuetify.icons.globe }}
-            | &nbsp; {{ login }}
+            | &nbsp; {{ breadcrumb.root.name }}
           v-breadcrumbs-item(
               v-for="item in breadcrumb.path",
               :key="`${item.id}.crumb`",

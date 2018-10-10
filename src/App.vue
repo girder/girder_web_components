@@ -9,8 +9,9 @@ v-app.app
     girder-upload(v-if="uploader",
         :dest="uploadDest",
         multiple="multiple",
-        @done="refresh++")
-  girder-file-browser(v-if="!loggedOut && location",
+        @done="$refs.girderBrowser.refresh()")
+  girder-file-browser(ref="girderBrowser",
+      v-if="!loggedOut && location",
       :location.sync="location",
       :refresh="refresh",
       @click:newitem="uploader = true")
@@ -41,7 +42,7 @@ export default {
     };
   },
   asyncComputed: {
-    async folder () {
+    async folder() {
       if (this.girderRest.user) {
         try {
           return (await this.girderRest.get('folder', {
@@ -75,7 +76,7 @@ export default {
     },
   },
   methods: {
-    initializeLocation() {
+    resetLocation() {
       if (this.girderRest.user) {
         return { type: 'user', id: this.girderRest.user._id };
       }
@@ -83,9 +84,9 @@ export default {
     },
   },
   mounted() {
-    this.location = this.initializeLocation();
+    this.location = this.resetLocation();
     this.girderRest.$on('login', () => {
-      this.location = this.initializeLocation();
+      this.location = this.resetLocation();
     });
   },
 };
