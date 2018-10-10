@@ -60,7 +60,7 @@ export default {
         while (type) {
           const { data } = (await this.girderRest.get(`${type}/${id}`));
           const entity = {
-            name: data.type !== 'user' ? data.name : data.login,
+            name: data._modelType !== 'user' ? data.name : data.login,
             id: data._id,
             type: data._modelType,
             parentId: data.parentId,
