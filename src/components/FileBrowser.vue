@@ -103,8 +103,7 @@ export default {
     rows: {
       default: [],
       async get() {
-        const counts = this.counts;
-        const location = this.location;
+        const { counts, location } = this;
         this.rowsLoading = true;
 
         const folderParams = {
@@ -129,7 +128,7 @@ export default {
         if (itemParams.limit > 0 && location.type === 'folder') {
           promises.push(this.girderRest.get(GIRDER_ITEM_ENDOINT, { params: itemParams }));
         }
-        const responses = (await Promise.all(promises)).map(response => response.data)
+        const responses = (await Promise.all(promises)).map(response => response.data);
         const rows = []
           .concat.apply(...responses)
           .map(item => ({
