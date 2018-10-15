@@ -50,6 +50,10 @@ export default {
       refreshCounter_: 0, // https://github.com/girder/girder_web_components/issues/39
     };
   },
+  computed: {
+    loading() { return this.rowsLoading || this.breadcrumbLoading; },
+    totalItems() { return this.counts.nFolders + this.counts.nItems; },
+  },
   asyncComputed: {
     breadcrumb: {
       default: { root: {}, path: [] },
@@ -99,32 +103,47 @@ export default {
     rows: {
       default: [],
       async get() {
-        const request = async (gr, endpoint, params) => {
-          if (params === null) return [];
-          const resp = await gr.get(endpoint, { params });
-          if (resp.status !== 200) return [];
-          return resp.data;
-        };
+        const counts = this.counts;
+        const location = this.location;
         this.rowsLoading = true;
-        const rows = [
-          ...(await request(this.girderRest, GIRDER_FOLDER_ENDPOINT, this.folderParams)),
-          ...(await request(this.girderRest, GIRDER_ITEM_ENDOINT, this.itemParams)),
-        ].map(item => ({
-          name: item.name,
-          type: item._modelType,
-          id: item._id,
-          size: item.size ? this.formatSize(item.size) : '',
-          icon: item._modelType in ICON_MAP ? ICON_MAP[item._modelType] : 'file',
-        }));
+
+        const folderParams = {
+          parentType: location.type,
+          parentId: location.id,
+          limit: this.pagination.rowsPerPage,
+          offset: (this.pagination.page - 1) * this.pagination.rowsPerPage,
+        };
+        const itemParams = {
+          folderId: location.id,
+          // If there are folders on the current page,
+          // the numer of items to fetch will be less than rowsPerPage
+          limit: counts.nFolders > folderParams.offset
+            ? this.pagination.rowsPerPage - (counts.nFolders - folderParams.offset)
+            : this.pagination.rowsPerPage,
+          offset: folderParams.offset > 0
+            ? folderParams.offset - counts.nFolders
+            : 0,
+        };
+        const promises = [];
+        promises.push(this.girderRest.get(GIRDER_FOLDER_ENDPOINT, { params: folderParams }));
+        if (itemParams.limit > 0 && location.type === 'folder') {
+          promises.push(this.girderRest.get(GIRDER_ITEM_ENDOINT, { params: itemParams }));
+        }
+        const responses = (await Promise.all(promises)).map(response => response.data)
+        const rows = []
+          .concat.apply(...responses)
+          .map(item => ({
+            name: item.name,
+            type: item._modelType,
+            id: item._id,
+            size: item.size ? this.formatSize(item.size) : '',
+            icon: item._modelType in ICON_MAP ? ICON_MAP[item._modelType] : 'file',
+          }));
         this.rowsLoading = false;
         return rows;
       },
       watch() {
         return [
-          this.folderParams,
-          this.itemParams,
-          this.counts,
-          this.location,
           this.refreshCounter_,
         ];
       },
@@ -140,30 +159,6 @@ export default {
     selected(newval) {
       this.$emit('selection-changed', newval);
     },
-  },
-  computed: {
-    folderParams() {
-      return {
-        parentType: this.location.type,
-        parentId: this.location.id,
-        limit: this.pagination.rowsPerPage,
-        offset: (this.pagination.page - 1) * this.pagination.rowsPerPage,
-      };
-    },
-    itemParams() {
-      const limit = this.counts.nFolders > this.folderParams.offset
-        ? this.pagination.rowsPerPage - (this.counts.nFolders - this.folderParams.offset)
-        : this.pagination.rowsPerPage;
-      const offset = this.folderParams.offset > 0
-        ? this.folderParams.offset - this.counts.nFolders
-        : 0;
-      if (limit <= 0 || (this.location.type !== 'folder')) {
-        return null; // No items should be shown on the current page.
-      }
-      return { folderId: this.location.id, limit, offset };
-    },
-    loading() { return this.rowsLoading || this.breadcrumbLoading; },
-    totalItems() { return this.counts.nFolders + this.counts.nItems; },
   },
   methods: {
     toggleAll() {
