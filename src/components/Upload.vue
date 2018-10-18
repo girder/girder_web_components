@@ -167,67 +167,90 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-$stripeColor = #f0f0f3
-$img = linear-gradient(
-  -45deg, $stripeColor 25%, transparent 25%, transparent 50%, $stripeColor 50%,
-  $stripeColor 75%, transparent 75%, transparent)
+<style lang="scss" scoped>
+$stripeColor: #f0f0f3;
+$img: linear-gradient(
+  -45deg,
+  $stripeColor 25%,
+  transparent 25%,
+  transparent 50%,
+  $stripeColor 50%,
+  $stripeColor 75%,
+  transparent 75%,
+  transparent
+);
 
-.dropzone-wrapper
-  position relative
-  cursor pointer
-  min-height 260px
-  height 100%
-  text-align center
-  background-color #f6f6f9
-  background-repeat repeat
-  background-size 30px 30px
+.dropzone-wrapper {
+  position: relative;
+  cursor: pointer;
+  min-height: 260px;
+  height: 100%;
+  text-align: center;
+  background-color: #f6f6f9;
+  background-repeat: repeat;
+  background-size: 30px 30px;
 
-  &:hover
-    background-image $img
+  &:hover {
+    background-image: $img;
+  }
 
-  &.animate
-    animation stripes 2s linear infinite
-    background-image $img
+  &.animate {
+    animation: stripes 2s linear infinite;
+    background-image: $img;
+  }
 
-  .file-input
-    position absolute
-    top 0
-    right 0
-    bottom 0
-    left 0
-    height 100%
-    width 100%
-    opacity 0
-    z-index 1
-    cursor pointer
+  .file-input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    z-index: 1;
+    cursor: pointer;
+  }
+}
 
-@keyframes stripes
-  from
-    background-position 0 0
-  to
-    background-position 30px 60px
+@keyframes stripes {
+  from {
+    background-position: 0 0;
+  }
 
-.dropzone-message
-  position absolute
-  left 50%
-  top 50%
-  transform translateX(-50%) translateY(-50%)
+  to {
+    background-position: 30px 60px;
+  }
+}
 
-.file-tile
-  background-color transparent
-  transition width 0.8s ease-in-out 1s, height 0.8s ease-in-out 1s, background .5s ease-in-out
-  width 100%
-  height 100%
+.dropzone-message {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
 
-  &.status-uploading
-    background-color #fef4c9
+.file-tile {
+  background-color: transparent;
+  transition:
+    width 0.8s ease-in-out 1s,
+    height 0.8s ease-in-out 1s,
+    background-color 0.5s ease-in-out;
+  width: 100%;
+  height: 100%;
 
-  &.status-done
-    width 0
-    height 0
-    overflow hidden
+  &.status-uploading {
+    background-color: #fef4c9;
+  }
 
-.upload-wrapper
-  height 100%
+  &.status-done {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+}
+
+.upload-wrapper {
+  height: 100%;
+}
 </style>
