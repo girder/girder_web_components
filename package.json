@@ -8,6 +8,7 @@
     "build": "vue-cli-service build --target lib --name girder src/index.js",
     "lint": "vue-cli-service lint",
     "lint:pug": "pug-lint-vue src",
+    "lint:style": "stylelint 'src/**/*.vue'",
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
@@ -32,6 +33,8 @@
     "node-sass": "^4.9.0",
     "pug-lint-vue": "^0.1.3",
     "sass-loader": "^7.0.1",
+    "stylelint": "^9.6.0",
+    "stylelint-config-standard": "^18.2.0",
     "vue-cli-plugin-pug": "^1.0.7",
     "vue-template-compiler": "^2.5.16"
   },
@@ -116,6 +119,11 @@
     "validateLineBreaks": "LF",
     "validateSelfClosingTags": true,
     "validateTemplateString": true
+  },
+  "stylelint": {
+    "extends": [
+      "stylelint-config-standard"
+    ]
   },
   "browserslist": [
     "> 1%",
