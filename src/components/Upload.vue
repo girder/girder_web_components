@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.upload-wrapper(flat)
+v-card(flat, height="100%")
   slot(name="header")
     v-card-title(primary-title)
       div
@@ -19,7 +19,7 @@ v-card.upload-wrapper(flat)
     .dropzone-wrapper(
         v-if="!files.length", :class="dropzoneClass", @dragenter="dropzoneClass = 'animate'",
         @dragleave="dropzoneClass = null", @drop="dropzoneClass = null")
-      .dropzone-message
+      v-layout(column, justify-center, align-center, fill-height)
         v-icon(size="50px") $vuetify.icons.fileUpload
         .title.mt-3 {{ dropzoneMessage }}
       input.file-input(type="file", :multiple="multiple", @change="filesChanged")
@@ -185,7 +185,6 @@ $img: linear-gradient(
   cursor: pointer;
   min-height: 260px;
   height: 100%;
-  text-align: center;
   background-color: #f6f6f9;
   background-repeat: repeat;
   background-size: 30px 30px;
@@ -223,15 +222,7 @@ $img: linear-gradient(
   }
 }
 
-.dropzone-message {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%);
-}
-
 .file-tile {
-  background-color: transparent;
   transition:
     width 0.8s ease-in-out 1s,
     height 0.8s ease-in-out 1s,
@@ -248,9 +239,5 @@ $img: linear-gradient(
     height: 0;
     overflow: hidden;
   }
-}
-
-.upload-wrapper {
-  height: 100%;
 }
 </style>
