@@ -20,7 +20,7 @@ v-card(flat, height="100%")
       .dropzone-wrapper(
           v-if="!files.length", :class="dropzoneClass", @dragenter="dropzoneClass = 'animate'",
           @dragleave="dropzoneClass = null", @drop="dropzoneClass = null")
-        v-layout(column, justify-center, align-center, fill-height)
+        v-layout.dropzone-message(column, justify-center, align-center, fill-height)
           v-icon(size="50px") $vuetify.icons.fileUpload
           .title.mt-3 {{ dropzoneMessage }}
         input.file-input(type="file", :multiple="multiple", @change="filesChanged")
@@ -198,6 +198,11 @@ $img: linear-gradient(
   &.animate {
     animation: stripes 2s linear infinite;
     background-image: $img;
+  }
+
+  .dropzone-message {
+    position: absolute;
+    width: 100%;
   }
 
   .file-input {
