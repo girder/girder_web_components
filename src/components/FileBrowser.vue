@@ -249,23 +249,29 @@ v-data-table.girder-file-browser-component.elevation-1(
 <style lang="scss" scoped>
 .girder-file-browser-component.elevation-1 {
   .selectable {
-    opacity: .8;
+    opacity: 0.8;
+
     &:hover {
       opacity: 1;
       cursor: pointer;
     }
   }
+
   .v-table tr {
-    &.itemRow[active], &.itemRow:hover {
-      background: #E1F5FE !important;
+    &.itemRow[active],
+    &.itemRow:hover {
+      background: #e1f5fe !important;
     }
+
     &.secondary {
       border-color: inherit !important;
     }
+
     .v-input--checkbox {
       border-right: 1.5px solid;
       padding-bottom: 4px;
     }
+
     .text-container i {
       vertical-align: bottom;
     }
@@ -275,11 +281,12 @@ v-data-table.girder-file-browser-component.elevation-1(
 
 <style lang="scss">
 .girder-file-browser-component {
-  ul.v-breadcrumbs li::nth-child(2n) {
-    padding: 0 4px
+  ul.v-breadcrumbs li:nth-child(2n) {
+    padding: 0 4px;
   }
+
   .theme--light.v-icon {
-    color: inherit
+    color: inherit;
   }
 }
 </style>
