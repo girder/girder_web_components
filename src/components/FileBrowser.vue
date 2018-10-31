@@ -9,6 +9,7 @@ const ICON_MAP = {
 };
 
 export default {
+  mixins: [sizeFormatter],
   props: {
     // location should have properties `type`, `id`
     location: {
@@ -36,7 +37,6 @@ export default {
       default: true,
     },
   },
-  mixins: [sizeFormatter],
   inject: ['girderRest'],
   data() {
     return {

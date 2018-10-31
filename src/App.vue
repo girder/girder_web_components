@@ -75,6 +75,12 @@ export default {
       return this.folder;
     },
   },
+  mounted() {
+    this.location = this.resetLocation();
+    this.girderRest.$on('login', () => {
+      this.location = this.resetLocation();
+    });
+  },
   methods: {
     resetLocation() {
       if (this.girderRest.user) {
@@ -82,12 +88,6 @@ export default {
       }
       return null;
     },
-  },
-  mounted() {
-    this.location = this.resetLocation();
-    this.girderRest.$on('login', () => {
-      this.location = this.resetLocation();
-    });
   },
 };
 </script>
