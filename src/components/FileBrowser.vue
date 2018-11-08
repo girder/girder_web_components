@@ -40,19 +40,24 @@ export default {
   inject: ['girderRest'],
   data() {
     return {
-      rowsLoading: false,
       breadcrumbLoading: false,
       pagination: {
         rowsPerPage: 10,
         page: 1,
       },
-      selected: [],
       refreshCounter_: 0, // https://github.com/girder/girder_web_components/issues/39
+      rows: [], // https://github.com/girder/girder_web_components/pull/36#discussion_r225943054
+      rowsLoading: false,
+      selected: [],
     };
   },
   computed: {
-    loading() { return this.rowsLoading || this.breadcrumbLoading; },
-    totalItems() { return this.counts.nFolders + this.counts.nItems; },
+    loading() {
+      return this.rowsLoading || this.breadcrumbLoading;
+    },
+    totalItems() {
+      return this.counts.nFolders + this.counts.nItems;
+    },
   },
   asyncComputed: {
     breadcrumb: {
@@ -62,7 +67,7 @@ export default {
         const breadcrumb = { root: {}, path: [] };
         let { id, type } = this.location;
         while (type) {
-          const { data } = (await this.girderRest.get(`${type}/${id}`));
+          const { data } = await this.girderRest.get(`${type}/${id}`);
           const entity = {
             name: data._modelType !== 'user' ? data.name : data.login,
             id: data._id,
@@ -87,64 +92,11 @@ export default {
       default: { nFolders: 0, nItems: 0 },
       async get() {
         const endpoint = `${this.location.type}/${this.location.id}/details`;
-        const { data } = (await this.girderRest.get(endpoint));
+        const { data } = await this.girderRest.get(endpoint);
         return {
           nFolders: data.nFolders ? data.nFolders : 0,
           nItems: data.nItems ? data.nItems : 0,
         };
-      },
-      watch() {
-        return [
-          this.pagination,
-          this.location,
-        ];
-      },
-    },
-    rows: {
-      default: [],
-      async get() {
-        const { counts, location } = this;
-        this.rowsLoading = true;
-
-        const folderParams = {
-          parentType: location.type,
-          parentId: location.id,
-          limit: this.pagination.rowsPerPage,
-          offset: (this.pagination.page - 1) * this.pagination.rowsPerPage,
-        };
-        const itemParams = {
-          folderId: location.id,
-          // If there are folders on the current page,
-          // the numer of items to fetch will be less than rowsPerPage
-          limit: counts.nFolders > folderParams.offset
-            ? this.pagination.rowsPerPage - (counts.nFolders - folderParams.offset)
-            : this.pagination.rowsPerPage,
-          offset: folderParams.offset > 0
-            ? folderParams.offset - counts.nFolders
-            : 0,
-        };
-        const promises = [];
-        promises.push(this.girderRest.get(GIRDER_FOLDER_ENDPOINT, { params: folderParams }));
-        if (itemParams.limit > 0 && location.type === 'folder') {
-          promises.push(this.girderRest.get(GIRDER_ITEM_ENDOINT, { params: itemParams }));
-        }
-        const responses = (await Promise.all(promises)).map(response => response.data);
-        const rows = []
-          .concat.apply(...responses)
-          .map(item => ({
-            name: item.name,
-            type: item._modelType,
-            id: item._id,
-            size: item.size ? this.formatSize(item.size) : '',
-            icon: item._modelType in ICON_MAP ? ICON_MAP[item._modelType] : 'file',
-          }));
-        this.rowsLoading = false;
-        return rows;
-      },
-      watch() {
-        return [
-          this.refreshCounter_,
-        ];
       },
     },
   },
@@ -158,6 +110,12 @@ export default {
     selected(newval) {
       this.$emit('selection-changed', newval);
     },
+    async counts() {
+      this.rows = await this.fetchPaginatedRows();
+    },
+    async pagination() {
+      this.rows = await this.fetchPaginatedRows();
+    },
   },
   methods: {
     toggleAll() {
@@ -169,13 +127,50 @@ export default {
     },
     changeLocation(item) {
       const { type, id, name } = item;
-      if ((this.location.id !== id || this.location.type !== type)
-          && type !== 'item') {
+      if ((this.location.id !== id || this.location.type !== type) &&
+          type !== 'item') {
         this.$emit('update:location', { type, id, name });
       }
     },
     refresh() {
       this.refreshCounter_ += 1;
+    },
+    async fetchPaginatedRows() {
+      this.rowsLoading = true;
+      const { counts, location, pagination } = this;
+      const { page, rowsPerPage } = pagination;
+      const folderParams = {
+        parentType: location.type,
+        parentId: location.id,
+        limit: rowsPerPage,
+        offset: (page - 1) * rowsPerPage,
+      };
+      const itemParams = {
+        folderId: location.id,
+        // If there are folders on the current page,
+        // the numer of items to fetch will be less than rowsPerPage
+        limit:
+          counts.nFolders > folderParams.offset
+            ? rowsPerPage - (counts.nFolders - folderParams.offset)
+            : rowsPerPage,
+        offset:
+          folderParams.offset > 0 ? folderParams.offset - counts.nFolders : 0,
+      };
+      const promises = [];
+      promises.push(this.girderRest.get(GIRDER_FOLDER_ENDPOINT, { params: folderParams }));
+      if (itemParams.limit > 0 && location.type === 'folder') {
+        promises.push(this.girderRest.get(GIRDER_ITEM_ENDOINT, { params: itemParams }));
+      }
+      const responses = (await Promise.all(promises)).map(response => response.data);
+      const rows = [].concat.apply(...responses).map(item => ({
+        name: item.name,
+        type: item._modelType,
+        id: item._id,
+        size: item.size ? this.formatSize(item.size) : '',
+        icon: item._modelType in ICON_MAP ? ICON_MAP[item._modelType] : 'file',
+      }));
+      this.rowsLoading = false;
+      return rows;
     },
   },
 };
@@ -260,6 +255,7 @@ v-data-table.girder-file-browser-component.elevation-1(
   .v-table tr {
     &.itemRow[active],
     &.itemRow:hover {
+      // $light-blue.lighten-5
       background: #e1f5fe !important;
     }
 
@@ -287,6 +283,10 @@ v-data-table.girder-file-browser-component.elevation-1(
 
   .theme--light.v-icon {
     color: inherit;
+  }
+
+  .v-datatable__progress .v-progress-linear {
+    position: absolute;
   }
 }
 </style>
