@@ -79,19 +79,12 @@ describe('File Browser', () => {
   });
 
   it('can handle normal navigation', async () => {
-    mock
-      .onGet(/user\/foo_user_id/)
-      .reply(200, getMockUserResponse('foo_user_id'))
-      .onGet(/user\/foo_user_id\/details/)
-      .replyOnce(200, { nFolders: 1 })
-      .onGet(/folder\/fake_folder_id/)
-      .reply(200, getMockFolderResponse('foo_user_id'))
-      .onGet(/folder\/fake_folder_id\/details/)
-      .replyOnce(200, { nFolders: 1, nItems: 1 })
-      .onGet(/folder/)
-      .reply(200, getMockFolderQueryResponse(1))
-      .onGet(/item/)
-      .reply(200, getMockItemQueryResponse(1));
+    mock.onGet(/user\/foo_user_id/).reply(200, getMockUserResponse('foo_user_id'));
+    mock.onGet(/user\/foo_user_id\/details/).replyOnce(200, { nFolders: 1 });
+    mock.onGet(/folder\/fake_folder_id/).reply(200, getMockFolderResponse('foo_user_id'));
+    mock.onGet(/folder\/fake_folder_id\/details/).replyOnce(200, { nFolders: 1, nItems: 1 });
+    mock.onGet(/folder/).reply(200, getMockFolderQueryResponse(1));
+    mock.onGet(/item/).reply(200, getMockItemQueryResponse(1));
     const wrapper = shallowMount(FileBrowser, {
       localVue,
       propsData: {
