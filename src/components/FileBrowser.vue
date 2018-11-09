@@ -15,6 +15,7 @@ export default {
     location: {
       type: Object,
       required: true,
+      validator: (val) => val.type && val.id,
     },
     selectEnabled: {
       type: Boolean,
@@ -45,8 +46,8 @@ export default {
         rowsPerPage: 10,
         page: 1,
       },
-      refreshCounter_: 0, // https://github.com/girder/girder_web_components/issues/39
-      rows: [], // https://github.com/girder/girder_web_components/pull/36#discussion_r225943054
+      refreshCounter_: 0,
+      rows: [],
       rowsLoading: false,
       selected: [],
     };
@@ -66,6 +67,7 @@ export default {
         this.breadcrumbLoading = true;
         const breadcrumb = { root: {}, path: [] };
         let { id, type } = this.location;
+
         while (type) {
           const { data } = await this.girderRest.get(`${type}/${id}`);
           const entity = {
@@ -97,6 +99,10 @@ export default {
           nFolders: data.nFolders ? data.nFolders : 0,
           nItems: data.nItems ? data.nItems : 0,
         };
+      },
+      watch() {
+        this.refreshCounter_;
+        this.location;
       },
     },
   },
@@ -197,7 +203,7 @@ v-data-table.girder-file-browser-component.elevation-1(
             :input-value="props.all",
             :indeterminate="selected.length > 0 && !props.all",
             @click.native="toggleAll")
-      th.pl-0(width="80%")
+      th.pl-0
         v-breadcrumbs.pl-0
           v-icon.mdi-24px(slot="divider", color="accent") {{ $vuetify.icons.chevron }}
           v-breadcrumbs-item(@click.native="changeLocation(breadcrumb.root)")
@@ -207,22 +213,22 @@ v-data-table.girder-file-browser-component.elevation-1(
               v-for="item in breadcrumb.path",
               :key="`${item.id}.crumb`",
               @click.native="changeLocation(item)") {{ item.name }}
-      th.pr-0(width="1%")
+      th.pr-0.align-right(width="1%")
         v-btn(flat,
             small,
             color="secondary darken-2",
             v-if="newFolderEnabled",
             @click="$emit('click:newfolder')")
           v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.folderNew }}
-          | New Folder
-      th.pl-0.pr-2(width="1%")
+          span(v-if="$vuetify.breakpoint.smAndUp") New Folder
+      th.pl-0.pr-1.align-right(width="1%")
         v-btn(flat,
             small,
             color="secondary darken-2",
             v-if="newItemEnabled",
             @click="$emit('click:newitem')")
           v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.fileNew }}
-          | New Item
+          span(v-if="$vuetify.breakpoint.smAndUp") New Item
 
   //- Table Row Slot
   template(slot="items", slot-scope="props")
@@ -233,12 +239,12 @@ v-data-table.girder-file-browser-component.elevation-1(
         v-checkbox.secondary--text.text--darken-1.pr-2(
             :input-value="props.selected", accent, hide-details)
       td.pl-1(colspan="2")
-        span.text-container.secondary--text.text--darken-3(
+        span.text-container.secondary--text.text--darken-3.nobreak(
             :class="{selectable: props.item.type !== 'item'}",
             @click.stop="changeLocation(props.item)")
           v-icon(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons[props.item.icon] }}
-          | &nbsp; {{ props.item.name }}
-      td.text-xs-right.secondary--text.text--darken-3 {{ props.item.size }}
+          span &nbsp; {{ props.item.name }}
+      td.text-xs-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
 </template>
 
 <style lang="scss" scoped>
@@ -252,24 +258,37 @@ v-data-table.girder-file-browser-component.elevation-1(
     }
   }
 
-  .v-table tr {
-    &.itemRow[active],
-    &.itemRow:hover {
-      // $light-blue.lighten-5
-      background: #e1f5fe !important;
+  .v-table {
+    th {
+      button.v-btn {
+        min-width: 0;
+        margin: 0;
+      }
     }
 
-    &.secondary {
-      border-color: inherit !important;
-    }
+    tr {
+      &.itemRow[active],
+      &.itemRow:hover {
+        // $light-blue.lighten-5
+        background: #e1f5fe !important;
+      }
 
-    .v-input--checkbox {
-      border-right: 1.5px solid;
-      padding-bottom: 4px;
-    }
+      &.secondary {
+        border-color: inherit !important;
+      }
 
-    .text-container i {
-      vertical-align: bottom;
+      .v-input--checkbox {
+        border-right: 1.5px solid;
+        padding-bottom: 4px;
+      }
+
+      .text-container i {
+        vertical-align: bottom;
+      }
+
+      .nobreak {
+        white-space: nowrap;
+      }
     }
   }
 }
