@@ -80,12 +80,14 @@ describe('File Browser', () => {
 
   it('can handle normal navigation', async () => {
     mock
-      .onGet(/user\/foo_user_id/).reply(200, getMockUserResponse('foo_user_id'))
-      .onGet(/user\/foo_user_id\/details/).reply(200, { nFolders: 1 })
+      .onGet(/user\/foo_user_id/)
+      .reply(200, getMockUserResponse('foo_user_id'))
+      .onGet(/user\/foo_user_id\/details/)
+      .replyOnce(200, { nFolders: 1 })
       .onGet(/folder\/fake_folder_id/)
       .reply(200, getMockFolderResponse('foo_user_id'))
       .onGet(/folder\/fake_folder_id\/details/)
-      .reply(200, { nFolders: 1, nItems: 1 })
+      .replyOnce(200, { nFolders: 1, nItems: 1 })
       .onGet(/folder/)
       .reply(200, getMockFolderQueryResponse(1))
       .onGet(/item/)
@@ -112,6 +114,8 @@ describe('File Browser', () => {
     expect(wrapper.vm.rows.length).toBe(1);
     expect(wrapper.vm.breadcrumb.path.length).toBe(0);
     expect(wrapper.vm.breadcrumb.root.id).toBe('foo_user_id');
+
+    // Change location, and check that FileBrowser reacts accordingly.
     wrapper.vm.location = {
       type: 'folder',
       id: 'fake_folder_id',
@@ -122,12 +126,4 @@ describe('File Browser', () => {
     expect(wrapper.vm.breadcrumb.root.id).toBe('foo_user_id');
     expect(wrapper.vm.rows.length).toBe(2); // 1 folder, 1 item
   });
-
-  it('emits selection change events if select enabled', () => { });
-
-  it('does not emit selection change events if select disabled', () => { });
-
-  it('allows multi-select', () => { });
-
-  it('shows the proper pagination for folders and items', () => { });
 });
