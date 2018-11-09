@@ -15,7 +15,7 @@ export default {
     location: {
       type: Object,
       required: true,
-      validator: (val) => val.type && val.id,
+      validator: val => val.type && val.id,
     },
     selectEnabled: {
       type: Boolean,
@@ -101,8 +101,10 @@ export default {
         };
       },
       watch() {
-        this.refreshCounter_;
-        this.location;
+        return [
+          this.refreshCounter_,
+          this.location,
+        ];
       },
     },
   },
