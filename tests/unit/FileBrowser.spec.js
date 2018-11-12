@@ -6,27 +6,6 @@ import { flushPromises, girderVue } from './utils';
 
 const localVue = girderVue();
 
-function getMockUserResponse(userId) {
-  return {
-    admin: true,
-    created: '2018-09-07T19:35:02.275000+00:00',
-    email: 'foo@kitware.com',
-    emailVerified: true,
-    firstName: 'Foo',
-    groupInvites: [],
-    groups: [],
-    lastName: 'User',
-    login: 'foo',
-    otp: false,
-    public: true,
-    size: 104502538,
-    status: 'enabled',
-    _accessLevel: 2,
-    _id: userId,
-    _modelType: 'user',
-  };
-}
-
 function getMockFolderResponse(parentId, parentCollection = 'user') {
   return {
     _accessLevel: 2,
@@ -79,9 +58,7 @@ describe('File Browser', () => {
   });
 
   it('can handle normal navigation', async () => {
-    mock.onGet(/user\/foo_user_id/).reply(200, getMockUserResponse('foo_user_id'));
     mock.onGet(/user\/foo_user_id\/details/).replyOnce(200, { nFolders: 1 });
-    mock.onGet(/folder\/fake_folder_id/).reply(200, getMockFolderResponse('foo_user_id'));
     mock.onGet(/folder\/fake_folder_id\/details/).replyOnce(200, { nFolders: 1, nItems: 1 });
     mock.onGet(/folder/).reply(200, getMockFolderQueryResponse(1));
     mock.onGet(/item/).reply(200, getMockItemQueryResponse(1));
@@ -105,8 +82,6 @@ describe('File Browser', () => {
     expect(location.required).toBeTruthy();
     expect(location.type).toBe(Object);
     expect(wrapper.vm.rows.length).toBe(1);
-    expect(wrapper.vm.breadcrumb.path.length).toBe(0);
-    expect(wrapper.vm.breadcrumb.root.id).toBe('foo_user_id');
 
     // Change location, and check that FileBrowser reacts accordingly.
     wrapper.vm.location = {
@@ -115,8 +90,6 @@ describe('File Browser', () => {
     };
     await flushPromises();
     expect(wrapper.vm.location.type).toBe('folder');
-    expect(wrapper.vm.breadcrumb.path.length).toBe(1);
-    expect(wrapper.vm.breadcrumb.root.id).toBe('foo_user_id');
     expect(wrapper.vm.rows.length).toBe(2); // 1 folder, 1 item
   });
 });

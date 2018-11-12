@@ -1,5 +1,6 @@
 <script>
 import { sizeFormatter } from '../utils/mixins';
+import GirderBreadcrumb from './Breadcrumb.vue';
 
 const GIRDER_FOLDER_ENDPOINT = 'folder';
 const GIRDER_ITEM_ENDOINT = 'item';
@@ -9,9 +10,11 @@ const ICON_MAP = {
 };
 
 export default {
+  components: {
+    GirderBreadcrumb,
+  },
   mixins: [sizeFormatter],
   props: {
-    // location should have properties `type`, `id`
     location: {
       type: Object,
       required: true,
@@ -61,35 +64,6 @@ export default {
     },
   },
   asyncComputed: {
-    breadcrumb: {
-      default: { root: {}, path: [] },
-      async get() {
-        this.breadcrumbLoading = true;
-        const breadcrumb = { root: {}, path: [] };
-        let { id, type } = this.location;
-
-        while (type) {
-          const { data } = await this.girderRest.get(`${type}/${id}`);
-          const entity = {
-            name: data._modelType !== 'user' ? data.name : data.login,
-            id: data._id,
-            type: data._modelType,
-            parentId: data.parentId,
-            parentType: data.parentCollection,
-          };
-          if (entity.type === 'folder') {
-            breadcrumb.path.unshift(entity);
-            id = entity.parentId;
-            type = entity.parentType;
-          } else {
-            breadcrumb.root = entity;
-            break;
-          }
-        }
-        this.breadcrumbLoading = false;
-        return breadcrumb;
-      },
-    },
     counts: {
       default: { nFolders: 0, nItems: 0 },
       async get() {
@@ -206,15 +180,10 @@ v-data-table.girder-file-browser-component.elevation-1(
             :indeterminate="selected.length > 0 && !props.all",
             @click.native="toggleAll")
       th.pl-0
-        v-breadcrumbs.pl-0
-          v-icon.mdi-24px(slot="divider", color="accent") {{ $vuetify.icons.chevron }}
-          v-breadcrumbs-item(@click.native="changeLocation(breadcrumb.root)")
-            v-icon.mdi-24px(color="accent") {{ $vuetify.icons.globe }}
-            | &nbsp; {{ breadcrumb.root.name }}
-          v-breadcrumbs-item(
-              v-for="item in breadcrumb.path",
-              :key="`${item.id}.crumb`",
-              @click.native="changeLocation(item)") {{ item.name }}
+        girder-breadcrumb(
+            :location="location",
+            :loading.sync="breadcrumbLoading",
+            @changelocation="changeLocation")
       th.pr-0.align-right(width="1%")
         v-btn(flat,
             small,
@@ -298,10 +267,6 @@ v-data-table.girder-file-browser-component.elevation-1(
 
 <style lang="scss">
 .girder-file-browser-component {
-  ul.v-breadcrumbs li:nth-child(2n) {
-    padding: 0 4px;
-  }
-
   .theme--light.v-icon {
     color: inherit;
   }
