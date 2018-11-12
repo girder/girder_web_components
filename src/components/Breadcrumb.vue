@@ -26,25 +26,27 @@ export default {
       async get() {
         this.$emit('update:loading', true);
         const breadcrumb = { root: {}, path: [] };
-        let { id, type } = this.location;
-
-        while (type) {
-          const { data } = await this.girderRest.get(`${type}/${id}`);
-          const entity = {
-            name: data._modelType !== 'user' ? data.name : data.login,
-            id: data._id,
-            type: data._modelType,
-            parentId: data.parentId,
-            parentType: data.parentCollection,
-          };
-          if (entity.type === 'folder') {
-            breadcrumb.path.unshift(entity);
-            id = entity.parentId;
-            type = entity.parentType;
-          } else {
-            breadcrumb.root = entity;
-            break;
-          }
+        const { id, type } = this.location;
+        if (type === 'folder') {
+          breadcrumb.path.unshift(this.location);
+          const { data } = await this.girderRest.get(`folder/${id}/rootpath`);
+          data.reverse().forEach((crumb) => {
+            const { object } = crumb;
+            const entity = {
+              name: object._modelType !== 'user' ? object.name : object.login,
+              id: object._id,
+              type: object._modelType,
+              parentId: object.parentId,
+              parentType: object.parentCollection,
+            };
+            if (entity.type === 'folder') {
+              breadcrumb.path.unshift(entity);
+            } else {
+              breadcrumb.root = entity;
+            }
+          });
+        } else {
+          breadcrumb.root = this.location;
         }
         this.$emit('update:loading', false);
         return breadcrumb;
