@@ -191,7 +191,7 @@ v-data-table.girder-file-browser-component.elevation-1(
             v-if="newFolderEnabled",
             @click="$emit('click:newfolder')")
           v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.folderNew }}
-          span(v-if="$vuetify.breakpoint.smAndUp") New Folder
+          span.hidden-xs-only New Folder
       th.pl-0.pr-1.align-right(width="1%")
         v-btn(flat,
             small,
@@ -199,7 +199,7 @@ v-data-table.girder-file-browser-component.elevation-1(
             v-if="newItemEnabled",
             @click="$emit('click:newitem')")
           v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.fileNew }}
-          span(v-if="$vuetify.breakpoint.smAndUp") New Item
+          span.hidden-xs-only New Item
 
   //- Table Row Slot
   template(slot="items", slot-scope="props")
