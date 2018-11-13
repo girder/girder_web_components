@@ -220,6 +220,7 @@ v-data-table.girder-file-browser-component.elevation-1(
 
 <style lang="scss" scoped>
 .girder-file-browser-component.elevation-1 {
+  box-shadow: none !important;
   .selectable {
     opacity: 0.8;
 
