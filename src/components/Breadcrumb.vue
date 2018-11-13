@@ -26,9 +26,16 @@ export default {
       async get() {
         this.$emit('update:loading', true);
         const breadcrumb = { root: {}, path: [] };
-        const { id, type } = this.location;
+        const { id, type, name } = this.location;
         if (type === 'folder') {
-          breadcrumb.path.unshift(this.location);
+          // The last breadcrumb isn't returned by rootpath.
+          if (name) {
+            breadcrumb.path.unshift(this.location);
+          } else {
+            const { data } = await this.girderRest.get(`folder/${id}`);
+            breadcrumb.path.unshift(this.extractCrumbData(data));
+          }
+          // Get the rest of the path.
           const { data } = await this.girderRest.get(`folder/${id}/rootpath`);
           data.reverse().forEach((crumb) => {
             const { object } = crumb;
