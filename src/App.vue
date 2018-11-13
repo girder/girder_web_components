@@ -94,6 +94,7 @@ export default {
 
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css?family=Barlow+Condensed:300,300i,400,400i,600,600i');
+
 .app {
   font-family: "Barlow Condensed", sans-serif;
   -webkit-font-smoothing: antialiased;
