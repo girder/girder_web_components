@@ -32,13 +32,7 @@ export default {
           const { data } = await this.girderRest.get(`folder/${id}/rootpath`);
           data.reverse().forEach((crumb) => {
             const { object } = crumb;
-            const entity = {
-              name: object._modelType !== 'user' ? object.name : object.login,
-              id: object._id,
-              type: object._modelType,
-              parentId: object.parentId,
-              parentType: object.parentCollection,
-            };
+            const entity = this.extractCrumbData(object);
             if (entity.type === 'folder') {
               breadcrumb.path.unshift(entity);
             } else {
@@ -46,11 +40,23 @@ export default {
             }
           });
         } else {
-          breadcrumb.root = this.location;
+          const { data } = await this.girderRest.get(`${type}/${id}`);
+          breadcrumb.root = this.extractCrumbData(data);
         }
         this.$emit('update:loading', false);
         return breadcrumb;
       },
+    },
+  },
+  methods: {
+    extractCrumbData(object) {
+      return {
+        name: object._modelType !== 'user' ? object.name : object.login,
+        id: object._id,
+        type: object._modelType,
+        parentId: object.parentId,
+        parentType: object.parentCollection,
+      };
     },
   },
 };
