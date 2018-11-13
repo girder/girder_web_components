@@ -8,9 +8,9 @@ import colors from 'vuetify/es5/util/colors';
 
 export default {
   theme: {
-    primary: colors.blue,
+    primary: colors.lightBlue.darken1,
     secondary: colors.blueGrey,
-    accent: colors.blue,
+    accent: colors.lightBlue.darken1,
     error: colors.red,
   },
   iconfont: 'mdi',
