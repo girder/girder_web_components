@@ -71,7 +71,7 @@ export default {
 </script>
 
 <template lang="pug">
-v-breadcrumbs.headline.pa-0
+v-breadcrumbs.girder-breadcrumb-component.font-weight-bold.pa-0
   v-icon.mdi-24px(
       :class="{ disabled }",
       slot="divider",
@@ -93,8 +93,6 @@ v-breadcrumbs.headline.pa-0
 
 <style lang="scss">
 .girder-breadcrumb-component {
-  font-weight: 700;
-
   &.v-breadcrumbs li:nth-child(2n) {
     padding: 0 4px !important;
   }
