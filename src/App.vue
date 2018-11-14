@@ -13,7 +13,6 @@ v-app.app
   girder-file-browser(ref="girderBrowser",
       v-if="!loggedOut && location",
       :location.sync="location",
-      :refresh="refresh",
       @click:newitem="uploader = true")
 </template>
 
@@ -36,7 +35,6 @@ export default {
     return {
       multiple: true,
       uploader: false,
-      refresh: 0,
       browserLocation: null,
       forgotPasswordUrl: '/#?dialog=resetpassword',
     };
