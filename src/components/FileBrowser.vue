@@ -3,7 +3,7 @@ import { sizeFormatter } from '../utils/mixins';
 import GirderBreadcrumb from './Breadcrumb.vue';
 
 const GIRDER_FOLDER_ENDPOINT = 'folder';
-const GIRDER_ITEM_ENDOINT = 'item';
+const GIRDER_ITEM_ENDPOINT = 'item';
 const ICON_MAP = {
   folder: 'folder',
   item: 'file',
@@ -44,7 +44,6 @@ export default {
   inject: ['girderRest'],
   data() {
     return {
-      breadcrumbLoading: false,
       pagination: {
         rowsPerPage: 10,
         page: 1,
@@ -57,7 +56,7 @@ export default {
   },
   computed: {
     loading() {
-      return this.rowsLoading || this.breadcrumbLoading;
+      return (this.$refs.breadcrumb && this.$refs.breadcrumb.loading) || this.rowsLoading;
     },
     totalItems() {
       return this.counts.nFolders + this.counts.nItems;
@@ -70,8 +69,8 @@ export default {
         const endpoint = `${this.location.type}/${this.location.id}/details`;
         const { data } = await this.girderRest.get(endpoint);
         return {
-          nFolders: data.nFolders ? data.nFolders : 0,
-          nItems: data.nItems ? data.nItems : 0,
+          nFolders: data.nFolders || 0,
+          nItems: data.nItems || 0,
         };
       },
       watch() {
@@ -141,7 +140,7 @@ export default {
       const promises = [];
       promises.push(this.girderRest.get(GIRDER_FOLDER_ENDPOINT, { params: folderParams }));
       if (itemParams.limit > 0 && location.type === 'folder') {
-        promises.push(this.girderRest.get(GIRDER_ITEM_ENDOINT, { params: itemParams }));
+        promises.push(this.girderRest.get(GIRDER_ITEM_ENDPOINT, { params: itemParams }));
       }
       const responses = (await Promise.all(promises)).map(response => response.data);
       const rows = [].concat.apply(...responses).map(item => ({
@@ -181,9 +180,9 @@ v-data-table.girder-file-browser-component.elevation-1(
             @click.native="toggleAll")
       th.pl-0
         girder-breadcrumb(
+            ref="breadcrumb",
             :location="location",
-            :loading.sync="breadcrumbLoading",
-            @changelocation="changeLocation")
+            @crumbclick="changeLocation")
       th.pr-0.align-right(width="1%")
         v-btn(flat,
             small,

@@ -6,10 +6,6 @@ export default {
       required: true,
       validator: val => val.type && val.id,
     },
-    loading: {
-      type: Boolean,
-      default: false,
-    },
     disabled: {
       type: Boolean,
       default: false,
@@ -20,11 +16,16 @@ export default {
     },
   },
   inject: ['girderRest'],
+  data() {
+    return {
+      loading: false,
+    };
+  },
   asyncComputed: {
     breadcrumb: {
       default: { root: {}, path: [] },
       async get() {
-        this.$emit('update:loading', true);
+        this.loading = true;
         const breadcrumb = { root: {}, path: [] };
         const { id, type, name } = this.location;
         if (type === 'folder') {
@@ -50,7 +51,7 @@ export default {
           const { data } = await this.girderRest.get(`${type}/${id}`);
           breadcrumb.root = this.extractCrumbData(data);
         }
-        this.$emit('update:loading', false);
+        this.loading = false;
         return breadcrumb;
       },
     },
@@ -70,24 +71,24 @@ export default {
 </script>
 
 <template lang="pug">
-v-breadcrumbs.girder-breadcrumb-component.pl-0.pt-0.pb-0
+v-breadcrumbs.headline.pa-0
   v-icon.mdi-24px(
-      :class="{ disabled: disabled }",
+      :class="{ disabled }",
       slot="divider",
       color="accent") {{ $vuetify.icons.chevron }}
   v-breadcrumbs-item(
-      :class="{ disabled: disabled }",
-      @click.native="$emit('changelocation', breadcrumb.root)")
-    v-icon.mdi-24px(color="accent") {{ $vuetify.icons.globe }}
-    | &nbsp; {{ breadcrumb.root.name }}
+      :class="{ disabled }",
+      @click.native="$emit('crumbclick', breadcrumb.root)")
+    v-icon.mdi-24px.pr-2(color="accent") {{ $vuetify.icons.globe }}
+    | {{ breadcrumb.root.name }}
   v-breadcrumbs-item(
-      :class="{ disabled: disabled }",
+      :class="{ disabled }",
       v-for="item in breadcrumb.path",
       :key="`${item.id}.crumb`",
-      @click.native="$emit('changelocation', item)") {{ item.name }}
+      @click.native="$emit('crumbclick', item)") {{ item.name }}
   v-breadcrumbs-item(
       v-for="item in append",
-      :key="`${item.id}.crumb`") {{ item }}
+      :key="item.id") {{ item }}
 </template>
 
 <style lang="scss">

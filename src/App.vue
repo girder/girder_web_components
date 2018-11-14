@@ -37,7 +37,7 @@ export default {
       multiple: true,
       uploader: false,
       refresh: 0,
-      location: null,
+      browserLocation: null,
       forgotPasswordUrl: '/#?dialog=resetpassword',
     };
   },
@@ -63,6 +63,19 @@ export default {
     },
   },
   computed: {
+    location: {
+      get() {
+        if (this.browserLocation) {
+          return this.browserLocation;
+        } else if (this.girderRest.user) {
+          return { type: 'user', id: this.girderRest.user._id };
+        }
+        return null;
+      },
+      set(newVal) {
+        this.browserLocation = newVal;
+      },
+    },
     loggedOut() { return this.girderRest.user === null; },
     uploadDest() {
       if (this.location.type === 'folder') {
@@ -75,28 +88,11 @@ export default {
       return this.folder;
     },
   },
-  mounted() {
-    this.location = this.resetLocation();
-    this.girderRest.$on('login', () => {
-      this.location = this.resetLocation();
-    });
-  },
-  methods: {
-    resetLocation() {
-      if (this.girderRest.user) {
-        return { type: 'user', id: this.girderRest.user._id };
-      }
-      return null;
-    },
-  },
 };
 </script>
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css?family=Barlow+Condensed:300,300i,400,400i,600,600i');
-
 .app {
-  font-family: "Barlow Condensed", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
