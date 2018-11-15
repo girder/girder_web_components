@@ -73,18 +73,18 @@ export default {
 <template lang="pug">
 v-breadcrumbs.girder-breadcrumb-component.font-weight-bold.pa-0
   v-icon.mdi-24px(
-      :class="{ disabled }",
+      :disabled="disabled",
       slot="divider",
       color="accent") {{ $vuetify.icons.chevron }}
   v-breadcrumbs-item(
-      :class="{ disabled }",
+      :disabled="disabled || breadcrumb.path.length === 0",
       @click.native="$emit('crumbclick', breadcrumb.root)")
     v-icon.mdi-24px.pr-2(color="accent") {{ $vuetify.icons.globe }}
     | {{ breadcrumb.root.name }}
   v-breadcrumbs-item(
-      :class="{ disabled }",
-      v-for="item in breadcrumb.path",
-      :key="`${item.id}.crumb`",
+      :disabled="disabled || index == breadcrumb.path.length-1",
+      v-for="(item, index) in breadcrumb.path",
+      :key="item.id",
       @click.native="$emit('crumbclick', item)") {{ item.name }}
   v-breadcrumbs-item(
       v-for="item in append",
@@ -95,12 +95,6 @@ v-breadcrumbs.girder-breadcrumb-component.font-weight-bold.pa-0
 .girder-breadcrumb-component {
   &.v-breadcrumbs li:nth-child(2n) {
     padding: 0 4px !important;
-  }
-
-  li.disabled a,
-  li.v-breadcrumbs__divider i.disabled {
-    color: gray !important;
-    cursor: default !important;
   }
 }
 </style>
