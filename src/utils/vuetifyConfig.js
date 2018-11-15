@@ -29,7 +29,7 @@ export default {
     globus: 'mdi-earth',
     google: 'mdi-google',
     group: 'mdi-account-multiple',
-    item: 'mdi-file-document',
+    item: 'mdi-file',
     linkedin: 'mdi-linkedin',
     lock: 'mdi-lock',
     login: 'mdi-login',

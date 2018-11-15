@@ -4,10 +4,6 @@ import GirderBreadcrumb from './Breadcrumb.vue';
 
 const GIRDER_FOLDER_ENDPOINT = 'folder';
 const GIRDER_ITEM_ENDPOINT = 'item';
-const ICON_MAP = {
-  folder: 'folder',
-  item: 'file',
-};
 
 export default {
   components: {
@@ -148,7 +144,9 @@ export default {
         type: item._modelType,
         id: item._id,
         size: item.size ? this.formatSize(item.size) : '',
-        icon: item._modelType in ICON_MAP ? ICON_MAP[item._modelType] : 'file',
+        icon: item._modelType in this.$vuetify.icons
+          ? item._modelType
+          : 'file',
       }));
       this.rowsLoading = false;
       return rows;
