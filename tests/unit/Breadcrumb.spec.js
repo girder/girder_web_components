@@ -110,10 +110,12 @@ describe('Breadcrumb', () => {
     });
 
     // Change location, and check that FileBrowser reacts accordingly.
-    wrapper.vm.location = {
-      type: 'folder',
-      id: 'fake_folder_id_2',
-    };
+    wrapper.setProps({
+      location: {
+        type: 'folder',
+        id: 'fake_folder_id_2',
+      },
+    });
     await flushPromises();
     expect(wrapper.vm.breadcrumb.path.length).toBe(2);
     expect(wrapper.vm.breadcrumb.root.id).toBe('rootid2');

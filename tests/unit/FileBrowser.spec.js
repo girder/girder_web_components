@@ -84,10 +84,12 @@ describe('File Browser', () => {
     expect(wrapper.vm.rows.length).toBe(1);
 
     // Change location, and check that FileBrowser reacts accordingly.
-    wrapper.vm.location = {
-      type: 'folder',
-      id: 'fake_folder_id',
-    };
+    wrapper.setProps({
+      location: {
+        type: 'folder',
+        id: 'fake_folder_id',
+      },
+    });
     await flushPromises();
     expect(wrapper.vm.location.type).toBe('folder');
     expect(wrapper.vm.rows.length).toBe(2); // 1 folder, 1 item
