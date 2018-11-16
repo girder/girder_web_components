@@ -74,8 +74,7 @@ export default {
 v-breadcrumbs.girder-breadcrumb-component.font-weight-bold.pa-0
   span.subheading.font-weight-bold(
       :disabled="disabled",
-      slot="divider",
-      color="accent") /
+      slot="divider") /
   v-breadcrumbs-item(
       :disabled="disabled || breadcrumb.path.length === 0",
       @click.native="$emit('crumbclick', breadcrumb.root)")
