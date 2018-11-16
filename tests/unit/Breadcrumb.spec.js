@@ -1,7 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
-import { Breadcrumb } from '@/components';
+import Breadcrumb from '@/components/Breadcrumb.vue';
 import { flushPromises, girderVue } from './utils';
 
 const localVue = girderVue();
@@ -109,7 +109,7 @@ describe('Breadcrumb', () => {
       expect(p.name).toBeTruthy();
     });
 
-    // Change location, and check that FileBrowser reacts accordingly.
+    // Change location, and check that DataBrowser reacts accordingly.
     wrapper.setProps({
       location: {
         type: 'folder',

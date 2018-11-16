@@ -10,7 +10,7 @@ v-app.app
         :dest="uploadDest",
         multiple="multiple",
         @done="$refs.girderBrowser.refresh()")
-  girder-file-browser(ref="girderBrowser",
+  girder-data-browser(ref="girderBrowser",
       v-if="!loggedOut && location",
       :location.sync="location",
       @click:newitem="uploader = true")
@@ -20,7 +20,7 @@ v-app.app
 import {
   Upload as GirderUpload,
   Authentication as GirderAuth,
-  FileBrowser as GirderFileBrowser,
+  DataBrowser as GirderDataBrowser,
 } from './components';
 
 export default {
@@ -29,7 +29,7 @@ export default {
   components: {
     GirderUpload,
     GirderAuth,
-    GirderFileBrowser,
+    GirderDataBrowser,
   },
   data() {
     return {

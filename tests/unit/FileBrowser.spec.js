@@ -1,7 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
-import FileBrowser from '@/components/FileBrowser.vue';
+import DataBrowser from '@/components/DataBrowser.vue';
 import { flushPromises, girderVue } from './utils';
 
 const localVue = girderVue();
@@ -62,7 +62,7 @@ describe('File Browser', () => {
     mock.onGet(/folder\/fake_folder_id\/details/).replyOnce(200, { nFolders: 1, nItems: 1 });
     mock.onGet(/folder/).reply(200, getMockFolderQueryResponse(1));
     mock.onGet(/item/).reply(200, getMockItemQueryResponse(1));
-    const wrapper = shallowMount(FileBrowser, {
+    const wrapper = shallowMount(DataBrowser, {
       localVue,
       propsData: {
         location: {
@@ -83,7 +83,7 @@ describe('File Browser', () => {
     expect(location.type).toBe(Object);
     expect(wrapper.vm.rows.length).toBe(1);
 
-    // Change location, and check that FileBrowser reacts accordingly.
+    // Change location, and check that DataBrowser reacts accordingly.
     wrapper.setProps({
       location: {
         type: 'folder',
