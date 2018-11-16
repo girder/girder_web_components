@@ -72,10 +72,10 @@ export default {
 
 <template lang="pug">
 v-breadcrumbs.girder-breadcrumb-component.font-weight-bold.pa-0
-  v-icon.mdi-24px(
+  span.subheading.font-weight-bold(
       :disabled="disabled",
       slot="divider",
-      color="accent") {{ $vuetify.icons.chevron }}
+      color="accent") /
   v-breadcrumbs-item(
       :disabled="disabled || breadcrumb.path.length === 0",
       @click.native="$emit('crumbclick', breadcrumb.root)")
@@ -90,11 +90,3 @@ v-breadcrumbs.girder-breadcrumb-component.font-weight-bold.pa-0
       v-for="item in append",
       :key="item.id") {{ item }}
 </template>
-
-<style lang="scss">
-.girder-breadcrumb-component {
-  &.v-breadcrumbs li:nth-child(2n) {
-    padding: 0 4px !important;
-  }
-}
-</style>
