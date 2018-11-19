@@ -1,18 +1,26 @@
 <template lang="pug">
 v-app.app
-  girder-upload(v-if="folder", :dest="folder", :multiple="multiple")
-  v-layout(v-else, justify-center)
-    v-flex(xs12, sm10, md8, lg6)
-      girder-auth(
-          :register="true",
-          :oauth="true",
-          :forgot-password-url="forgotPasswordUrl")
+  v-dialog(v-model="loggedOut", width="50%", persistent)
+    girder-auth(
+        :register="true",
+        :oauth="true",
+        :forgot-password-url="forgotPasswordUrl")
+  v-dialog(v-model="uploader", width="70%")
+    girder-upload(v-if="uploader",
+        :dest="uploadDest",
+        multiple="multiple",
+        @done="$refs.girderBrowser.refresh()")
+  girder-data-browser(ref="girderBrowser",
+      v-if="!loggedOut && location",
+      :location.sync="location",
+      @click:newitem="uploader = true")
 </template>
 
 <script>
 import {
   Upload as GirderUpload,
   Authentication as GirderAuth,
+  DataBrowser as GirderDataBrowser,
 } from './components';
 
 export default {
@@ -21,11 +29,13 @@ export default {
   components: {
     GirderUpload,
     GirderAuth,
+    GirderDataBrowser,
   },
   data() {
     return {
-      error: null,
       multiple: true,
+      uploader: false,
+      browserLocation: null,
       forgotPasswordUrl: '/#?dialog=resetpassword',
     };
   },
@@ -50,12 +60,37 @@ export default {
       return null;
     },
   },
+  computed: {
+    location: {
+      get() {
+        if (this.browserLocation) {
+          return this.browserLocation;
+        } else if (this.girderRest.user) {
+          return { type: 'user', id: this.girderRest.user._id };
+        }
+        return null;
+      },
+      set(newVal) {
+        this.browserLocation = newVal;
+      },
+    },
+    loggedOut() { return this.girderRest.user === null; },
+    uploadDest() {
+      if (this.location.type === 'folder') {
+        return {
+          name: this.location.name,
+          _id: this.location.id,
+          _modelType: this.location.type,
+        };
+      }
+      return this.folder;
+    },
+  },
 };
 </script>
 
 <style lang="scss">
 .app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
