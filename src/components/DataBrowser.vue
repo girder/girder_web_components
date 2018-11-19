@@ -206,12 +206,12 @@ v-data-table.girder-file-browser-component.elevation-1(
       td
         v-checkbox.secondary--text.text--darken-1.pr-2(
             :input-value="props.selected", accent, hide-details)
-      td.pl-1(colspan="2")
+      td.pl-0(colspan="2")
         span.text-container.secondary--text.text--darken-3.nobreak(
             :class="{selectable: props.item.type !== 'item'}",
             @click.stop="changeLocation(props.item)")
-          v-icon(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons[props.item.icon] }}
-          span &nbsp; {{ props.item.name }}
+          v-icon(:color="props.selected ? 'accent' : ''").pr-2 {{ $vuetify.icons[props.item.icon] }}
+          | {{ props.item.name }}
       td.text-xs-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
 </template>
 
