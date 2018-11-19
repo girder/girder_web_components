@@ -1,0 +1,126 @@
+<script>
+import { stringify } from 'qs';
+import GirderBreadcrumb from './Breadcrumb.vue';
+import GirderMarkdownEditor from './MarkdownEditor.vue';
+
+const GIRDER_FOLDER_ENDPOINT = 'folder';
+
+export default {
+  components: {
+    GirderBreadcrumb,
+    GirderMarkdownEditor,
+  },
+  props: {
+    location: {
+      type: Object,
+      required: true,
+      validator: val => val.type && val.id,
+    },
+    edit: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  inject: ['girderRest'],
+  data() {
+    return {
+      name: '',
+      description: '',
+      error: '',
+    };
+  },
+  computed: {
+    append() {
+      return this.edit ? [] : [`[ ${this.name || 'New Folder'} ]`];
+    },
+  },
+  mounted() {
+    if (this.edit) {
+      this.loadFolder(this.location.id);
+    }
+  },
+  methods: {
+    async upsert() {
+      this.error = '';
+      try {
+        if (this.edit) {
+          await this.girderRest.put(
+            `${GIRDER_FOLDER_ENDPOINT}/${this.location.id}`,
+            stringify({
+              name: this.name,
+              description: this.description,
+            }),
+          );
+        } else {
+          await this.girderRest.post(
+            GIRDER_FOLDER_ENDPOINT,
+            stringify({
+              parentType: this.location.type,
+              parentId: this.location.id,
+              name: this.name,
+              description: this.description,
+              reuseExisting: false,
+            }),
+          );
+        }
+        this.$emit('done');
+      } catch (err) {
+        this.setError(err);
+      }
+    },
+    async loadFolder(id) {
+      this.error = '';
+      try {
+        const { data } = await this.girderRest.get(`${GIRDER_FOLDER_ENDPOINT}/${id}`);
+        this.name = data.name;
+        this.description = data.description;
+      } catch (err) {
+        this.setError(err);
+      }
+    },
+    setError(err) {
+      if (err.response && err.response.status === 400) {
+        const { data } = err.response;
+        this.error = `${data.type} error: ${data.message}`;
+      } else if (err.response.status) {
+        this.error = `${err.response.status} error.`;
+      } else {
+        this.error = `Unknown error: ${err.message}`;
+      }
+    },
+  },
+};
+</script>
+
+<template lang="pug">
+v-card(flat, height="100%")
+  v-layout.pa-2(column, fill-height)
+    slot(name="header")
+      v-card-title.pb-0(primary-title)
+        h5.display-1.secondary--text.text--darken-1 {{ edit ? 'Edit Folder' : 'Create New Folder'}}
+    v-card-text
+      v-flex(xs12)
+        v-text-field(
+            v-model="name",
+            autofocus,
+            label="Folder Name")
+      girder-breadcrumb.mb-3(
+          :location="location",
+          :disabled="true",
+          :append="append")
+      girder-markdown-editor(
+          v-model="description",
+          label="Description (Optional)")
+      v-alert(
+          type="error",
+          :value="!!error",
+          dismissible,
+          transition="scale-transition") {{ error }}
+    v-card-actions
+      v-spacer
+      v-btn(flat, @click="$emit('dismiss')") Cancel
+      v-btn(
+          depressed,
+          color="primary",
+          @click="upsert") {{ edit ? 'Save Changes' : 'Create Folder' }}
+</template>
