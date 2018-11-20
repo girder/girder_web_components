@@ -1,4 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
+import { parse } from 'qs';
 import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
 import UpsertFolder from '@/components/UpsertFolder.vue';
@@ -38,11 +39,14 @@ describe('Upsert Folder', () => {
     const description = 'Description foo';
     const parentType = 'user';
     const parentId = 'fake_user_id';
-    const qString = `parentType=${parentType}&parentId=${parentId}&name=${encodeURIComponent(name)}&description=${encodeURIComponent(description)}&reuseExisting=false`;
-    mock.onPost(/folder/).reply((config) => {
+    mock.onPost(/folder/).reply(({ data }) => {
       // If the following fails, it doesn't throw a useful error.
       // You might see `TypeError: Cannot read property 'status' of undefined`
-      expect(config.data).toBe(qString);
+      const params = parse(data);
+      expect(params.parentType).toBe(parentType);
+      expect(params.parentId).toBe(parentId);
+      expect(params.name).toBe(name);
+      expect(params.description).toBe(description);
       return [200, {}];
     });
     const wrapper = shallowMount(UpsertFolder, {
@@ -70,14 +74,15 @@ describe('Upsert Folder', () => {
   it('can update existing folders', async () => {
     const NEW_DESCRIPTION = 'Something else';
     const NEW_NAME = 'Fake Folder Updated';
-    const qString = `name=${encodeURIComponent(NEW_NAME)}&description=${encodeURIComponent(NEW_DESCRIPTION)}`;
     const parentType = 'folder';
     const parentId = 'fake_folder_id';
     mock.onGet(/folder\/fake_folder_id/).replyOnce(200, getMockFolderResponse('fake_folder_parent', 'folder'));
-    mock.onPut(/folder\/fake_folder_id/).replyOnce((config) => {
+    mock.onPut(/folder\/fake_folder_id/).replyOnce(({ data }) => {
       // If the following fails, it doesn't throw a useful error.
       // You might see `TypeError: Cannot read property 'status' of undefined`
-      expect(config.data).toBe(qString);
+      const params = parse(data);
+      expect(params.name).toBe(NEW_NAME);
+      expect(params.description).toBe(NEW_DESCRIPTION);
       return [200, {}];
     });
     const wrapper = shallowMount(UpsertFolder, {
