@@ -5,8 +5,8 @@ import { flushPromises, girderVue } from './utils';
 
 const localVue = girderVue();
 
-describe('Authentication', () => {
-  it('does not render children when toggled off', async () => {
+describe('Markdown Editor', () => {
+  it('can emit back props changes', async () => {
     const wrapper = shallowMount(MarkdownEditor, {
       localVue,
       propsData: {
