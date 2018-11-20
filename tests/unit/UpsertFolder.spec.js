@@ -73,15 +73,13 @@ describe('Upsert Folder', () => {
     const qString = `name=${encodeURIComponent(NEW_NAME)}&description=${encodeURIComponent(NEW_DESCRIPTION)}`;
     const parentType = 'folder';
     const parentId = 'fake_folder_id';
-    mock.onGet(/folder\/fake_folder_id/)
-      .replyOnce(200, getMockFolderResponse('fake_folder_parent', 'folder'));
-    mock.onPut(/folder\/fake_folder_id/)
-      .replyOnce((config) => {
-        // If the following fails, it doesn't throw a useful error.
-        // You might see `TypeError: Cannot read property 'status' of undefined`
-        expect(config.data).toBe(qString);
-        return [200, {}];
-      });
+    mock.onGet(/folder\/fake_folder_id/).replyOnce(200, getMockFolderResponse('fake_folder_parent', 'folder'));
+    mock.onPut(/folder\/fake_folder_id/).replyOnce((config) => {
+      // If the following fails, it doesn't throw a useful error.
+      // You might see `TypeError: Cannot read property 'status' of undefined`
+      expect(config.data).toBe(qString);
+      return [200, {}];
+    });
     const wrapper = shallowMount(UpsertFolder, {
       localVue,
       propsData: {
@@ -96,7 +94,6 @@ describe('Upsert Folder', () => {
     await flushPromises();
     expect(wrapper.vm.name).toBe('Private');
     expect(wrapper.vm.description).toBe('');
-
     expect(wrapper.emitted().done).toBeFalsy();
     wrapper.setData({
       name: NEW_NAME,
