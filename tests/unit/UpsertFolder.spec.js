@@ -40,8 +40,6 @@ describe('Upsert Folder', () => {
     const parentType = 'user';
     const parentId = 'fake_user_id';
     mock.onPost(/folder/).reply(({ data }) => {
-      // If the following fails, it doesn't throw a useful error.
-      // You might see `TypeError: Cannot read property 'status' of undefined`
       const params = parse(data);
       expect(params.parentType).toBe(parentType);
       expect(params.parentId).toBe(parentId);
@@ -68,6 +66,7 @@ describe('Upsert Folder', () => {
     expect(wrapper.emitted().done).toBeFalsy();
     await wrapper.vm.upsert();
     await flushPromises();
+    expect(wrapper.vm.error).toBe('');
     expect(wrapper.emitted().done).toBeTruthy();
   });
 
@@ -78,8 +77,6 @@ describe('Upsert Folder', () => {
     const parentId = 'fake_folder_id';
     mock.onGet(/folder\/fake_folder_id/).replyOnce(200, getMockFolderResponse('fake_folder_parent', 'folder'));
     mock.onPut(/folder\/fake_folder_id/).replyOnce(({ data }) => {
-      // If the following fails, it doesn't throw a useful error.
-      // You might see `TypeError: Cannot read property 'status' of undefined`
       const params = parse(data);
       expect(params.name).toBe(NEW_NAME);
       expect(params.description).toBe(NEW_DESCRIPTION);
@@ -106,6 +103,33 @@ describe('Upsert Folder', () => {
     });
     await wrapper.vm.upsert();
     await flushPromises();
+    expect(wrapper.vm.error).toBe('');
     expect(wrapper.emitted().done).toBeTruthy();
+  });
+
+  it('can handle server errors', async () => {
+    const parentType = 'folder';
+    const parentId = 'fake_folder_id';
+    mock.onGet(/folder\/fake_folder_id/).replyOnce(400, {
+      message: 'Invalid ObjectId: asdf',
+      field: 'id',
+      type: 'validation',
+    });
+    const wrapper = shallowMount(UpsertFolder, {
+      localVue,
+      propsData: {
+        location: {
+          type: parentType,
+          id: parentId,
+        },
+        edit: true,
+      },
+      provide: { girderRest },
+    });
+    await flushPromises();
+    expect(wrapper.vm.error).toContain('validation');
+    expect(wrapper.vm.name).toBe('');
+    expect(wrapper.vm.description).toBe('');
+    expect(wrapper.emitted().done).toBeFalsy();
   });
 });

@@ -79,11 +79,10 @@ export default {
       }
     },
     setError(err) {
-      if (err.response && err.response.status === 400) {
-        const { data } = err.response;
-        this.error = `${data.type} error: ${data.message}`;
-      } else if (err.response.status) {
-        this.error = `${err.response.status} error.`;
+      if (err.response) {
+        const { data = {} } = err.response;
+        const { type = 'unknown', message, field = 'unknown' } = data;
+        this.error = `${type} error on ${field}: ${message || err.message}`;
       } else {
         this.error = `Unknown error: ${err.message}`;
       }
