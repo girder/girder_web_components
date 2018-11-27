@@ -83,7 +83,7 @@ export default {
   }
 
   .v-toolbar__items .v-btn.active {
-    border-radius: 0px;
+    border-radius: 0;
     border-bottom: 3px solid white;
   }
 
