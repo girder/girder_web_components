@@ -64,9 +64,9 @@ export default {
           );
         }
         this.$emit('done');
-      } catch (err) {
-        this.$emit('error', { type: 'upsert', err });
-        this.setError(err);
+      } catch (error) {
+        this.$emit('error', { type: 'upsert', error });
+        this.setError(error);
       }
     },
     async loadFolder(id) {
@@ -75,9 +75,9 @@ export default {
         const { data } = await this.girderRest.get(`${GIRDER_FOLDER_ENDPOINT}/${id}`);
         this.name = data.name;
         this.description = data.description;
-      } catch (err) {
-        this.$emit('error', { type: 'load', err });
-        this.setError(err);
+      } catch (error) {
+        this.$emit('error', { type: 'load', error });
+        this.setError(error);
       }
     },
     setError(err) {

@@ -132,5 +132,6 @@ describe('Upsert Folder', () => {
     expect(wrapper.vm.description).toBe('');
     expect(wrapper.emitted().done).toBeFalsy();
     expect(wrapper.emitted().error[0][0].type).toBe('load');
+    expect(wrapper.emitted().error[0][0].error).toBeInstanceOf(Error);
   });
 });
