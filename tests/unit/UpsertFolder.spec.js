@@ -51,8 +51,8 @@ describe('Upsert Folder', () => {
       localVue,
       propsData: {
         location: {
-          type: parentType,
-          id: parentId,
+          _modelType: parentType,
+          _id: parentId,
         },
         edit: false,
       },
@@ -86,8 +86,8 @@ describe('Upsert Folder', () => {
       localVue,
       propsData: {
         location: {
-          type: parentType,
-          id: parentId,
+          _modelType: parentType,
+          _id: parentId,
         },
         edit: true,
       },
@@ -112,15 +112,15 @@ describe('Upsert Folder', () => {
     const parentId = 'fake_folder_id';
     mock.onGet(/folder\/fake_folder_id/).replyOnce(400, {
       message: 'Invalid ObjectId: asdf',
-      field: 'id',
+      field: '_id',
       type: 'validation',
     });
     const wrapper = shallowMount(UpsertFolder, {
       localVue,
       propsData: {
         location: {
-          type: parentType,
-          id: parentId,
+          _modelType: parentType,
+          _id: parentId,
         },
         edit: true,
       },

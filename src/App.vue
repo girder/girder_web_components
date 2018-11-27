@@ -78,7 +78,7 @@ export default {
         if (this.browserLocation) {
           return this.browserLocation;
         } else if (this.girderRest.user) {
-          return { type: 'user', id: this.girderRest.user._id };
+          return { _modelType: 'user', _id: this.girderRest.user._id };
         }
         return null;
       },
@@ -86,16 +86,11 @@ export default {
         this.browserLocation = newVal;
       },
     },
-    loggedOut() { return this.girderRest.user === null; },
+    loggedOut() {
+      return this.girderRest.user === null;
+    },
     uploadDest() {
-      if (this.location.type === 'folder') {
-        return {
-          name: this.location.name,
-          _id: this.location.id,
-          _modelType: this.location.type,
-        };
-      }
-      return this.folder;
+      return this.location._modelType === 'folder' ? this.location : this.folder;
     },
   },
 };
