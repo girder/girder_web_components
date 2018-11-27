@@ -65,6 +65,7 @@ export default {
         }
         this.$emit('done');
       } catch (err) {
+        this.$emit('error', { type: 'upsert', err });
         this.setError(err);
       }
     },
@@ -75,6 +76,7 @@ export default {
         this.name = data.name;
         this.description = data.description;
       } catch (err) {
+        this.$emit('error', { type: 'load', err });
         this.setError(err);
       }
     },
