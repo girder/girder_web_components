@@ -115,29 +115,35 @@ export default {
       this.refreshCounter_ += 1;
     },
     async fetchPaginatedRows() {
+      if (!this.counts.nFolders && !this.counts.nItems) {
+        return [];
+      }
       this.rowsLoading = true;
       const { counts, location, pagination } = this;
       const { page, rowsPerPage } = pagination;
       const folderParams = {
         parentType: location._modelType,
         parentId: location._id,
-        limit: rowsPerPage,
+        limit: rowsPerPage >= 0 ? rowsPerPage : null,
         offset: (page - 1) * rowsPerPage,
       };
+      const itemLimit = counts.nFolders > folderParams.offset
+        // if there are any folders on the current page,
+        // the numer of items to fetch is based on the number of folders
+        ? rowsPerPage - (counts.nFolders - folderParams.offset)
+        // else the page will be comprised of only items
+        : rowsPerPage;
+      const itemOffset = folderParams.offset - counts.nFolders;
       const itemParams = {
         folderId: location._id,
-        // If there are folders on the current page,
-        // the numer of items to fetch will be less than rowsPerPage
-        limit:
-          counts.nFolders > folderParams.offset
-            ? rowsPerPage - (counts.nFolders - folderParams.offset)
-            : rowsPerPage,
-        offset:
-          folderParams.offset > 0 ? folderParams.offset - counts.nFolders : 0,
+        limit: rowsPerPage >= 0 ? itemLimit : null,
+        offset: itemOffset > 0 ? itemOffset : 0,
       };
       const promises = [];
       promises.push(this.girderRest.get(GIRDER_FOLDER_ENDPOINT, { params: folderParams }));
-      if (itemParams.limit > 0 && location._modelType === 'folder') {
+      // a limit of < 0 signifies the current page only includes folders
+      // a limit of null signifies no pagination: fetch all entities
+      if ((itemParams.limit > 0 || itemParams.limit === null) && location._modelType === 'folder') {
         promises.push(this.girderRest.get(GIRDER_ITEM_ENDPOINT, { params: itemParams }));
       }
       const responses = (await Promise.all(promises)).map(response => response.data);
