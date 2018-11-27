@@ -13,7 +13,8 @@ v-app.app
           multiple="multiple",
           @done="$refs.girderBrowser.refresh(); uploader = false;")
     v-dialog(v-model="newFolder", full-width, max-width="800px")
-      girder-upsert-folder(v-if="newFolder",
+      girder-upsert-folder(
+          :key="location._id",
           :location="location",
           @dismiss="newFolder = false",
           @done="$refs.girderBrowser.refresh(); newFolder = false;")

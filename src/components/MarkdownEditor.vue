@@ -46,15 +46,15 @@ export default {
     v-tab(key="edit") Edit
     v-tab-item
       v-textarea(
-          color="accent",
           hide-details,
           v-model="text_",
           box,
+          single-line,
           :label="label",
           :placeholder="placeholder")
 
     v-tab(key="preview") Preview
-    v-tab-item.md-preview.pa-2
+    v-tab-item.md-preview.pa-2.grey.lighten-3
       girder-markdown(:text="text_")
 
   v-toolbar(dark, color="secondary darken-2")
@@ -62,11 +62,11 @@ export default {
       a(href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet")  Markdown
     v-spacer
     v-toolbar-items
-      v-btn(flat, @click="activeTab = 0")
+      v-btn(flat, @click="activeTab = 0", :class="{ active: activeTab === 0 }")
         v-layout(align-center, justify-content, column)
           v-icon.mdi-24px {{ $vuetify.icons.edit }}
           span.caption.text-capitalize Write
-      v-btn(flat, @click="activeTab = 1")
+      v-btn(flat, @click="activeTab = 1", :class="{ active: activeTab === 1 }")
         v-layout(align-center, justify-content, column)
           v-icon.mdi-24px {{ $vuetify.icons.preview }}
           span.caption.text-capitalize Preview
@@ -80,6 +80,16 @@ export default {
 
   .v-toolbar__content {
     padding-right: 0;
+  }
+
+  .v-toolbar__items .v-btn.active {
+    border-radius: 0px;
+    border-bottom: 3px solid white;
+  }
+
+  .md-preview {
+    border-radius: 4px 4px 0 0;
+    min-height: 116px;
   }
 
   a {
