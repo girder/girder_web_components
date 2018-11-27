@@ -4,7 +4,7 @@ export default {
     location: {
       type: Object,
       required: true,
-      validator: val => val.type && val.id,
+      validator: val => val._modelType && val._id,
     },
     disabled: {
       type: Boolean,
@@ -27,28 +27,28 @@ export default {
       async get() {
         this.loading = true;
         const breadcrumb = { root: {}, path: [] };
-        const { id, type, name } = this.location;
-        if (type === 'folder') {
+        const { _id, _modelType, name } = this.location;
+        if (_modelType === 'folder') {
           // The last breadcrumb isn't returned by rootpath.
           if (name) {
             breadcrumb.path.unshift(this.location);
           } else {
-            const { data } = await this.girderRest.get(`folder/${id}`);
+            const { data } = await this.girderRest.get(`folder/${_id}`);
             breadcrumb.path.unshift(this.extractCrumbData(data));
           }
           // Get the rest of the path.
-          const { data } = await this.girderRest.get(`folder/${id}/rootpath`);
+          const { data } = await this.girderRest.get(`folder/${_id}/rootpath`);
           data.reverse().forEach((crumb) => {
             const { object } = crumb;
             const entity = this.extractCrumbData(object);
-            if (entity.type === 'folder') {
+            if (entity._modelType === 'folder') {
               breadcrumb.path.unshift(entity);
             } else {
               breadcrumb.root = entity;
             }
           });
         } else {
-          const { data } = await this.girderRest.get(`${type}/${id}`);
+          const { data } = await this.girderRest.get(`${_modelType}/${_id}`);
           breadcrumb.root = this.extractCrumbData(data);
         }
         this.loading = false;
@@ -59,11 +59,8 @@ export default {
   methods: {
     extractCrumbData(object) {
       return {
+        ...object,
         name: object._modelType !== 'user' ? object.name : object.login,
-        id: object._id,
-        type: object._modelType,
-        parentId: object.parentId,
-        parentType: object.parentCollection,
       };
     },
   },
@@ -81,9 +78,9 @@ v-breadcrumbs.girder-breadcrumb-component.font-weight-bold.pa-0
   v-breadcrumbs-item(
       :disabled="disabled || index == breadcrumb.path.length-1",
       v-for="(item, index) in breadcrumb.path",
-      :key="item.id",
+      :key="item._id",
       @click.native="$emit('crumbclick', item)") {{ item.name }}
   v-breadcrumbs-item(
       v-for="item in append",
-      :key="item.id") {{ item }}
+      :key="item._id") {{ item }}
 </template>

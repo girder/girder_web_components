@@ -14,7 +14,7 @@ export default {
     location: {
       type: Object,
       required: true,
-      validator: val => val.type && val.id,
+      validator: val => val._modelType && val._id,
     },
     selectEnabled: {
       type: Boolean,
@@ -62,7 +62,8 @@ export default {
     counts: {
       default: { nFolders: 0, nItems: 0 },
       async get() {
-        const endpoint = `${this.location.type}/${this.location.id}/details`;
+        const { _modelType, _id } = this.location;
+        const endpoint = `${_modelType}/${_id}/details`;
         const { data } = await this.girderRest.get(endpoint);
         return {
           nFolders: data.nFolders || 0,
@@ -80,7 +81,7 @@ export default {
   watch: {
     location(newval, oldval) {
       // force reset pagination when location changes.
-      if (newval.id !== oldval.id) {
+      if (newval._id !== oldval._id) {
         this.pagination.page = 1;
       }
     },
@@ -90,6 +91,7 @@ export default {
     async counts() {
       this.rows = await this.fetchPaginatedRows();
     },
+    // Not triggered by location pagination reset because deep==false
     async pagination() {
       this.rows = await this.fetchPaginatedRows();
     },
@@ -103,10 +105,10 @@ export default {
       }
     },
     changeLocation(item) {
-      const { type, id, name } = item;
-      if ((this.location.id !== id || this.location.type !== type) &&
-          type !== 'item') {
-        this.$emit('update:location', { type, id, name });
+      const { _modelType, _id, name } = item;
+      if ((this.location._id !== _id || this.location._modelType !== _modelType) &&
+          _modelType !== 'item') {
+        this.$emit('update:location', { _modelType, _id, name });
       }
     },
     refresh() {
@@ -117,13 +119,13 @@ export default {
       const { counts, location, pagination } = this;
       const { page, rowsPerPage } = pagination;
       const folderParams = {
-        parentType: location.type,
-        parentId: location.id,
+        parentType: location._modelType,
+        parentId: location._id,
         limit: rowsPerPage,
         offset: (page - 1) * rowsPerPage,
       };
       const itemParams = {
-        folderId: location.id,
+        folderId: location._id,
         // If there are folders on the current page,
         // the numer of items to fetch will be less than rowsPerPage
         limit:
@@ -135,14 +137,12 @@ export default {
       };
       const promises = [];
       promises.push(this.girderRest.get(GIRDER_FOLDER_ENDPOINT, { params: folderParams }));
-      if (itemParams.limit > 0 && location.type === 'folder') {
+      if (itemParams.limit > 0 && location._modelType === 'folder') {
         promises.push(this.girderRest.get(GIRDER_ITEM_ENDPOINT, { params: itemParams }));
       }
       const responses = (await Promise.all(promises)).map(response => response.data);
       const rows = [].concat.apply(...responses).map(item => ({
-        name: item.name,
-        type: item._modelType,
-        id: item._id,
+        ...item,
         size: item.size ? this.formatSize(item.size) : '',
         icon: item._modelType in this.$vuetify.icons
           ? item._modelType
@@ -164,7 +164,7 @@ v-data-table.girder-file-browser-component.elevation-1(
     :items="rows",
     :total-items="totalItems",
     :loading="loading ? 'accent' : false",
-    item-key="id")
+    item-key="_id")
 
   //- Header Slot
   template(slot="headers", slot-scope="props")
@@ -208,7 +208,7 @@ v-data-table.girder-file-browser-component.elevation-1(
             :input-value="props.selected", accent, hide-details)
       td.pl-0(colspan="2")
         span.text-container.secondary--text.text--darken-3.nobreak(
-            :class="{selectable: props.item.type !== 'item'}",
+            :class="{selectable: props.item._modelType !== 'item'}",
             @click.stop="changeLocation(props.item)")
           v-icon.pr-2(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons[props.item.icon] }}
           | {{ props.item.name }}

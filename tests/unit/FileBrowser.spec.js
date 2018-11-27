@@ -66,8 +66,8 @@ describe('File Browser', () => {
       localVue,
       propsData: {
         location: {
-          type: 'user',
-          id: 'foo_user_id',
+          _modelType: 'user',
+          _id: 'foo_user_id',
         },
         selectEnabled: false,
         multiSelectEnabled: false,
@@ -86,12 +86,12 @@ describe('File Browser', () => {
     // Change location, and check that DataBrowser reacts accordingly.
     wrapper.setProps({
       location: {
-        type: 'folder',
-        id: 'fake_folder_id',
+        _modelType: 'folder',
+        _id: 'fake_folder_id',
       },
     });
     await flushPromises();
-    expect(wrapper.vm.location.type).toBe('folder');
+    expect(wrapper.vm.location._modelType).toBe('folder');
     expect(wrapper.vm.rows.length).toBe(2); // 1 folder, 1 item
   });
 });

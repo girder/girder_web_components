@@ -90,8 +90,8 @@ describe('Breadcrumb', () => {
       localVue,
       propsData: {
         location: {
-          type: 'folder',
-          id: 'fake_folder_id',
+          _modelType: 'folder',
+          _id: 'fake_folder_id',
         },
       },
       provide: { girderRest },
@@ -101,8 +101,8 @@ describe('Breadcrumb', () => {
     expect(location.required).toBeTruthy();
     expect(location.type).toBe(Object);
     expect(wrapper.vm.breadcrumb.path.length).toBe(2);
-    expect(wrapper.vm.breadcrumb.root.id).toBe('rootid');
-    expect(wrapper.vm.breadcrumb.root.type).toBe('user');
+    expect(wrapper.vm.breadcrumb.root._id).toBe('rootid');
+    expect(wrapper.vm.breadcrumb.root._modelType).toBe('user');
     expect(wrapper.vm.breadcrumb.root.name).toBe('fake_user');
 
     wrapper.vm.breadcrumb.path.forEach((p) => {
@@ -112,14 +112,14 @@ describe('Breadcrumb', () => {
     // Change location, and check that DataBrowser reacts accordingly.
     wrapper.setProps({
       location: {
-        type: 'folder',
-        id: 'fake_folder_id_2',
+        _modelType: 'folder',
+        _id: 'fake_folder_id_2',
       },
     });
     await flushPromises();
     expect(wrapper.vm.breadcrumb.path.length).toBe(2);
-    expect(wrapper.vm.breadcrumb.root.id).toBe('rootid2');
-    expect(wrapper.vm.breadcrumb.root.type).toBe('collection');
+    expect(wrapper.vm.breadcrumb.root._id).toBe('rootid2');
+    expect(wrapper.vm.breadcrumb.root._modelType).toBe('collection');
   });
 
   it('will construct the breadcrumb for a user', async () => {
@@ -128,8 +128,8 @@ describe('Breadcrumb', () => {
       localVue,
       propsData: {
         location: {
-          type: 'user',
-          id: 'fake_userid',
+          _modelType: 'user',
+          _id: 'fake_userid',
         },
       },
       provide: { girderRest },

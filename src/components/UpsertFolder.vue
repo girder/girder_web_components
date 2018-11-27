@@ -14,7 +14,7 @@ export default {
     location: {
       type: Object,
       required: true,
-      validator: val => val.type && val.id,
+      validator: val => val._modelType && val._id,
     },
     edit: {
       type: Boolean,
@@ -36,7 +36,7 @@ export default {
   },
   mounted() {
     if (this.edit) {
-      this.loadFolder(this.location.id);
+      this.loadFolder(this.location._id);
     }
   },
   methods: {
@@ -45,7 +45,7 @@ export default {
       try {
         if (this.edit) {
           await this.girderRest.put(
-            `${GIRDER_FOLDER_ENDPOINT}/${this.location.id}`,
+            `${GIRDER_FOLDER_ENDPOINT}/${this.location._id}`,
             stringify({
               name: this.name,
               description: this.description,
@@ -55,8 +55,8 @@ export default {
           await this.girderRest.post(
             GIRDER_FOLDER_ENDPOINT,
             stringify({
-              parentType: this.location.type,
-              parentId: this.location.id,
+              parentType: this.location._modelType,
+              parentId: this.location._id,
               name: this.name,
               description: this.description,
               reuseExisting: false,
@@ -108,7 +108,6 @@ v-card(flat, height="100%")
           :disabled="true",
           :append="append")
       girder-markdown-editor(
-          v-model="description",
           label="Description (Optional)")
       v-alert(
           type="error",
