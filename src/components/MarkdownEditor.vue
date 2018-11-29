@@ -82,9 +82,14 @@ export default {
     padding-right: 0;
   }
 
-  .v-toolbar__items .v-btn.active {
-    border-radius: 0;
-    border-bottom: 3px solid white;
+  .v-toolbar__items .v-btn.active::after {
+    content: " ";
+    background-color: white;
+    height: 3px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 
   .md-preview {
