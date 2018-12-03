@@ -1,5 +1,6 @@
 <script>
 import { stringify } from 'qs';
+import { registerHooks } from '../utils/mixins';
 import GirderBreadcrumb from './Breadcrumb.vue';
 import GirderMarkdownEditor from './MarkdownEditor.vue';
 
@@ -22,6 +23,7 @@ export default {
     },
   },
   inject: ['girderRest'],
+  mixins: [registerHooks(['preUpsert', 'postUpsert'])],
   data() {
     return {
       name: '',
@@ -43,6 +45,7 @@ export default {
     async upsert() {
       this.error = '';
       try {
+        await this.waitForHook('preUpsert');
         if (this.edit) {
           await this.girderRest.put(
             `${GIRDER_FOLDER_ENDPOINT}/${this.location._id}`,
@@ -63,6 +66,9 @@ export default {
             }),
           );
         }
+        await this.waitForHook('postUpsert');
+        this.name = '';
+        this.description = '';
         this.$emit('done');
       } catch (error) {
         this.$emit('error', { type: 'upsert', error });

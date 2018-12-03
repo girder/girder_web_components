@@ -175,14 +175,14 @@ v-data-table.girder-file-browser-component.elevation-1(
   //- Header Slot
   template(slot="headers", slot-scope="props")
     tr.secondary.lighten-5
-      th(width="1%")
+      th.pl-3.pr-0(width="1%", v-if="selectEnabled")
         v-checkbox.secondary--text.text--darken-1.pr-2(
             color="accent",
             hide-details,
             :input-value="props.all",
             :indeterminate="selected.length > 0 && !props.all",
             @click.native="toggleAll")
-      th.pl-0
+      th.pl-3
         girder-breadcrumb(
             ref="breadcrumb",
             :location="location",
@@ -207,12 +207,12 @@ v-data-table.girder-file-browser-component.elevation-1(
   //- Table Row Slot
   template(slot="items", slot-scope="props")
     tr.itemRow(:active="props.selected",
-        @click="props.selected = !props.selected",
+        @click="if (selectEnabled) props.selected = !props.selected;",
         :key="props.index")
-      td
+      td.pl-3.pr-0(v-if="selectEnabled")
         v-checkbox.secondary--text.text--darken-1.pr-2(
             :input-value="props.selected", accent, hide-details)
-      td.pl-0(colspan="2")
+      td.pl-3(colspan="2")
         span.text-container.secondary--text.text--darken-3.nobreak(
             :class="{selectable: props.item._modelType !== 'item'}",
             @click.stop="changeLocation(props.item)")
@@ -255,7 +255,6 @@ v-data-table.girder-file-browser-component.elevation-1(
 
       .v-input--checkbox {
         border-right: 1.5px solid;
-        padding-bottom: 4px;
       }
 
       .text-container i {
