@@ -19,34 +19,4 @@ const sizeFormatter = {
   },
 };
 
-/*
- * For any view whose consumer may need to embed synchronous hooks into
- * the execution of user workflows.
- */
-const registerHooks = allHooks => ({
-  props: {
-    hooks: {
-      default: () => ({}),
-      type: Object,
-      validator(val) {
-        const keys = Object.keys(val);
-        return keys
-          .filter(k => (allHooks.indexOf(k) >= 0) && typeof val[k] === 'function')
-          .length === keys.length;
-      },
-    },
-  },
-  methods: {
-    async waitForHook(hook) {
-      if (hook in this.hooks) {
-        try {
-          await Promise.resolve(this.hooks[hook]());
-        } catch (error) {
-          this.$emit('error', { error });
-        }
-      }
-    },
-  },
-});
-
-export { registerHooks, sizeFormatter };
+export { sizeFormatter };

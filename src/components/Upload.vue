@@ -52,14 +52,11 @@ v-card(flat, height="100%")
 </template>
 
 <script>
-import { sizeFormatter, registerHooks } from '../utils/mixins';
+import { sizeFormatter } from '../utils/mixins';
 import Upload from '../utils/upload';
 
 export default {
-  mixins: [
-    sizeFormatter,
-    registerHooks(['preUpload', 'postUpload']),
-  ],
+  mixins: [sizeFormatter],
   inject: ['girderRest'],
   props: {
     dest: {
@@ -69,6 +66,14 @@ export default {
     multiple: {
       default: true,
       type: Boolean,
+    },
+    preUpload: {
+      default: () => {},
+      type: Function,
+    },
+    postUpload: {
+      default: () => {},
+      type: Function,
     },
   },
   data: () => ({
@@ -126,7 +131,7 @@ export default {
       const results = [];
       this.uploading = true;
       this.errorMessage = null;
-      await this.waitForHook('preUpload');
+      await this.preUpload();
       for (let i = 0; i < this.files.length; i += 1) {
         const file = this.files[i];
         if (file.status === 'done') {
@@ -162,7 +167,7 @@ export default {
           }
         }
       }
-      await this.waitForHook('postUpload');
+      await this.postUpload();
       this.uploading = false;
       this.files = [];
       this.$emit('done', results);
