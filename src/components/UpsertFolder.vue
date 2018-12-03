@@ -11,6 +11,7 @@ export default {
     GirderBreadcrumb,
     GirderMarkdownEditor,
   },
+  mixins: [registerHooks(['preUpsert', 'postUpsert'])],
   props: {
     location: {
       type: Object,
@@ -23,7 +24,6 @@ export default {
     },
   },
   inject: ['girderRest'],
-  mixins: [registerHooks(['preUpsert', 'postUpsert'])],
   data() {
     return {
       name: '',

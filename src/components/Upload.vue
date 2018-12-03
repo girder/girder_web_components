@@ -58,7 +58,7 @@ import Upload from '../utils/upload';
 export default {
   mixins: [
     sizeFormatter,
-    registerHooks(['preUpload', 'postUpload'])
+    registerHooks(['preUpload', 'postUpload']),
   ],
   inject: ['girderRest'],
   props: {

@@ -55,6 +55,27 @@ export default {
       upsertHooks: { postUpsert: this.postUpsert },
     };
   },
+  computed: {
+    location: {
+      get() {
+        if (this.browserLocation) {
+          return this.browserLocation;
+        } else if (this.girderRest.user) {
+          return { _modelType: 'user', _id: this.girderRest.user._id };
+        }
+        return null;
+      },
+      set(newVal) {
+        this.browserLocation = newVal;
+      },
+    },
+    loggedOut() {
+      return this.girderRest.user === null;
+    },
+    uploadDest() {
+      return this.location._modelType === 'folder' ? this.location : this.folder;
+    },
+  },
   methods: {
     postUpload() {
       // postUpload is an example of using hooks for greater control of component behavior.
@@ -88,27 +109,6 @@ export default {
         }
       }
       return null;
-    },
-  },
-  computed: {
-    location: {
-      get() {
-        if (this.browserLocation) {
-          return this.browserLocation;
-        } else if (this.girderRest.user) {
-          return { _modelType: 'user', _id: this.girderRest.user._id };
-        }
-        return null;
-      },
-      set(newVal) {
-        this.browserLocation = newVal;
-      },
-    },
-    loggedOut() {
-      return this.girderRest.user === null;
-    },
-    uploadDest() {
-      return this.location._modelType === 'folder' ? this.location : this.folder;
     },
   },
 };
