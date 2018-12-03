@@ -90,27 +90,6 @@ export default {
       return new Promise(resolve => setTimeout(resolve, 400));
     },
   },
-  asyncComputed: {
-    async folder() {
-      if (this.girderRest.user) {
-        try {
-          return (await this.girderRest.get('folder', {
-            params: {
-              parentType: 'user',
-              parentId: this.girderRest.user._id,
-            },
-          })).data[0];
-        } catch ({ response }) {
-          if (response) {
-            this.error = response.data.message;
-          } else {
-            this.error = `Could not connect to server: ${this.girderRest.apiRoot}`;
-          }
-        }
-      }
-      return null;
-    },
-  },
 };
 </script>
 
