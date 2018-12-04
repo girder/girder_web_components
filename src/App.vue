@@ -11,13 +11,13 @@ v-app.app
       girder-upload(
           v-if="uploadDest",
           :dest="uploadDest",
-          :hooks="uploadHooks",
+          :post-upload="postUpload",
           multiple="multiple")
     v-dialog(v-model="newFolder", full-width, max-width="800px")
       girder-upsert-folder(
           :key="location._id",
           :location="location",
-          :hooks="upsertHooks",
+          :post-upsert="postUpsert",
           @dismiss="newFolder = false")
     v-card
       girder-data-browser(ref="girderBrowser",
@@ -51,8 +51,6 @@ export default {
       newFolder: false,
       browserLocation: null,
       forgotPasswordUrl: '/#?dialog=resetpassword',
-      uploadHooks: { postUpload: this.postUpload },
-      upsertHooks: { postUpsert: this.postUpsert },
     };
   },
   asyncComputed: {
