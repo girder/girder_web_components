@@ -8,16 +8,17 @@ v-app.app
           :oauth="true",
           :forgot-password-url="forgotPasswordUrl")
     v-dialog(v-model="uploader", full-width, max-width="800px")
-      girder-upload(v-if="uploader",
+      girder-upload(
+          v-if="uploadDest",
           :dest="uploadDest",
-          multiple="multiple",
-          @done="$refs.girderBrowser.refresh(); uploader = false;")
+          :post-upload="postUpload",
+          multiple="multiple")
     v-dialog(v-model="newFolder", full-width, max-width="800px")
       girder-upsert-folder(
           :key="location._id",
           :location="location",
-          @dismiss="newFolder = false",
-          @done="$refs.girderBrowser.refresh(); newFolder = false;")
+          :post-upsert="postUpsert",
+          @dismiss="newFolder = false")
     v-card
       girder-data-browser(ref="girderBrowser",
           v-if="!loggedOut && location",
@@ -92,6 +93,20 @@ export default {
     },
     uploadDest() {
       return this.location._modelType === 'folder' ? this.location : this.folder;
+    },
+  },
+  methods: {
+    postUpload() {
+      // postUpload is an example of using hooks for greater control of component behavior.
+      // here, we can complete the dialog disappear animation before the upload UI resets.
+      this.$refs.girderBrowser.refresh();
+      this.uploader = false;
+      return new Promise(resolve => setTimeout(resolve, 400));
+    },
+    postUpsert() {
+      this.$refs.girderBrowser.refresh();
+      this.newFolder = false;
+      return new Promise(resolve => setTimeout(resolve, 400));
     },
   },
 };

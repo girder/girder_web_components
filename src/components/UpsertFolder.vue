@@ -20,6 +20,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    preUpsert: {
+      type: Function,
+      default: () => {},
+    },
+    postUpsert: {
+      type: Function,
+      default: () => {},
+    },
   },
   inject: ['girderRest'],
   data() {
@@ -43,6 +51,7 @@ export default {
     async upsert() {
       this.error = '';
       try {
+        await this.preUpsert();
         if (this.edit) {
           await this.girderRest.put(
             `${GIRDER_FOLDER_ENDPOINT}/${this.location._id}`,
@@ -63,6 +72,9 @@ export default {
             }),
           );
         }
+        await this.postUpsert();
+        this.name = '';
+        this.description = '';
         this.$emit('done');
       } catch (error) {
         this.$emit('error', { type: 'upsert', error });

@@ -47,6 +47,10 @@ describe('Upsert Folder', () => {
       expect(params.description).toBe(description);
       return [200, {}];
     });
+    let preHookResolve;
+    let postHookResolve;
+    const preHook = new Promise((resolve) => { preHookResolve = resolve; });
+    const postHook = new Promise((resolve) => { postHookResolve = resolve; });
     const wrapper = shallowMount(UpsertFolder, {
       localVue,
       propsData: {
@@ -55,6 +59,8 @@ describe('Upsert Folder', () => {
           _id: parentId,
         },
         edit: false,
+        preUpsert: preHookResolve,
+        postUpsert: postHookResolve,
       },
       provide: { girderRest },
     });
@@ -67,6 +73,10 @@ describe('Upsert Folder', () => {
     await wrapper.vm.upsert();
     await flushPromises();
     expect(wrapper.vm.error).toBe('');
+    const pre = await preHook;
+    expect(pre).toBeUndefined();
+    const post = await postHook;
+    expect(post).toBeUndefined();
     expect(wrapper.emitted().done).toBeTruthy();
   });
 
