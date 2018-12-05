@@ -1,27 +1,28 @@
 <template lang="pug">
 v-app.app
-  v-container
+  v-dialog(v-model="loggedOut", full-width, max-width="600px")
+    girder-auth(
+        :register="true",
+        :oauth="true",
+        :forgot-password-url="forgotPasswordUrl")
+  v-dialog(v-model="uploader", full-width, max-width="800px")
+    girder-upload(
+        v-if="uploadDest",
+        :dest="uploadDest",
+        :post-upload="postUpload",
+        multiple="multiple")
+  v-dialog(v-model="newFolder", full-width, max-width="800px")
+    girder-upsert-folder(
+        v-if="location",
+        :key="location._id",
+        :location="location",
+        :post-upsert="postUpsert",
+        @dismiss="newFolder = false")
+  v-container(v-show="!loggedOut")
     h4.display-1.pb-3 Girder Vue Demo
-    v-dialog(v-model="loggedOut", full-width, max-width="600px")
-      girder-auth(
-          :register="true",
-          :oauth="true",
-          :forgot-password-url="forgotPasswordUrl")
-    v-dialog(v-model="uploader", full-width, max-width="800px")
-      girder-upload(
-          v-if="uploadDest",
-          :dest="uploadDest",
-          :post-upload="postUpload",
-          multiple="multiple")
-    v-dialog(v-model="newFolder", full-width, max-width="800px")
-      girder-upsert-folder(
-          :key="location._id",
-          :location="location",
-          :post-upsert="postUpsert",
-          @dismiss="newFolder = false")
     v-card
       girder-data-browser(ref="girderBrowser",
-          v-if="!loggedOut && location",
+          v-if="location",
           :location.sync="location",
           @click:newitem="uploader = true",
           @click:newfolder="newFolder = true")
@@ -92,7 +93,10 @@ export default {
       return this.girderRest.user === null;
     },
     uploadDest() {
-      return this.location._modelType === 'folder' ? this.location : this.folder;
+      if (this.location) {
+        return this.location._modelType === 'folder' ? this.location : this.folder;
+      }
+      return null;
     },
   },
   methods: {

@@ -39,10 +39,6 @@ export default class RestClient extends Vue {
     }));
   }
 
-  set token(val) {
-    this.token = val;
-  }
-
   async login(username, password) {
     try {
       await this.logout();
