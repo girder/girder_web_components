@@ -1,5 +1,15 @@
 <template lang="pug">
 v-app.app
+  v-toolbar
+    v-toolbar-title Controls
+    v-spacer
+    v-toolbar-items
+      v-layout.pt-3(row, align-center, justify-center)
+        v-checkbox.px-2(label="Select", v-model="selectEnabled")
+        v-checkbox.px-2(label="New Folder", v-model="newFolderEnabled")
+        v-checkbox.px-2(label="Upload", v-model="newItemEnabled")
+      v-btn(flat, icon, @click="girderRest.logout()")
+        v-icon $vuetify.icons.logout
   v-dialog(v-model="loggedOut", full-width, max-width="600px")
     girder-auth(
         :register="true",
@@ -24,6 +34,9 @@ v-app.app
       girder-data-browser(ref="girderBrowser",
           v-if="location",
           :location.sync="location",
+          :select-enabled="selectEnabled",
+          :new-item-enabled="newItemEnabled",
+          :new-folder-enabled="newFolderEnabled",
           @click:newitem="uploader = true",
           @click:newfolder="newFolder = true")
 </template>
@@ -52,6 +65,9 @@ export default {
       newFolder: false,
       browserLocation: null,
       forgotPasswordUrl: '/#?dialog=resetpassword',
+      selectEnabled: true,
+      newItemEnabled: true,
+      newFolderEnabled: true,
     };
   },
   asyncComputed: {

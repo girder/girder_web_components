@@ -34,6 +34,7 @@ export default {
     linkedin: 'mdi-linkedin',
     lock: 'mdi-lock',
     login: 'mdi-login',
+    logout: 'mdi-logout',
     preview: 'mdi-file-find',
     user: 'mdi-account',
   },

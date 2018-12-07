@@ -39,7 +39,7 @@ export default {
   },
   computed: {
     append() {
-      return this.edit ? [] : [`[ ${this.name || 'New Folder'} ]`];
+      return this.edit ? [] : [this.name || 'New Folder'];
     },
   },
   mounted() {
@@ -114,6 +114,7 @@ v-card(flat, height="100%")
     v-card-text
       v-flex(xs12)
         v-text-field(
+            ref="folderName",
             v-model="name",
             autofocus,
             label="Folder Name")
@@ -134,5 +135,6 @@ v-card(flat, height="100%")
       v-btn(
           depressed,
           color="primary",
+          :disabled="!name",
           @click="upsert") {{ edit ? 'Save Changes' : 'Create Folder' }}
 </template>
