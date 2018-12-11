@@ -19,6 +19,7 @@ export default {
     box_com: 'mdi-package',
     chevron: 'mdi-chevron-right',
     collection: 'mdi-file-tree',
+    edit: 'mdi-pencil',
     file: 'mdi-file',
     fileNew: 'mdi-file-plus',
     fileUpload: 'mdi-file-upload',
@@ -33,6 +34,8 @@ export default {
     linkedin: 'mdi-linkedin',
     lock: 'mdi-lock',
     login: 'mdi-login',
+    logout: 'mdi-logout',
+    preview: 'mdi-file-find',
     user: 'mdi-account',
   },
 };
