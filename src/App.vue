@@ -1,15 +1,16 @@
 <template lang="pug">
 v-app.app
-  v-toolbar
+  v-toolbar.toolbar-main(v-show="!loggedOut", color="primary" dark)
     v-toolbar-title Controls
-    v-spacer
     v-toolbar-items
-      v-layout.pt-3(row, align-center, justify-center)
-        v-checkbox.px-2(label="Select", v-model="selectEnabled")
-        v-checkbox.px-2(label="New Folder", v-model="newFolderEnabled")
-        v-checkbox.px-2(label="Upload", v-model="newItemEnabled")
-      v-btn(flat, icon, @click="girderRest.logout()")
-        v-icon $vuetify.icons.logout
+      v-layout(row, align-center, justify-center)
+        v-checkbox.px-2.py-0(hide-details, color="white", label="Select", v-model="selectEnabled")
+        v-checkbox.px-2.py-0(hide-details, color="white", label="New Folder", v-model="newFolderEnabled")
+        v-checkbox.px-2.py-0(hide-details, color="white", label="Upload", v-model="newItemEnabled")
+    v-spacer
+    girder-search
+    v-btn(flat, icon, @click="girderRest.logout()")
+      v-icon $vuetify.icons.logout
   v-dialog(:value="loggedOut", persistent, full-width, max-width="600px")
     girder-auth(
         :register="true",
@@ -28,10 +29,10 @@ v-app.app
         :location="location",
         :post-upsert="postUpsert",
         @dismiss="newFolder = false")
-  v-container(v-show="!loggedOut")
-    h4.display-1.pb-3 Girder Vue Demo
+  v-container(v-show="!loggedOut", fluid)
     v-card
-      girder-data-browser(ref="girderBrowser",
+      girder-data-browser(
+          ref="girderBrowser",
           v-if="location",
           :location.sync="location",
           :select-enabled="selectEnabled",
@@ -45,6 +46,7 @@ v-app.app
 import {
   Authentication as GirderAuth,
   DataBrowser as GirderDataBrowser,
+  Search as GirderSearch,
   Upload as GirderUpload,
   UpsertFolder as GirderUpsertFolder,
 } from './components';
@@ -55,6 +57,7 @@ export default {
   components: {
     GirderAuth,
     GirderDataBrowser,
+    GirderSearch,
     GirderUpload,
     GirderUpsertFolder,
   },

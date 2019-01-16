@@ -1,6 +1,7 @@
 <script>
 import { sizeFormatter } from '../utils/mixins';
 import GirderBreadcrumb from './Breadcrumb.vue';
+import GirderDataTable from './DataTable.vue';
 
 const GIRDER_FOLDER_ENDPOINT = 'folder';
 const GIRDER_ITEM_ENDPOINT = 'item';
@@ -8,6 +9,7 @@ const GIRDER_ITEM_ENDPOINT = 'item';
 export default {
   components: {
     GirderBreadcrumb,
+    GirderDataTable,
   },
   mixins: [sizeFormatter],
   props: {
@@ -162,18 +164,16 @@ export default {
 </script>
 
 <template lang="pug">
-v-data-table.girder-file-browser-component.elevation-1(
-    select-all,
-    :headers-length="4",
-    v-model="selected",
+girder-data-table.girder-file-browser(
+    :rows="rows",
     :pagination.sync="pagination",
-    :items="rows",
     :total-items="totalItems",
-    :loading="loading ? 'accent' : false",
-    item-key="_id")
-
-  //- Header Slot
-  template(slot="headers", slot-scope="props")
+    :loading="loading",
+    :selected="selected",
+    :select-enabled="selectEnabled",
+    @rowclick="changeLocation")
+  
+  template(slot="header", slot-scope="props")
     tr.secondary.lighten-5
       th.pl-3.pr-0(width="1%", v-if="selectEnabled")
         v-checkbox.secondary--text.text--darken-1.pr-2(
@@ -182,101 +182,25 @@ v-data-table.girder-file-browser-component.elevation-1(
             :input-value="props.all",
             :indeterminate="selected.length > 0 && !props.all",
             @click.native="toggleAll")
-      th.pl-3
-        girder-breadcrumb(
-            ref="breadcrumb",
-            :location="location",
-            @crumbclick="changeLocation")
-      th.pr-0.align-right(width="1%")
-        v-btn(flat,
-            small,
-            color="secondary darken-2",
-            v-if="newFolderEnabled",
-            @click="$emit('click:newfolder')")
-          v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.folderNew }}
-          span.hidden-xs-only New Folder
-      th.pl-0.pr-1.align-right(width="1%")
-        v-btn(flat,
-            small,
-            color="secondary darken-2",
-            v-if="newItemEnabled",
-            @click="$emit('click:newitem')")
-          v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.fileNew }}
-          span.hidden-xs-only New Item
-
-  //- Table Row Slot
-  template(slot="items", slot-scope="props")
-    tr.itemRow(:active="props.selected",
-        @click="if (selectEnabled) props.selected = !props.selected;",
-        :key="props.index")
-      td.pl-3.pr-0(v-if="selectEnabled")
-        v-checkbox.secondary--text.text--darken-1.pr-2(
-            :input-value="props.selected", accent, hide-details)
-      td.pl-3(colspan="2")
-        span.text-container.secondary--text.text--darken-3.nobreak(
-            :class="{selectable: props.item._modelType !== 'item'}",
-            @click.stop="changeLocation(props.item)")
-          v-icon.pr-2(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons[props.item.icon] }}
-          | {{ props.item.name }}
-      td.text-xs-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
+      th.pl-3(colspan="100", width="99%")
+        v-layout(row, align-center)
+          girder-breadcrumb(
+              ref="breadcrumb",
+              :location="location",
+              @crumbclick="changeLocation")
+          v-spacer
+          v-btn.ma-0(flat,
+              small,
+              color="secondary darken-2",
+              v-if="newFolderEnabled",
+              @click="$emit('click:newfolder')")
+            v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.folderNew }}
+            span.hidden-xs-only New Folder
+          v-btn.ma-0(flat,
+              small,
+              color="secondary darken-2",
+              v-if="newItemEnabled",
+              @click="$emit('click:newitem')")
+            v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.fileNew }}
+            span.hidden-xs-only New Item
 </template>
-
-<style lang="scss" scoped>
-.girder-file-browser-component.elevation-1 {
-  box-shadow: none !important;
-
-  .selectable {
-    opacity: 0.8;
-
-    &:hover {
-      opacity: 1;
-      cursor: pointer;
-    }
-  }
-
-  .v-table {
-    th {
-      button.v-btn {
-        min-width: 0;
-        margin: 0;
-      }
-    }
-
-    tr {
-      &.itemRow[active],
-      &.itemRow:hover {
-        // $light-blue.lighten-5
-        background: #e1f5fe !important;
-      }
-
-      &.secondary {
-        border-color: inherit !important;
-      }
-
-      .v-input--checkbox {
-        border-right: 1.5px solid;
-      }
-
-      .text-container i {
-        vertical-align: bottom;
-      }
-
-      .nobreak {
-        white-space: nowrap;
-      }
-    }
-  }
-}
-</style>
-
-<style lang="scss">
-.girder-file-browser-component {
-  .theme--light.v-icon {
-    color: inherit;
-  }
-
-  .v-datatable__progress .v-progress-linear {
-    position: absolute;
-  }
-}
-</style>
