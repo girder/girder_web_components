@@ -83,14 +83,22 @@ export default {
       searchOptionsMenu: false,
     };
   },
+  computed: {
+    quickresults() {
+      if (this.searchresults) {
+        return this.searchresults.slice(0, this.maxQuickResults);
+      }
+      return [];
+    },
+  },
   watch: {
-    async searchtext(newVal) {
+    async searchtext(val) {
       this.errtext = '';
       try {
-        if (this.searchtext) {
+        if (val) {
           const { data } = await this.girderRest.get(endpoint, {
             params: {
-              q: this.searchtext,
+              q: val,
               mode: this.searchmode,
               types: JSON.stringify(this.searchtypes),
               limit: this.maxQuickResults + 1,
@@ -106,15 +114,6 @@ export default {
   methods: {
     formatUsername(user) {
       return `${user.firstName} ${user.lastName} (${user.login})`;
-    }
-  },
-  computed: {
-    quickresults() {
-      if (this.searchresults) {
-        return this.searchresults.slice(0, this.maxQuickResults);
-      } else {
-        return [];
-      }
     },
   },
 };
@@ -125,9 +124,12 @@ export default {
   .v-text-field.v-text-field--solo .v-input__control {
     min-height: 40px;
   }
+
   .v-list__tile {
     height: 40px;
-    .v-list__tile__action, .v-list__tile__avatar {
+
+    .v-list__tile__action,
+    .v-list__tile__avatar {
       min-width: 40px;
     }
   }

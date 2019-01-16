@@ -172,7 +172,7 @@ girder-data-table.girder-file-browser(
     :loading="loading",
     :select-enabled="selectEnabled",
     @rowclick="changeLocation")
-  
+
   template(slot="header", slot-scope="props")
     tr.secondary.lighten-5
       th.pl-3.pr-0(width="1%", v-if="selectEnabled")

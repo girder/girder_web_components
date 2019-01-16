@@ -37,7 +37,7 @@ v-data-table.girder-data-table(
     @input="$emit('input', $event)",
     :pagination="pagination",
     @update:pagination="$emit('update:pagination', $event)",
-    :items="rows",,
+    :items="rows",
     :total-items="totalItems",
     :loading="loading ? 'accent' : false",
     item-key="_id")
@@ -68,7 +68,6 @@ v-data-table.girder-data-table(
 
 <style lang="scss">
 .girder-data-table {
-
   .selectable {
     opacity: 0.8;
 
@@ -79,7 +78,6 @@ v-data-table.girder-data-table(
   }
 
   .v-table {
-
     tr {
       &.itemRow[active],
       &.itemRow:hover {

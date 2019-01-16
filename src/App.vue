@@ -1,12 +1,24 @@
 <template lang="pug">
 v-app.app
-  v-toolbar.toolbar-main(v-show="!loggedOut", color="primary" dark)
+  v-toolbar.toolbar-main(v-show="!loggedOut", color="primary", dark)
     v-toolbar-title Controls
     v-toolbar-items
       v-layout(row, align-center, justify-center)
-        v-checkbox.px-2.py-0(hide-details, color="white", label="Select", v-model="selectEnabled")
-        v-checkbox.px-2.py-0(hide-details, color="white", label="New Folder", v-model="newFolderEnabled")
-        v-checkbox.px-2.py-0(hide-details, color="white", label="Upload", v-model="newItemEnabled")
+        v-checkbox.px-2.py-0(
+            hide-details,
+            color="white",
+            label="Select",
+            v-model="selectEnabled")
+        v-checkbox.px-2.py-0(
+            hide-details,
+            color="white",
+            label="New Folder",
+            v-model="newFolderEnabled")
+        v-checkbox.px-2.py-0(
+            hide-details,
+            color="white",
+            label="Upload",
+            v-model="newItemEnabled")
     v-spacer
     girder-search(@select="handleSearchSelect")
     v-btn(flat, icon, @click="girderRest.logout()")
@@ -132,14 +144,10 @@ export default {
       return new Promise(resolve => setTimeout(resolve, 400));
     },
     handleSearchSelect(item) {
-      switch(item._modelType) {
-        case 'user':
-        case 'folder':
-          this.browserLocation = item;
-          break;
-        case 'item':
-          this.browserLocation = { _modelType: 'folder', _id: item.folderId }
-          break;
+      if (['user', 'folder'].indexOf(item._modelType) >= 0) {
+        this.browserLocation = item;
+      } else {
+        this.browserLocation = { _modelType: 'folder', _id: item.folderId };
       }
     },
   },
