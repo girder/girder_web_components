@@ -8,7 +8,14 @@ const girderRest = new RestClient({ apiRoot: 'http://localhost:8080/api/v1' });
 
 girderRest.fetchUser().then(() => {
   new Vue({
-    render: h => h(App),
+    propsData: {
+      foo: 2,
+    },
+    render: h => h(App, {
+      props: {
+        foo: 'bar',
+      },
+    }),
     provide: { girderRest },
   }).$mount('#app');
 });

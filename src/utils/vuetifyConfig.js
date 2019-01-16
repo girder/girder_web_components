@@ -15,6 +15,7 @@ export default {
   },
   iconfont: 'mdi',
   icons: {
+    alert: 'mdi-alert-circle',
     bitbucket: 'mdi-bitbucket',
     box_com: 'mdi-package',
     chevron: 'mdi-chevron-right',
@@ -35,7 +36,10 @@ export default {
     lock: 'mdi-lock',
     login: 'mdi-login',
     logout: 'mdi-logout',
+    more: 'mdi-dots-horizontal',
     preview: 'mdi-file-find',
+    search: 'mdi-magnify',
+    settings: 'mdi-tune',
     user: 'mdi-account',
   },
 };
