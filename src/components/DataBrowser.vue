@@ -165,11 +165,11 @@ export default {
 
 <template lang="pug">
 girder-data-table.girder-file-browser(
+    v-model="selected",
     :rows="rows",
     :pagination.sync="pagination",
     :total-items="totalItems",
     :loading="loading",
-    :selected="selected",
     :select-enabled="selectEnabled",
     @rowclick="changeLocation")
   

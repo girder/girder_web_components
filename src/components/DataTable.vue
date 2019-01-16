@@ -17,7 +17,7 @@ export default {
       type: Boolean,
       required: true,
     },
-    selected: {
+    value: {
       type: Array,
       default: () => [],
     },
@@ -33,7 +33,8 @@ export default {
 v-data-table.girder-data-table(
     select-all,
     :headers-length="4",
-    v-model="selected",
+    :value="value",
+    @input="$emit('input', $event)",
     :pagination="pagination",
     @update:pagination="$emit('update:pagination', $event)",
     :items="rows",,
