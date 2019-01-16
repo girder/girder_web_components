@@ -8,7 +8,7 @@ v-app.app
         v-checkbox.px-2.py-0(hide-details, color="white", label="New Folder", v-model="newFolderEnabled")
         v-checkbox.px-2.py-0(hide-details, color="white", label="Upload", v-model="newItemEnabled")
     v-spacer
-    girder-search
+    girder-search(@select="handleSearchSelect")
     v-btn(flat, icon, @click="girderRest.logout()")
       v-icon $vuetify.icons.logout
   v-dialog(:value="loggedOut", persistent, full-width, max-width="600px")
@@ -130,6 +130,17 @@ export default {
       this.$refs.girderBrowser.refresh();
       this.newFolder = false;
       return new Promise(resolve => setTimeout(resolve, 400));
+    },
+    handleSearchSelect(item) {
+      switch(item._modelType) {
+        case 'user':
+        case 'folder':
+          this.browserLocation = item;
+          break;
+        case 'item':
+          this.browserLocation = { _modelType: 'folder', _id: item.folderId }
+          break;
+      }
     },
   },
 };

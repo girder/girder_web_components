@@ -7,15 +7,15 @@ v-layout.searchbar(row, justify-center, align-center)
       hide-details,
       clearable,
       v-model="searchtext")
-  v-menu(
+  v-menu.searchbar(
       bottom,
       offset-y,
       :activator="'.searchtext'",
       :value="searchtext",
       max-width,
       :nudge-bottom="6")
-    v-list.searchbar
-      v-list-tile(v-for="r in quickresults", @click="$emit('select', r)")
+    v-list
+      v-list-tile(v-for="r in quickresults", @click="$emit('select', r)", :key="r._id")
         v-list-tile-action
           v-icon {{ $vuetify.icons[r._modelType] }}
         v-list-tile-content
@@ -33,7 +33,7 @@ v-layout.searchbar(row, justify-center, align-center)
           v-icon {{ $vuetify.icons.more }}
         v-list-tile-content
           v-list-tile-title more
-  v-menu(
+  v-menu.searchbar(
       bottom,
       offset-y,
       :close-on-content-click="false",
@@ -43,7 +43,7 @@ v-layout.searchbar(row, justify-center, align-center)
       v-model="searchOptionsMenu")
     v-btn.mx-2(icon, slot="activator")
       v-icon.mdi-24px(color="white") {{ $vuetify.icons.settings}}
-    v-card
+    v-card.search-options
       v-card-actions
         v-layout(column)
           v-radio-group.my-2(hide-details, v-model="searchmode")
