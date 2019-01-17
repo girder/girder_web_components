@@ -2,17 +2,12 @@
 v-layout.searchbar(row, justify-center, align-center)
   v-icon.mdi-24px.mx-2(color="white") {{ $vuetify.icons.search }}
   v-text-field.searchtext.mx-4(
-      light,
-      solo,
-      hide-details,
-      clearable,
+      light, solo, hide-details, clearable,
       v-model="searchtext")
   v-menu.searchbar(
-      bottom,
-      offset-y,
+      offset-y, max-width,
       :activator="'.searchtext'",
       :value="searchtext",
-      max-width,
       :nudge-bottom="6")
     v-list
       v-list-tile(v-for="r in quickresults", @click="$emit('select', r)", :key="r._id")
@@ -26,15 +21,13 @@ v-layout.searchbar(row, justify-center, align-center)
         v-list-tile-content
           v-list-tile-title No results found for query '{{ searchtext }}'
           v-list-tile-sub-title Try an advanced search or refine your query.
-      v-list-tile(
-          v-else-if="showMore && searchresults.length > maxQuickResults",
+      v-list-tile(v-else-if="showMore && searchresults.length > maxQuickResults",
           @click="$emit('more-results', searchtext)")
         v-list-tile-action
           v-icon {{ $vuetify.icons.more }}
         v-list-tile-content
           v-list-tile-title more
   v-menu.searchbar(
-      bottom,
       offset-y,
       :close-on-content-click="false",
       :nudge-width="150",
@@ -74,9 +67,6 @@ export default {
     return {
       errtext: '',
       searchtext: '',
-      searchmodel: null,
-      isLoading: false,
-      searchresults: null,
       searchmode: 'prefix',
       searchtypes: ['user', 'folder', 'item'],
       /* options */
@@ -85,30 +75,32 @@ export default {
   },
   computed: {
     quickresults() {
-      if (this.searchresults) {
-        return this.searchresults.slice(0, this.maxQuickResults);
-      }
-      return [];
+      return this.searchresults.slice(0, this.maxQuickResults);
     },
   },
-  watch: {
-    async searchtext(val) {
-      this.errtext = '';
-      try {
-        if (val) {
-          const { data } = await this.girderRest.get(endpoint, {
-            params: {
-              q: val,
-              mode: this.searchmode,
-              types: JSON.stringify(this.searchtypes),
-              limit: this.maxQuickResults + 1,
-            },
-          });
-          this.searchresults = [].concat(...this.searchtypes.map(t => data[t]));
+  asyncComputed: {
+    searchresults: {
+      default: [],
+      async get() {
+        this.errtext = '';
+        try {
+          if (this.searchtext) {
+            const { data } = await this.girderRest.get(endpoint, {
+              params: {
+                q: this.searchtext,
+                mode: this.searchmode,
+                types: JSON.stringify(this.searchtypes),
+                // add 1 to know if total possible results > maxQuickResults
+                limit: this.maxQuickResults + 1,
+              },
+            });
+            return [].concat(...this.searchtypes.map(t => data[t]));
+          }
+        } catch (err) {
+          this.errtext = err.message || 'Unknown error during search.';
         }
-      } catch (err) {
-        this.errtext = err.message;
-      }
+        return [];
+      },
     },
   },
   methods: {
