@@ -34,9 +34,10 @@ v-layout.searchbar(row, justify-center, align-center)
       :nudge-bottom="10",
       :nudge-left="150",
       v-model="searchOptionsMenu")
-    v-btn.mx-2(icon, slot="activator")
-      v-icon.mdi-24px(color="white") {{ $vuetify.icons.settings}}
-    v-card.search-options
+    menu-activator-btn(slot="activator",
+        :value="searchOptionsMenu",
+        :icon="$vuetify.icons.settings")
+    v-card
       v-card-actions
         v-layout(column)
           v-radio-group.my-2(hide-details, v-model="searchmode")
@@ -49,6 +50,8 @@ v-layout.searchbar(row, justify-center, align-center)
 </template>
 
 <script>
+import MenuActivatorBtn from './Internal/MenuActivatorBtn.vue';
+
 const endpoint = 'resource/search';
 
 export default {
@@ -61,6 +64,9 @@ export default {
       type: Boolean,
       default: true,
     },
+  },
+  components: {
+    MenuActivatorBtn,
   },
   inject: ['girderRest'],
   data() {
