@@ -18,7 +18,7 @@ v-app.app
             v-layout(column)
               v-checkbox.mt-2(hide-details, label="Select", v-model="selectEnabled")
               v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
-              v-checkbox.mt-1( hide-details, label="Upload", v-model="newItemEnabled")
+              v-checkbox.mt-1(hide-details, label="Upload", v-model="newItemEnabled")
               v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
     v-spacer
     girder-search(v-if="searchEnabled", @select="handleSearchSelect")

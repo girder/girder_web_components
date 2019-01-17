@@ -1,8 +1,8 @@
 <template lang="pug">
 v-btn(icon, @click="$emit('click')")
-    v-icon.mdi-24px {{ icon }}
-    v-fade-transition
-      div.arrow-up(v-if="value", :style="{ top: nudgeTop + 'px' }")
+  v-icon.mdi-24px {{ icon }}
+  v-fade-transition
+    .arrow-up(v-if="value", :style="{ top: nudgeTop + 'px' }")
 </template>
 
 <script>
