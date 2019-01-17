@@ -55,6 +55,9 @@ import MenuActivatorBtn from './Internal/MenuActivatorBtn.vue';
 const endpoint = 'resource/search';
 
 export default {
+  components: {
+    MenuActivatorBtn,
+  },
   props: {
     maxQuickResults: {
       type: Number,
@@ -64,9 +67,6 @@ export default {
       type: Boolean,
       default: true,
     },
-  },
-  components: {
-    MenuActivatorBtn,
   },
   inject: ['girderRest'],
   data() {
