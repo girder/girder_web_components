@@ -1,14 +1,12 @@
 <template lang="pug">
-v-layout.searchbar(row, justify-center, align-center)
+v-layout.searchbar(row, align-center)
   v-icon.mdi-24px.mx-2(color="white") {{ $vuetify.icons.search }}
-  v-text-field.searchtext.mx-4(
-      light, solo, hide-details, clearable,
-      v-model="searchtext")
-  v-menu.searchbar(
-      offset-y, max-width,
-      :activator="'.searchtext'",
+  v-menu.searchbar.grow(
+      offset-y,
       :value="searchtext",
       :nudge-bottom="6")
+    v-text-field.mx-4(
+      slot="activator", v-model="searchtext", light, solo, hide-details, clearable)
     v-list
       v-list-tile(v-for="r in quickresults", @click="$emit('select', r)", :key="r._id")
         v-list-tile-action
