@@ -1,5 +1,5 @@
 <template lang="pug">
-v-layout.searchbar(row, align-center)
+v-layout.girder-searchbar(row, align-center)
   v-icon.mdi-24px.mx-2(color="white") {{ $vuetify.icons.search }}
   v-menu.searchbar.grow(
       offset-y,
@@ -29,7 +29,7 @@ v-layout.searchbar(row, align-center)
   v-menu.searchbar(
       offset-y,
       left,
-      content-class="arrow-menu",
+      content-class="girder-arrow-menu",
       :close-on-content-click="false",
       v-model="searchOptionsMenu")
     v-btn(icon, slot="activator")
@@ -113,7 +113,7 @@ export default {
 </script>
 
 <style lang="scss">
-.searchbar {
+.girder-searchbar {
   .v-text-field.v-text-field--solo .v-input__control {
     min-height: 40px;
   }
@@ -128,7 +128,7 @@ export default {
   }
 }
 
-.arrow-menu {
+.girder-arrow-menu {
   transform: translateY(10px);
   // Override to make the arrow visible
   overflow: visible;
