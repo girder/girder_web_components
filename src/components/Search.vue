@@ -1,7 +1,7 @@
 <template lang="pug">
 v-layout.girder-searchbar(row, align-center)
   v-icon.mdi-24px.mx-2(color="white") {{ $vuetify.icons.search }}
-  v-menu.searchbar.grow(
+  v-menu.grow(
       offset-y,
       :value="searchtext",
       :nudge-bottom="6")
@@ -26,10 +26,10 @@ v-layout.girder-searchbar(row, align-center)
           v-icon {{ $vuetify.icons.more }}
         v-list-tile-content
           v-list-tile-title more
-  v-menu.searchbar(
+  v-menu(
       offset-y,
       left,
-      content-class="girder-arrow-menu",
+      content-class="girder-search-arrow-menu",
       :close-on-content-click="false",
       v-model="searchOptionsMenu")
     v-btn(icon, slot="activator")
@@ -128,7 +128,7 @@ export default {
   }
 }
 
-.girder-arrow-menu {
+.girder-search-arrow-menu {
   transform: translateY(10px);
   // Override to make the arrow visible
   overflow: visible;
