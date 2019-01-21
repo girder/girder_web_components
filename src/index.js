@@ -1,6 +1,7 @@
 import VueAsyncComputed from 'vue-async-computed';
 import Vuetify from 'vuetify';
 import * as components from './components';
+import * as constants from './constants';
 import RestClient from './rest';
 import * as utils from './utils';
 
@@ -16,6 +17,7 @@ function install(Vue) {
 
 export {
   components,
+  constants,
   RestClient,
   utils,
 };
