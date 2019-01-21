@@ -5,14 +5,12 @@ v-app.app
     v-toolbar-items
       v-menu(
           offset-y,
-          bottom,
+          left,
           :close-on-content-click="false",
-          :nudge-width="150",
-          :nudge-bottom="10",
+          content-class="girder-search-arrow-menu",
           v-model="uiOptionsMenu")
-        menu-activator-btn(slot="activator",
-            :icon="$vuetify.icons.more",
-            :value="uiOptionsMenu")
+        v-btn(icon, slot="activator")
+          v-icon.mdi-24px {{ $vuetify.icons.more }}
         v-card
           v-card-actions
             v-layout(column)
