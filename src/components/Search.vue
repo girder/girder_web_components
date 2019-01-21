@@ -1,7 +1,5 @@
 
 <script>
-const endpoint = 'resource/search';
-
 export default {
   props: {
     maxQuickResults: {
@@ -25,18 +23,18 @@ export default {
     };
   },
   computed: {
-    quickresults() {
-      return this.searchresults.slice(0, this.maxQuickResults);
+    quickResults() {
+      return this.searchResults.slice(0, this.maxQuickResults);
     },
   },
   asyncComputed: {
-    searchresults: {
+    searchResults: {
       default: [],
       async get() {
         this.errText = '';
         try {
           if (this.searchText) {
-            const { data } = await this.girderRest.get(endpoint, {
+            const { data } = await this.girderRest.get('resource/search', {
               params: {
                 q: this.searchText,
                 mode: this.searchMode,
@@ -73,18 +71,18 @@ v-layout.girder-searchbar(row, align-center)
     v-text-field(
       slot="activator", v-model="searchText", light, solo, hide-details, clearable)
     v-list
-      v-list-tile(v-for="r in quickresults", @click="$emit('select', r)", :key="r._id")
+      v-list-tile(v-for="r in quickResults", @click="$emit('select', r)", :key="r._id")
         v-list-tile-action
           v-icon {{ $vuetify.icons[r._modelType] }}
         v-list-tile-content
           v-list-tile-title {{ r.name || formatUsername(r) }}
-      v-list-tile(v-if="quickresults.length === 0")
+      v-list-tile(v-if="quickResults.length === 0")
         v-list-tile-action
           v-icon {{ $vuetify.icons.alert }}
         v-list-tile-content
           v-list-tile-title No results found for query '{{ searchText }}'
           v-list-tile-sub-title Try an advanced search or refine your query.
-      v-list-tile(v-else-if="showMore && searchresults.length > maxQuickResults",
+      v-list-tile(v-else-if="showMore && searchResults.length > maxQuickResults",
           @click="$emit('more-results', searchText)")
         v-list-tile-action
           v-icon {{ $vuetify.icons.more }}
