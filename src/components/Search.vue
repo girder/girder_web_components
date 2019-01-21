@@ -27,14 +27,12 @@ v-layout.searchbar(row, align-center)
           v-list-tile-title more
   v-menu.searchbar(
       offset-y,
+      left,
+      content-class="arrow-menu",
       :close-on-content-click="false",
-      :nudge-width="150",
-      :nudge-bottom="10",
-      :nudge-left="150",
       v-model="searchOptionsMenu")
-    menu-activator-btn(slot="activator",
-        :value="searchOptionsMenu",
-        :icon="$vuetify.icons.settings")
+    v-btn(icon, slot="activator")
+      v-icon.mdi-24px {{ $vuetify.icons.settings }}
     v-card
       v-card-actions
         v-layout(column)
@@ -48,13 +46,11 @@ v-layout.searchbar(row, align-center)
 </template>
 
 <script>
-import MenuActivatorBtn from './Internal/MenuActivatorBtn.vue';
 
 const endpoint = 'resource/search';
 
 export default {
   components: {
-    MenuActivatorBtn,
   },
   props: {
     maxQuickResults: {
@@ -128,6 +124,30 @@ export default {
     .v-list__tile__avatar {
       min-width: 40px;
     }
+  }
+}
+
+.arrow-menu {
+  transform: translateY(10px);
+  // Override to make the arrow visible
+  overflow: visible;
+  contain: inherit;
+
+  // Remove any shadow that is made visible by above style
+  :first-child {
+    box-shadow: none;
+  }
+
+  &::before {
+    content: " ";
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+    right: 10px;
+    top: -8px;
+    position: absolute;
   }
 }
 </style>
