@@ -66,7 +66,6 @@ import {
   Upload as GirderUpload,
   UpsertFolder as GirderUpsertFolder,
 } from './components';
-import MenuActivatorBtn from './components/Internal/MenuActivatorBtn.vue';
 
 export default {
   name: 'App',
@@ -77,7 +76,6 @@ export default {
     GirderSearch,
     GirderUpload,
     GirderUpsertFolder,
-    MenuActivatorBtn,
   },
   data() {
     return {
