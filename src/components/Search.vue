@@ -20,7 +20,8 @@ v-layout.searchbar(row, align-center)
           v-list-tile-title No results found for query '{{ searchtext }}'
           v-list-tile-sub-title Try an advanced search or refine your query.
       v-list-tile(v-else-if="showMore && searchresults.length > maxQuickResults",
-          @click="$emit('more-results', searchtext)")
+          @click="$emit('more-results', searchtext)",
+          :disabled="!$listeners['more-result']")
         v-list-tile-action
           v-icon {{ $vuetify.icons.more }}
         v-list-tile-content
