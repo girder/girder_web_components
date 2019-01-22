@@ -32,7 +32,7 @@
         v-spacer
         v-btn(
             flat, color="primary", :to="forgotPasswordRoute", :href="forgotPasswordUrl",
-            @click="$emit('forgotPassword')") Forgot Password?
+            @click="$emit('forgotpassword')") Forgot Password?
   template(v-if="oauthProviders && oauthProviders.length")
     v-divider
     girder-oauth(:providers="oauthProviders")
