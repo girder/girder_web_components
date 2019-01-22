@@ -105,7 +105,7 @@ v-data-table.girder-data-table(
     }
 
     td:first-child {
-      padding: 0px;
+      padding: 0;
     }
   }
 
