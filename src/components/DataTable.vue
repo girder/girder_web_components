@@ -61,8 +61,10 @@ v-data-table.girder-data-table(
       td.text-xs-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
 
   template(slot="no-data")
-    td(v-if="selectEnabled")
-    td.text-xs-center No Data Available
+    td.text-xs-center(colspan="2", width="100%") No Data Available
+
+  template(slot="no-results")
+    td.text-xs-center(colspan="2", width="100%") No Data Available
 </template>
 
 
@@ -100,6 +102,10 @@ v-data-table.girder-data-table(
       .nobreak {
         white-space: nowrap;
       }
+    }
+
+    td:first-child {
+      padding: 0px;
     }
   }
 
