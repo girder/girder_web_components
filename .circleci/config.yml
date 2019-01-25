@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  checkout:
     docker:
       - image: circleci/node:10
     steps:
@@ -15,9 +15,40 @@ jobs:
           key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
+
+  build:
+    docker:
+      - image: circleci/node:10
+    steps:
       - run: yarn lint --no-fix
       - run: yarn lint:pug
       - run: yarn lint:style
       - run: yarn test:unit --coverage --coverageReporters html
       - store_artifacts:
           path: coverage/
+
+  deploy:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - run: yarn build:demo
+      - deploy:
+          command: |
+            if [ "${CIRCLECI_BRANCH}" == "master" ]; do
+              .circleci/pages-deploy.sh
+            fi
+
+workflows:
+  version: 2
+  checkout_test_deploy:
+    jobs:
+      - checkout
+      - build:
+          requires:
+            - checkout
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
