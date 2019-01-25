@@ -12,6 +12,7 @@ export default {
     secondary: colors.blueGrey,
     accent: colors.lightBlue.darken1,
     error: colors.red,
+    info: colors.lightBlue.lighten1,
   },
   iconfont: 'mdi',
   icons: {

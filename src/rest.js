@@ -93,6 +93,9 @@ export default class RestClient extends Vue {
     const resp = await this.post('user', stringify({
       login, email, firstName, lastName, password, admin,
     }));
+    if (!resp.data.authToken) {
+      return resp;
+    }
     this.token = resp.data.authToken.token;
     this.user = resp.data;
     if (this.cors) {
