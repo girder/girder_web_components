@@ -10,7 +10,7 @@ v-app.app
         v-checkbox.px-2(label="Upload", v-model="newItemEnabled")
       v-btn(flat, icon, @click="girderRest.logout()")
         v-icon $vuetify.icons.logout
-  v-dialog(v-model="loggedOut", full-width, max-width="600px")
+  v-dialog(:value="loggedOut", persistent, full-width, max-width="600px")
     girder-auth(
         :register="true",
         :oauth="true",

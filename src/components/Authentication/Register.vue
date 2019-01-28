@@ -7,8 +7,15 @@
       :key="err",
       :value="true",
       type="error") {{ err }}
+  v-alert.mt-0(
+      dismissible,
+      transition="scale-transition",
+      v-for="info in alerts.infos",
+      :key="info",
+      :value="true",
+      type="info") {{ info }}
   v-container
-    v-form(@submit.prevent="register", ref="register")
+    v-form(@submit.prevent="register", ref="form")
       v-text-field(
           v-model="login",
           label="Username",
@@ -79,6 +86,7 @@ export default {
       inProgress: false,
       alerts: {
         errors: [],
+        infos: [],
       },
       nonEmptyRules,
       retypeMustMatchPasswordRules,
@@ -86,19 +94,24 @@ export default {
   },
   methods: {
     async register() {
-      if (!this.$refs.register.validate()) {
+      if (!this.$refs.form.validate()) {
         return;
       }
       this.inProgress = true;
       this.alerts.errors = [];
+      this.alerts.infos = [];
       try {
-        await this.girderRest.register(
+        const resp = await this.girderRest.register(
           this.login,
           this.email,
           this.firstName,
           this.lastName,
           this.password,
         );
+        if (!resp.data.authToken) {
+          this.alerts.infos.push('Registration needs email verification or administrator approval. \nCheck your email to continue.');
+          this.$refs.form.reset();
+        }
       } catch (err) {
         if (!err.response || err.response.status !== 400) {
           this.alerts.errors.push('Unknown error.');
