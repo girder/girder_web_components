@@ -123,6 +123,7 @@ v-card(flat, height="100%")
           :disabled="true",
           :append="append")
       girder-markdown-editor(
+          v-model="description",
           label="Description (Optional)")
       v-alert(
           type="error",
