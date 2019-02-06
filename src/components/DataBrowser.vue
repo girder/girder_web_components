@@ -107,10 +107,12 @@ export default {
       }
     },
     changeLocation(item) {
-      const { _modelType, _id, name } = item;
+      const { _modelType, _id } = item;
       if ((this.location._id !== _id || this.location._modelType !== _modelType) &&
           _modelType !== 'item') {
-        this.$emit('update:location', { _modelType, _id, name });
+        this.$emit('update:location', item);
+      } else if (_modelType === 'item') {
+        this.$emit('itemclick', item);
       }
     },
     refresh() {
