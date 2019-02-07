@@ -1,6 +1,9 @@
 
 <script>
+import { countlock } from '../utils/mixins';
+
 export default {
+  mixins: [countlock],
   props: {
     maxQuickResults: {
       type: Number,
@@ -14,11 +17,9 @@ export default {
   inject: ['girderRest'],
   data() {
     return {
-      errText: '',
       searchText: '',
       searchMode: 'prefix',
       searchTypes: ['user', 'folder', 'item'],
-      /* options */
       searchOptionsMenu: false,
     };
   },
@@ -26,29 +27,34 @@ export default {
     quickResults() {
       return this.searchResults.slice(0, this.maxQuickResults);
     },
+    searchParams() {
+      return {
+        q: this.searchText,
+        mode: this.searchMode,
+        types: JSON.stringify(this.searchTypes),
+        // + 1 to determine if total results > maxQuickResults
+        limit: this.maxQuickResults + 1,
+      };
+    },
   },
   asyncComputed: {
     searchResults: {
       default: [],
       async get() {
-        this.errText = '';
+        let results = [];
+        this.lock();
         try {
           if (this.searchText) {
             const { data } = await this.girderRest.get('resource/search', {
-              params: {
-                q: this.searchText,
-                mode: this.searchMode,
-                types: JSON.stringify(this.searchTypes),
-                // add 1 to know if total possible results > maxQuickResults
-                limit: this.maxQuickResults + 1,
-              },
+              params: this.searchParams,
             });
-            return [].concat(...this.searchTypes.map(t => data[t]));
+            results = [].concat(...this.searchTypes.map(t => data[t]));
           }
         } catch (err) {
-          this.errText = err.message || 'Unknown error during search.';
+          this.$emit('error', err.message || 'Unknown error during search');
         }
-        return [];
+        this.unlock();
+        return results;
       },
     },
   },
@@ -64,30 +70,41 @@ export default {
 v-layout.girder-searchbar(row, align-center)
   v-icon.mdi-24px(color="white") {{ $vuetify.icons.search }}
   v-menu.grow.mx-3(
-      offset-y,
-      content-class="girder-searchbar",
-      :value="searchText",
-      :nudge-bottom="6")
+      offset-y, content-class="girder-searchbar-menu", :open-on-click="false",
+      :value="searchText", :nudge-bottom="6")
     v-text-field(
-      slot="activator", v-model="searchText", light, solo, hide-details, clearable)
+        slot="activator", v-model="searchText", light, solo, hide-details, clearable)
     v-list
-      v-list-tile(v-for="r in quickResults", @click="$emit('select', r)", :key="r._id")
+      v-list-tile(
+          v-show="!locked",
+          v-for="r in quickResults",
+          @click="$emit('select', r)",
+          :key="r._id")
         v-list-tile-action
           v-icon {{ $vuetify.icons[r._modelType] }}
         v-list-tile-content
           v-list-tile-title {{ r.name || formatUsername(r) }}
-      v-list-tile(v-if="quickResults.length === 0")
+      v-list-tile(v-show="searchText && quickResults.length === 0 && !locked")
         v-list-tile-action
           v-icon {{ $vuetify.icons.alert }}
         v-list-tile-content
           v-list-tile-title No results found for query '{{ searchText }}'
-          v-list-tile-sub-title Try an advanced search or refine your query.
-      v-list-tile(v-else-if="showMore && searchResults.length > maxQuickResults",
-          @click="$emit('more-results', searchText)")
+          v-list-tile-sub-title Modify search parameters or refine your query.
+      v-list-tile(v-show="!locked && showMore && searchResults.length > maxQuickResults",
+          @click="$emit('moreresults', searchParams)")
         v-list-tile-action
           v-icon {{ $vuetify.icons.more }}
         v-list-tile-content
-          v-list-tile-title more
+          v-list-tile-title More
+      //- Skeleton search results shown as "loading" animation
+      v-list-tile(v-show="locked", v-for="i in 3")
+        v-list-tile-action
+          v-icon {{ $vuetify.icons.circle }}
+        v-list-tile-content
+          v-list-tile-title.skeleton.mb-1(
+              :style="{ width: (60 + (6 * (i % 2))) + '%', height: '12px' }")
+          v-list-tile-sub-title.skeleton(
+              :style="{ width: (45 - (4 * (i % 2))) + '%', height: '8px' }")
   v-menu(
       offset-y,
       left,
@@ -109,11 +126,11 @@ v-layout.girder-searchbar(row, align-center)
 </template>
 
 <style lang="scss">
-.girder-searchbar {
-  .v-text-field.v-text-field--solo .v-input__control {
-    min-height: 40px;
-  }
+.girder-searchbar .v-text-field .v-input__control {
+  min-height: 40px;
+}
 
+.girder-searchbar-menu {
   .v-list__tile {
     height: 40px;
 
@@ -121,8 +138,35 @@ v-layout.girder-searchbar(row, align-center)
       min-width: 40px;
     }
   }
+
+  .skeleton {
+    background: linear-gradient(270deg, #c8c8c8, #797979, #c8c8c8);
+    background-size: 600% 600%;
+    -webkit-animation: AnimationName 4s ease infinite;
+    -moz-animation: AnimationName 4s ease infinite;
+    animation: AnimationName 4s ease infinite;
+
+    @-webkit-keyframes AnimationName {
+      0% { background-position: 0% 51%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 51%; }
+    }
+
+    @-moz-keyframes AnimationName {
+      0% { background-position: 0% 51%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 51%; }
+    }
+
+    @keyframes AnimationName {
+      0% { background-position: 0% 51%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 51%; }
+    }
+  }
 }
 
+// TODO: factor out into common stylesheet if we are to use this elsewhere.
 .girder-search-arrow-menu {
   transform: translateY(10px);
   // Override to make the arrow visible

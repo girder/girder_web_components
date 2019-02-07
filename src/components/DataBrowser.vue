@@ -191,6 +191,7 @@ girder-data-table.girder-file-browser(
               :location="location",
               @crumbclick="changeLocation")
           v-spacer
+          slot(name="headerwidget")
           v-btn.ma-0(flat,
               small,
               color="secondary darken-2",

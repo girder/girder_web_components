@@ -20,6 +20,7 @@ export default {
     bitbucket: 'mdi-bitbucket',
     box_com: 'mdi-package',
     chevron: 'mdi-chevron-right',
+    circle: 'mdi-checkbox-blank-circle',
     collection: 'mdi-file-tree',
     edit: 'mdi-pencil',
     file: 'mdi-file',

@@ -83,7 +83,6 @@ describe('Search', () => {
     await flushPromises();
     expect(wrapper.vm.searchResults.length).toBe(3);
     expect(wrapper.vm.quickResults.length).toBe(3);
-    expect(wrapper.vm.errText).toBe('');
   });
 
   it('can process searchResults > maxQuickResults', async () => {
