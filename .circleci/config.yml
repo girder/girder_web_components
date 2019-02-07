@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  checkout:
+  test:
     docker:
       - image: circleci/node:10
     steps:
@@ -19,13 +19,6 @@ jobs:
           root: /home/circleci
           paths:
             - project
-
-  test:
-    docker:
-      - image: circleci/node:10
-    steps:
-      - attach_workspace:
-          at: /home/circleci
       - run: yarn lint --no-fix
       - run: yarn lint:pug
       - run: yarn lint:style
@@ -50,10 +43,7 @@ workflows:
   version: 2
   checkout_test_deploy:
     jobs:
-      - checkout
-      - test:
-          requires:
-            - checkout
+      - test
       - deploy:
           requires:
             - test
