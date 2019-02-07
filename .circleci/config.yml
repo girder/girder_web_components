@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  test:
     docker:
       - image: circleci/node:10
     steps:
@@ -15,9 +15,38 @@ jobs:
           key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - project
       - run: yarn lint --no-fix
       - run: yarn lint:pug
       - run: yarn lint:style
       - run: yarn test:unit --coverage --coverageReporters html
       - store_artifacts:
           path: coverage/
+
+  deploy:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run: yarn build:demo
+      - add_ssh_keys:
+          fingerprints:
+            - "eb:dc:cd:0a:f4:99:56:3f:79:f7:22:a2:6c:21:56:c7"
+      - deploy:
+          command: .circleci/pages-deploy.sh
+
+workflows:
+  version: 2
+  checkout_test_deploy:
+    jobs:
+      - test
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+                only: master

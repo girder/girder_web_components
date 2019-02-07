@@ -6,6 +6,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib --name girder src/index.js",
+    "build:demo": "vue-cli-service build --dest _site/",
     "lint": "vue-cli-service lint",
     "lint:pug": "pug-lint-vue src",
     "lint:style": "stylelint 'src/**/*.vue'",
