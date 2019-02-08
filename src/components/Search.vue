@@ -24,6 +24,9 @@ export default {
     };
   },
   computed: {
+    loading() {
+      return this.locked;
+    },
     quickResults() {
       return this.searchResults.slice(0, this.maxQuickResults);
     },
@@ -76,7 +79,7 @@ v-layout.girder-searchbar(row, align-center)
         slot="activator", v-model="searchText", light, solo, hide-details, clearable)
     v-list
       v-list-tile(
-          v-show="!locked",
+          v-show="!loading",
           v-for="r in quickResults",
           @click="$emit('select', r)",
           :key="r._id")
@@ -84,26 +87,26 @@ v-layout.girder-searchbar(row, align-center)
           v-icon {{ $vuetify.icons[r._modelType] }}
         v-list-tile-content
           v-list-tile-title {{ r.name || formatUsername(r) }}
-      v-list-tile(v-show="searchText && quickResults.length === 0 && !locked")
+      v-list-tile(v-show="searchText && quickResults.length === 0 && !loading")
         v-list-tile-action
           v-icon {{ $vuetify.icons.alert }}
         v-list-tile-content
           v-list-tile-title No results found for query '{{ searchText }}'
           v-list-tile-sub-title Modify search parameters or refine your query.
-      v-list-tile(v-show="!locked && showMore && searchResults.length > maxQuickResults",
+      v-list-tile(v-show="!loading && showMore && searchResults.length > maxQuickResults",
           @click="$emit('moreresults', searchParams)")
         v-list-tile-action
           v-icon {{ $vuetify.icons.more }}
         v-list-tile-content
           v-list-tile-title More
       //- Skeleton search results shown as "loading" animation
-      v-list-tile(v-show="locked", v-for="i in (maxQuickResults + (showMore ? 1 : 0))")
+      v-list-tile(v-show="loading", v-for="i in (maxQuickResults + (showMore ? 1 : 0))")
         v-list-tile-action
-          v-icon {{ $vuetify.icons.circle }}
+          v-icon.grey--text.text--lighten-1 {{ $vuetify.icons.circle }}
         v-list-tile-content
-          v-list-tile-title.skeleton.mb-2(
+          v-list-tile-title.skeleton.skeleton--text.mb-2(
               :style="{ width: (60 + (4 * (i % 3))) + '%', height: '10px' }")
-          v-list-tile-sub-title.skeleton(
+          v-list-tile-sub-title.skeleton.skeleton--text(
               :style="{ width: (45 - (4 * (i % 2))) + '%', height: '6px' }")
   v-menu(
       offset-y,
@@ -139,7 +142,7 @@ v-layout.girder-searchbar(row, align-center)
     }
   }
 
-  .skeleton {
+  .skeleton.skeleton--text {
     background: linear-gradient(270deg, #e0e0e0, #c7c7c7, #e0e0e0);
     background-size: 600% 600%;
     -webkit-animation: AnimationName 2s ease infinite;
