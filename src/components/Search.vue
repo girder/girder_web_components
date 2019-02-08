@@ -97,14 +97,14 @@ v-layout.girder-searchbar(row, align-center)
         v-list-tile-content
           v-list-tile-title More
       //- Skeleton search results shown as "loading" animation
-      v-list-tile(v-show="locked", v-for="i in 3")
+      v-list-tile(v-show="locked", v-for="i in (maxQuickResults + (showMore ? 1 : 0))")
         v-list-tile-action
           v-icon {{ $vuetify.icons.circle }}
         v-list-tile-content
-          v-list-tile-title.skeleton.mb-1(
-              :style="{ width: (60 + (6 * (i % 2))) + '%', height: '12px' }")
+          v-list-tile-title.skeleton.mb-2(
+              :style="{ width: (60 + (4 * (i % 3))) + '%', height: '10px' }")
           v-list-tile-sub-title.skeleton(
-              :style="{ width: (45 - (4 * (i % 2))) + '%', height: '8px' }")
+              :style="{ width: (45 - (4 * (i % 2))) + '%', height: '6px' }")
   v-menu(
       offset-y,
       left,
@@ -140,11 +140,11 @@ v-layout.girder-searchbar(row, align-center)
   }
 
   .skeleton {
-    background: linear-gradient(270deg, #c8c8c8, #797979, #c8c8c8);
+    background: linear-gradient(270deg, #e0e0e0, #c7c7c7, #e0e0e0);
     background-size: 600% 600%;
-    -webkit-animation: AnimationName 4s ease infinite;
-    -moz-animation: AnimationName 4s ease infinite;
-    animation: AnimationName 4s ease infinite;
+    -webkit-animation: AnimationName 2s ease infinite;
+    -moz-animation: AnimationName 2s ease infinite;
+    animation: AnimationName 2s ease infinite;
 
     @-webkit-keyframes AnimationName {
       0% { background-position: 0% 51%; }
