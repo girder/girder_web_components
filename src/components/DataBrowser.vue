@@ -162,7 +162,7 @@ export default {
 </script>
 
 <template lang="pug">
-v-data-table.girder-file-browser-component.elevation-1(
+v-data-table.girder-file-browser-component(
     select-all,
     :headers-length="4",
     v-model="selected",
@@ -222,9 +222,7 @@ v-data-table.girder-file-browser-component.elevation-1(
 </template>
 
 <style lang="scss" scoped>
-.girder-file-browser-component.elevation-1 {
-  box-shadow: none !important;
-
+.girder-file-browser-component {
   .selectable {
     opacity: 0.8;
 
@@ -257,8 +255,12 @@ v-data-table.girder-file-browser-component.elevation-1(
         border-right: 1.5px solid;
       }
 
-      .text-container i {
-        vertical-align: bottom;
+      .text-container {
+        vertical-align: text-bottom;
+
+        i {
+          vertical-align: bottom;
+        }
       }
 
       .nobreak {
