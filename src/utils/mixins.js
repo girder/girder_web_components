@@ -1,4 +1,4 @@
-import { AccessType } from '@/constants';
+import { AccessType } from '../constants';
 
 /**
  * Any view component that needs to display human-readable data sizes should use this.
