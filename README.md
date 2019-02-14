@@ -1,5 +1,7 @@
 # Girder web component library
 
+Try the [demo app](https://girder.github.io/girder_web_components/).  It works with [data.kitware.com](https://data.kitware.com/).
+
 ## For users
 
 ### Installation
