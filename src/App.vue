@@ -14,6 +14,7 @@ v-app.app
     girder-auth(
         :register="true",
         :oauth="true",
+        :key="girderRest.token",
         :forgot-password-url="forgotPasswordUrl")
   v-dialog(v-model="uploader", full-width, max-width="800px")
     girder-upload(

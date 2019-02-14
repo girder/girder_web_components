@@ -82,6 +82,7 @@ export default {
       this.inProgress = true;
       try {
         await this.girderRest.login(this.username, this.password);
+        this.password = '';
       } catch (err) {
         if (!err.response || err.response.status !== 401) {
           this.alerts.errors.push('Unknown error.');
