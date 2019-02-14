@@ -1,15 +1,27 @@
 <template lang="pug">
 v-app.app
-  v-toolbar
-    v-toolbar-title Controls
-    v-spacer
+  v-toolbar.toolbar-main(v-show="!loggedOut", color="primary", dark)
+    v-toolbar-title Girder Web Components
     v-toolbar-items
-      v-layout.pt-3(row, align-center, justify-center)
-        v-checkbox.px-2(label="Select", v-model="selectEnabled")
-        v-checkbox.px-2(label="New Folder", v-model="newFolderEnabled")
-        v-checkbox.px-2(label="Upload", v-model="newItemEnabled")
-      v-btn(flat, icon, @click="girderRest.logout()")
-        v-icon $vuetify.icons.logout
+      v-menu(
+          offset-y,
+          left,
+          :close-on-content-click="false",
+          content-class="girder-search-arrow-menu",
+          v-model="uiOptionsMenu")
+        v-btn(icon, slot="activator")
+          v-icon.mdi-24px {{ $vuetify.icons.more }}
+        v-card
+          v-card-actions
+            v-layout(column)
+              v-checkbox.mt-2(hide-details, label="Select", v-model="selectEnabled")
+              v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
+              v-checkbox.mt-1(hide-details, label="Upload", v-model="newItemEnabled")
+              v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
+    v-spacer
+    girder-search(v-if="searchEnabled", @select="handleSearchSelect")
+    v-btn(flat, icon, @click="girderRest.logout()")
+      v-icon $vuetify.icons.logout
   v-dialog(:value="loggedOut", persistent, full-width, max-width="600px")
     girder-auth(
         :register="true",
@@ -29,23 +41,27 @@ v-app.app
         :location="location",
         :post-upsert="postUpsert",
         @dismiss="newFolder = false")
-  v-container(v-show="!loggedOut")
-    h4.display-1.pb-3 Girder Vue Demo
-    v-card
-      girder-data-browser(ref="girderBrowser",
-          v-if="location",
-          :location.sync="location",
-          :select-enabled="selectEnabled",
-          :new-item-enabled="newItemEnabled",
-          :new-folder-enabled="newFolderEnabled",
-          @click:newitem="uploader = true",
-          @click:newfolder="newFolder = true")
+  v-container(v-show="!loggedOut", fluid)
+    v-layout(row, wrap)
+      v-flex.mr-2(grow)
+        v-card
+          girder-data-browser(
+              ref="girderBrowser",
+              v-if="location",
+              :location.sync="location",
+              :select-enabled="selectEnabled",
+              :new-item-enabled="newItemEnabled",
+              :new-folder-enabled="newFolderEnabled",
+              @click:newitem="uploader = true",
+              @click:newfolder="newFolder = true",
+              @selection-changed="selected = $event")
 </template>
 
 <script>
 import {
   Authentication as GirderAuth,
   DataBrowser as GirderDataBrowser,
+  Search as GirderSearch,
   Upload as GirderUpload,
   UpsertFolder as GirderUpsertFolder,
 } from '@/components';
@@ -56,6 +72,7 @@ export default {
   components: {
     GirderAuth,
     GirderDataBrowser,
+    GirderSearch,
     GirderUpload,
     GirderUpsertFolder,
   },
@@ -64,11 +81,14 @@ export default {
       multiple: true,
       uploader: false,
       newFolder: false,
+      uiOptionsMenu: false,
       browserLocation: null,
       forgotPasswordUrl: '/#?dialog=resetpassword',
       selectEnabled: true,
       newItemEnabled: true,
       newFolderEnabled: true,
+      searchEnabled: true,
+      selected: [],
     };
   },
   asyncComputed: {
@@ -128,6 +148,13 @@ export default {
       this.$refs.girderBrowser.refresh();
       this.newFolder = false;
       return new Promise(resolve => setTimeout(resolve, 400));
+    },
+    handleSearchSelect(item) {
+      if (['user', 'folder'].indexOf(item._modelType) >= 0) {
+        this.browserLocation = item;
+      } else {
+        this.browserLocation = { _modelType: 'folder', _id: item.folderId };
+      }
     },
   },
 };
