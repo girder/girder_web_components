@@ -48,7 +48,7 @@ import {
   DataBrowser as GirderDataBrowser,
   Upload as GirderUpload,
   UpsertFolder as GirderUpsertFolder,
-} from './components';
+} from '@/components';
 
 export default {
   name: 'App',

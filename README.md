@@ -30,7 +30,7 @@ This will expose all the library's components under the global variable `girder`
 
 #### Girder RestClient
 
-Many components in this library will require a `RestClient` named `girderRest` through provide/inject.  
+Many components in this library will require a `RestClient` named `girderRest` through provide/inject.
 The client can be provided through any common ancestor.  For example:
 
 ```javascript
@@ -47,7 +47,7 @@ new Vue({
 
 #### Components
 
-If you're building your own downstream application, you can include individual components from the library. Because these are vuetify components, your consumer application is responsible for creating the `v-app` container.  [Read more](https://vuetifyjs.com/en/layout/pre-defined#all-about-app).  See `src/main.js` for a more comprehensive example.
+If you're building your own downstream application, you can include individual components from the library. Because these are vuetify components, your consumer application is responsible for creating the `v-app` container.  [Read more](https://vuetifyjs.com/en/layout/pre-defined#all-about-app).  See `demo/main.js` for a more comprehensive example.
 
 Either import the full UMD module:
 

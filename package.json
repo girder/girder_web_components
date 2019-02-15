@@ -4,9 +4,9 @@
   "license": "Apache-2.0",
   "main": "dist/girder.umd.min.js",
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve demo/main.js",
     "build": "vue-cli-service build --target lib --name girder src/index.js",
-    "build:demo": "vue-cli-service build --dest _site/",
+    "build:demo": "vue-cli-service build --dest _site/ demo/main.js",
     "lint": "vue-cli-service lint",
     "lint:pug": "pug-lint-vue src",
     "lint:style": "stylelint 'src/**/*.vue'",

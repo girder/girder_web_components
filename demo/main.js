@@ -1,7 +1,7 @@
 import Vue from 'vue';
-import Girder from '.';
+import Girder from '@';
 import App from './App.vue';
-import RestClient from './rest';
+import RestClient from '@/rest';
 
 Vue.use(Girder);
 const girderRest = new RestClient({
