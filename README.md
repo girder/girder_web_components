@@ -149,3 +149,17 @@ yarn lint
 # Run unit tests
 yarn test:unit
 ```
+
+### Use an external Girder API
+
+To build the demo app against an external Girder API, set the
+`VUE_APP_API_ROOT` environment variable. For example:
+
+```bash
+export VUE_APP_API_ROOT=https://data.kitware.com/api/v1
+yarn serve
+```
+
+This variable value defaults to `http://localhost:8080/api/v1` for
+normal development (which assumes the developer has a local instance of
+the Girder API server running).
