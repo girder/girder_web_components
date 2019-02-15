@@ -145,23 +145,9 @@ v-layout.girder-searchbar(row, align-center)
   .skeleton.skeleton--text {
     background: linear-gradient(270deg, #e0e0e0, #c7c7c7, #e0e0e0);
     background-size: 600% 600%;
-    -webkit-animation: AnimationName 2s ease infinite;
-    -moz-animation: AnimationName 2s ease infinite;
-    animation: AnimationName 2s ease infinite;
+    animation: SkeletonShimmer 2s ease infinite;
 
-    @-webkit-keyframes AnimationName {
-      0% { background-position: 0% 51%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 51%; }
-    }
-
-    @-moz-keyframes AnimationName {
-      0% { background-position: 0% 51%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 51%; }
-    }
-
-    @keyframes AnimationName {
+    @keyframes SkeletonShimmer {
       0% { background-position: 0% 51%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 51%; }
