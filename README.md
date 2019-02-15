@@ -30,7 +30,7 @@ This will expose all the library's components under the global variable `girder`
 
 #### Girder RestClient
 
-Many components in this library will require a `RestClient` named `girderRest` through provide/inject.  
+Many components in this library will require a `RestClient` named `girderRest` through provide/inject.
 The client can be provided through any common ancestor.  For example:
 
 ```javascript
@@ -47,7 +47,7 @@ new Vue({
 
 #### Components
 
-If you're building your own downstream application, you can include individual components from the library. Because these are vuetify components, your consumer application is responsible for creating the `v-app` container.  [Read more](https://vuetifyjs.com/en/layout/pre-defined#all-about-app).  See `src/main.js` for a more comprehensive example.
+If you're building your own downstream application, you can include individual components from the library. Because these are vuetify components, your consumer application is responsible for creating the `v-app` container.  [Read more](https://vuetifyjs.com/en/layout/pre-defined#all-about-app).  See `demo/main.js` for a more comprehensive example.
 
 Either import the full UMD module:
 
@@ -149,3 +149,17 @@ yarn lint
 # Run unit tests
 yarn test:unit
 ```
+
+### Use an external Girder API
+
+To build the demo app against an external Girder API, set the
+`VUE_APP_API_ROOT` environment variable. For example:
+
+```bash
+export VUE_APP_API_ROOT=https://data.kitware.com/api/v1
+yarn serve
+```
+
+This variable value defaults to `http://localhost:8080/api/v1` for
+normal development (which assumes the developer has a local instance of
+the Girder API server running).

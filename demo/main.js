@@ -1,13 +1,11 @@
 import Vue from 'vue';
-import Girder from '.';
+import Girder from '@';
+import RestClient from '@/rest';
 import App from './App.vue';
-import RestClient from './rest';
 
 Vue.use(Girder);
 const girderRest = new RestClient({
-  apiRoot: process.env.NODE_ENV === 'production'
-    ? 'https://data.kitware.com/api/v1'
-    : 'http://localhost:8080/api/v1',
+  apiRoot: process.env.VUE_APP_API_ROOT,
 });
 
 girderRest.fetchUser().then(() => {
