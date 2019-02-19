@@ -17,14 +17,18 @@ v-card(flat, height="100%")
       v-btn(flat, color="primary", @click="start") Start upload
 
     slot(name="dropzone")
-      dropzone(:files="files", :message="dropzoneMessage", @change="filesChanged")
+      dropzone(
+          :files="files",
+          :message="dropzoneMessage",
+          :multiple="multiple",
+          @change="filesChanged")
 
     div(v-if="errorMessage")
       v-alert(:value="true", dark, type="error") {{ errorMessage }}
         v-btn(v-if="!uploading", dark, outline, @click="start") Resume upload
 
     slot(name="files")
-      file-upload-list(:files="files")
+      file-upload-list(:files="files", @remove="files.splice($event, 1)")
 </template>
 
 <script>

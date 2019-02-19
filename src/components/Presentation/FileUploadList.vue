@@ -5,7 +5,7 @@
       v-divider(v-if="i > 0")
       v-list-tile(avatar)
         v-list-tile-avatar
-          v-btn(v-if="file.status === 'pending'", icon, @click="files.splice(i, 1)")
+          v-btn(v-if="file.status === 'pending'", icon, @click="$emit('remove', i)")
             v-icon $vuetify.icons.close
           v-progress-circular(v-if="file.status === 'uploading'", color="primary",
               :rotate="-90", :value="progressPercent(file.progress)",

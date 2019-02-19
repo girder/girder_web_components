@@ -19,6 +19,10 @@ export default {
       type: String,
       required: true,
     },
+    multiple: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
