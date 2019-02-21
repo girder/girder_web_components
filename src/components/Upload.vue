@@ -17,11 +17,10 @@ v-card(flat, height="100%")
       v-btn(flat, color="primary", @click="start") Start upload
 
     slot(name="dropzone")
-      dropzone(
-          :files="files",
+      dropzone(v-if="!files.length",
+          @change="filesChanged",
           :message="dropzoneMessage",
-          :multiple="multiple",
-          @change="filesChanged")
+          :multiple="multiple")
 
     div(v-if="errorMessage")
       v-alert(:value="true", dark, type="error") {{ errorMessage }}
@@ -96,8 +95,8 @@ export default {
     },
   },
   methods: {
-    filesChanged({ target }) {
-      this.files = [...target.files].map(file => ({
+    filesChanged(files) {
+      this.files = files.map(file => ({
         file,
         status: 'pending',
         progress: {},

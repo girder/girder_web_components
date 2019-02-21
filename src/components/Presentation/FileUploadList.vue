@@ -38,7 +38,7 @@ export default {
         ...this.value.slice(idx + 1),
       ];
     },
-  }
+  },
 };
 </script>
 

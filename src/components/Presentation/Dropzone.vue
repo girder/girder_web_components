@@ -1,20 +1,18 @@
 <template lang="pug">
   .dropzone-wrapper(
-      v-if="!files.length", :class="dropzoneClass", @dragenter="dropzoneClass = 'animate'",
+      :class="dropzoneClass",
+      @dragenter="dropzoneClass = 'animate'",
       @dragleave="dropzoneClass = null", @drop="dropzoneClass = null")
     v-layout.dropzone-message(column, justify-center, align-center, fill-height)
       v-icon(size="50px") $vuetify.icons.fileUpload
       .title.mt-3 {{ message }}
-    input.file-input(type="file", :multiple="multiple", @change="$emit('change', $event)")
+    input.file-input(type="file", :multiple="multiple",
+        @change="$emit('change',Array(...$event.target.files))")
 </template>
 
 <script>
 export default {
   props: {
-    files: {
-      type: Array,
-      required: true,
-    },
     message: {
       type: String,
       required: true,
