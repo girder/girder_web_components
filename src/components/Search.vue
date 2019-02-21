@@ -151,7 +151,12 @@ v-layout.girder-searchbar(row, align-center)
       min-width: 40px;
     }
   }
+}
 
+</style>
+
+<style lang="scss" scoped>
+.girder-searchbar-menu {
   .skeleton.skeleton--text {
     background: linear-gradient(270deg, #e0e0e0, #c7c7c7, #e0e0e0);
     background-size: 600% 600%;
@@ -165,14 +170,14 @@ v-layout.girder-searchbar(row, align-center)
   }
 }
 
-// TODO: factor out into common stylesheet if we are to use this elsewhere.
+// Consider factor out into common stylesheet if we are to use this elsewhere.
 .girder-search-arrow-menu {
   transform: translateY(10px);
   // Override to make the arrow visible
   overflow: visible;
   contain: inherit;
 
-  // Remove any shadow that is made visible by above style
+  // Remove any shadow that is made visible by above two style overrides
   :first-child {
     box-shadow: none;
   }
