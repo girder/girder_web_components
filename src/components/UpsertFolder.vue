@@ -106,36 +106,38 @@ export default {
 </script>
 
 <template lang="pug">
-v-card(flat, height="100%")
-  v-layout.pa-2(column, fill-height)
-    slot(name="header")
-      v-card-title.pb-0(primary-title)
-        h5.display-1.secondary--text.text--darken-1 {{ edit ? 'Edit Folder' : 'Create New Folder'}}
-    v-card-text
-      v-flex(xs12)
-        v-text-field(
-            ref="folderName",
-            v-model="name",
-            autofocus,
-            label="Folder Name")
-      girder-breadcrumb.mb-3(
-          :location="location",
-          :disabled="true",
-          :append="append")
-      girder-markdown-editor(
-          v-model="description",
-          label="Description (Optional)")
-      v-alert(
-          type="error",
-          :value="!!error",
-          dismissible,
-          transition="scale-transition") {{ error }}
-    v-card-actions
-      v-spacer
-      v-btn(flat, @click="$emit('dismiss')") Cancel
-      v-btn(
-          depressed,
-          color="primary",
-          :disabled="!name",
-          @click="upsert") {{ edit ? 'Save Changes' : 'Create Folder' }}
+v-form(@submit.prevent="upsert")
+  v-card(flat, height="100%")
+    v-layout.pa-2(column, fill-height)
+      slot(name="header")
+        v-card-title.pb-0(primary-title)
+          h5.display-1.secondary--text.text--darken-1
+          | {{ edit ? 'Edit Folder' : 'Create New Folder'}}
+      v-card-text
+        v-flex(xs12)
+          v-text-field(
+              ref="folderName",
+              v-model="name",
+              autofocus,
+              label="Folder Name")
+        girder-breadcrumb.mb-3(
+            :location="location",
+            :disabled="true",
+            :append="append")
+        girder-markdown-editor(
+            v-model="description",
+            label="Description (Optional)")
+        v-alert(
+            type="error",
+            :value="!!error",
+            dismissible,
+            transition="scale-transition") {{ error }}
+      v-card-actions
+        v-spacer
+        v-btn(flat, @click="$emit('dismiss')") Cancel
+        v-btn(
+            depressed,
+            color="primary",
+            type="submit",
+            :disabled="!name") {{ edit ? 'Save Changes' : 'Create Folder' }}
 </template>
