@@ -120,12 +120,10 @@ export default {
     postUpload() {
       // postUpload is an example of using hooks for greater control of component behavior.
       // here, we can complete the dialog disappear animation before the upload UI resets.
-      this.$refs.girderBrowser.refresh();
       this.uploader = false;
       return new Promise(resolve => setTimeout(resolve, 400));
     },
     postUpsert() {
-      this.$refs.girderBrowser.refresh();
       this.newFolder = false;
       return new Promise(resolve => setTimeout(resolve, 400));
     },

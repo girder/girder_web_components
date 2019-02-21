@@ -72,6 +72,7 @@ export default {
             }),
           );
         }
+        this.$girderEmit('folder');
         await this.postUpsert();
         this.name = '';
         this.description = '';

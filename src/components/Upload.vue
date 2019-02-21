@@ -167,6 +167,7 @@ export default {
           }
         }
       }
+      this.$girderEmit('file');
       await this.postUpload();
       this.uploading = false;
       this.files = [];

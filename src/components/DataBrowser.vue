@@ -98,6 +98,12 @@ export default {
       this.rows = await this.fetchPaginatedRows();
     },
   },
+  created() {
+    this.$girderOn(['item', 'file', 'folder'], () => { this.refreshCounter_ += 1; });
+  },
+  beforeDestroy() {
+    this.$girderOffAll();
+  },
   methods: {
     toggleAll() {
       if (this.selected.length === this.rows.length) {
@@ -114,9 +120,6 @@ export default {
       } else if (_modelType === 'item') {
         this.$emit('itemclick', item);
       }
-    },
-    refresh() {
-      this.refreshCounter_ += 1;
     },
     async fetchPaginatedRows() {
       if (!this.counts.nFolders && !this.counts.nItems) {
