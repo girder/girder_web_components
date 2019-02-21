@@ -28,7 +28,7 @@ v-card(flat, height="100%")
         v-btn(v-if="!uploading", dark, outline, @click="start") Resume upload
 
     slot(name="files")
-      file-upload-list(:files="files", @remove="files.splice($event, 1)")
+      file-upload-list(v-model="files")
 </template>
 
 <script>

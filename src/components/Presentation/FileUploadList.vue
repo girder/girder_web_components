@@ -1,11 +1,11 @@
 <template lang="pug">
-  v-list(v-show="files.length", dense)
-    .file-tile(v-for="(file, i) in files", :key="file.file.name",
+  v-list(v-show="value.length", dense)
+    .file-tile(v-for="(file, i) in value", :key="file.file.name",
         :class="`status-${file.status}`")
       v-divider(v-if="i > 0")
       v-list-tile(avatar)
         v-list-tile-avatar
-          v-btn(v-if="file.status === 'pending'", icon, @click="$emit('remove', i)")
+          v-btn(v-if="file.status === 'pending'", icon, @click="$emit('input', splice(i))")
             v-icon $vuetify.icons.close
           v-progress-circular(v-if="file.status === 'uploading'", color="primary",
               :rotate="-90", :value="progressPercent(file.progress)",
@@ -26,11 +26,19 @@ import { progressReporter, sizeFormatter } from '../../utils/mixins';
 export default {
   mixins: [progressReporter, sizeFormatter],
   props: {
-    files: {
+    value: {
       type: Array,
       required: true,
     },
   },
+  methods: {
+    splice(idx) {
+      return [
+        ...this.value.slice(0, idx),
+        ...this.value.slice(idx + 1),
+      ];
+    },
+  }
 };
 </script>
 
