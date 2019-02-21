@@ -32,48 +32,7 @@ const accessLevelChecker = {
   },
 };
 
-/**
- * Provides read/write-style lock with non-reactive components such that
- * the lock can be used as a side-effect in (especially async) computed properties.
- * Includes debouncing.
- */
-const countlock = {
-  data() {
-    return {
-      locked: false,
-    };
-  },
-  methods: {
-    lock() {
-      this.countlock += 1;
-      if (this.countlock > 0) {
-        this.toggleLock(true);
-      }
-    },
-    unlock() {
-      this.countlock -= 1;
-      if (this.countlock === 0) {
-        this.toggleLock(false);
-      }
-    },
-    toggleLock(bool) {
-      if (this.locktimeout) {
-        clearTimeout(this.locktimeout);
-      }
-      this.locktimeout = setTimeout(() => {
-        this.locked = bool;
-      }, this.locktime);
-    },
-  },
-  created() {
-    this.countlock = 0;
-    this.locktimeout = null;
-    this.locktime = 200;
-  },
-};
-
 export {
   accessLevelChecker,
-  countlock,
   sizeFormatter,
 };

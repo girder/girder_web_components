@@ -1,9 +1,10 @@
 
 <script>
-import { countlock } from '../utils/mixins';
+import { DebounceCounter } from '../utils';
+
+const counter = new DebounceCounter();
 
 export default {
-  mixins: [countlock],
   props: {
     maxQuickResults: {
       type: Number,
@@ -25,7 +26,7 @@ export default {
   },
   computed: {
     loading() {
-      return this.locked;
+      return counter.flag;
     },
     quickResults() {
       return this.searchResults.slice(0, this.maxQuickResults);
@@ -45,7 +46,7 @@ export default {
       default: [],
       async get() {
         let results = [];
-        this.lock();
+        counter.inc();
         try {
           if (this.searchText) {
             const { data } = await this.girderRest.get('resource/search', {
@@ -56,7 +57,7 @@ export default {
         } catch (err) {
           this.$emit('error', err.message || 'Unknown error during search');
         }
-        this.unlock();
+        counter.dec();
         return results;
       },
     },
@@ -100,7 +101,10 @@ v-layout.girder-searchbar(row, align-center)
         v-list-tile-content
           v-list-tile-title More
       //- Skeleton search results shown as "loading" animation
-      v-list-tile(v-show="loading", v-for="i in (maxQuickResults + (showMore ? 1 : 0))")
+      v-list-tile(
+          v-show="loading",
+          v-for="i in (maxQuickResults + (showMore ? 1 : 0))",
+          :key="`skeleton-${i}`")
         v-list-tile-action
           v-icon.grey--text.text--lighten-1 {{ $vuetify.icons.circle }}
         v-list-tile-content
@@ -129,8 +133,14 @@ v-layout.girder-searchbar(row, align-center)
 </template>
 
 <style lang="scss">
-.girder-searchbar .v-text-field .v-input__control {
-  min-height: 40px;
+.girder-searchbar {
+  .v-text-field .v-input__control {
+    min-height: 40px;
+  }
+
+  .v-menu__activator * {
+    cursor: text !important;
+  }
 }
 
 .girder-searchbar-menu {
