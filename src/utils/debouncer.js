@@ -20,7 +20,7 @@ export default class DebounceCounter extends Vue {
   }
 
   dec() {
-    this.count -= 1;
+    this.count = Math.max(0, this.count - 1);
     if (this.count === 0) {
       this._toggleFlag(false);
     }
