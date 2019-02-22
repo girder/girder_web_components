@@ -26,6 +26,23 @@ export default {
       required: true,
     },
   },
+  data() {
+    return { lastCheckBoxIdx: null };
+  },
+  methods: {
+    handleRowSelect({ shiftKey }, props) {
+      // eslint-disable-next-line no-param-reassign
+      props.selected = this.selectEnabled ? !props.selected : false;
+      if (this.selectEnabled && shiftKey && this.lastCheckBoxIdx !== null) {
+        const [start, end] = [this.lastCheckBoxIdx, props.index + 1].sort();
+        const newlySelectedRows = this.rows
+          .slice(start, end)
+          .filter(row => this.value.find(el => el._id === row._id) === undefined);
+        this.$emit('input', newlySelectedRows.concat(this.value));
+      }
+      this.lastCheckBoxIdx = props.index;
+    },
+  },
 };
 </script>
 
@@ -40,14 +57,18 @@ v-data-table.girder-data-table(
     :items="rows",
     :total-items="totalItems",
     :loading="loading ? 'accent' : false",
-    item-key="_id")
+    item-key="_id",
+    ref="girderDataTable")
 
   template(slot="headers", slot-scope="props")
-    slot(name="header", :props="props")
+    slot(name="header",
+        :all="props.all",
+        :indeterminate="props.indeterminate",
+        :headers="props.headers")
 
   template(slot="items", slot-scope="props")
     tr.itemRow(:active="props.selected",
-        @click="if (selectEnabled) props.selected = !props.selected;",
+        @click="handleRowSelect($event, props)",
         :key="props.index")
       td.pl-3.pr-0(v-if="selectEnabled")
         v-checkbox.secondary--text.text--darken-1.pr-2(
