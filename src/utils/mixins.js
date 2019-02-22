@@ -32,7 +32,22 @@ const accessLevelChecker = {
   },
 };
 
+/**
+ * Convert file progress properties to percent.
+ */
+const progressReporter = {
+  methods: {
+    progressPercent(progress) {
+      if (!progress.total) {
+        return 0;
+      }
+      return Math.round((100 * (progress.current || 0)) / progress.total);
+    },
+  },
+};
+
 export {
   accessLevelChecker,
+  progressReporter,
   sizeFormatter,
 };

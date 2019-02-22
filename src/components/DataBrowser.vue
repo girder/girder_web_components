@@ -1,7 +1,7 @@
 <script>
 import { sizeFormatter } from '../utils/mixins';
 import GirderBreadcrumb from './Breadcrumb.vue';
-import GirderDataTable from './DataTable.vue';
+import GirderDataTable from './Presentation/DataTable.vue';
 
 const GIRDER_FOLDER_ENDPOINT = 'folder';
 const GIRDER_ITEM_ENDPOINT = 'item';
