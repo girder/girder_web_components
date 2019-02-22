@@ -75,7 +75,7 @@ v-layout.girder-searchbar(row, align-center)
   v-icon.mdi-24px(color="white") {{ $vuetify.icons.search }}
   v-menu.grow.mx-3(
       offset-y, content-class="girder-searchbar-menu", :open-on-click="false",
-      :value="searchText", :nudge-bottom="6")
+      :value="searchText", :nudge-bottom="6", transition="slide-y-transition")
     v-text-field(
         slot="activator", v-model="searchText", light, solo, hide-details, clearable)
     v-list
