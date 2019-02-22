@@ -32,4 +32,7 @@ const accessLevelChecker = {
   },
 };
 
-export { accessLevelChecker, sizeFormatter };
+export {
+  accessLevelChecker,
+  sizeFormatter,
+};
