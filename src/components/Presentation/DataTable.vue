@@ -57,8 +57,7 @@ v-data-table.girder-data-table(
     :items="rows",
     :total-items="totalItems",
     :loading="loading ? 'accent' : false",
-    item-key="_id",
-    ref="girderDataTable")
+    item-key="_id")
 
   template(slot="headers", slot-scope="props")
     slot(name="header",
