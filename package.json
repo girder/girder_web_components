@@ -50,6 +50,7 @@
       "@vue/airbnb"
     ],
     "rules": {
+      "no-param-reassign": ["error", { "props": false }],
       "no-underscore-dangle": 0,
       "import/prefer-default-export": 0
     },

@@ -31,7 +31,6 @@ export default {
   },
   methods: {
     handleRowSelect({ shiftKey }, props) {
-      // eslint-disable-next-line no-param-reassign
       props.selected = this.selectEnabled ? !props.selected : false;
       if (this.selectEnabled && shiftKey && this.lastCheckBoxIdx !== null) {
         const [start, end] = [this.lastCheckBoxIdx, props.index + 1].sort();
