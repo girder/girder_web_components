@@ -60,6 +60,10 @@ export default {
       default: () => {},
       type: Function,
     },
+    upload: {
+      default: undefined,
+      type: Function,
+    },
   },
   data: () => ({
     dragover: false,
@@ -105,13 +109,15 @@ export default {
       }));
     },
 
-    async start() {
+    /**
+     * @param files the files to upload
+     * @returns {results, err: {error, file, message}}
+     */
+    async _upload(files) {
       const results = [];
-      this.uploading = true;
-      this.errorMessage = null;
-      await this.preUpload();
-      for (let i = 0; i < this.files.length; i += 1) {
-        const file = this.files[i];
+
+      for (let i = 0; i < files.length; i += 1) {
+        const file = files[i];
         if (file.status === 'done') {
           // We are resuming, skip already completed files
           results.push(file.result);
@@ -133,22 +139,40 @@ export default {
             results.push(file.result);
             file.status = 'done';
           } catch (error) {
+            let message = '';
             if (error.response) {
-              this.errorMessage = error.response.data.message || 'An error occurred during upload.';
+              message = error.response.data.message || 'An error occurred during upload.';
             } else {
-              this.errorMessage = 'Connection failed.';
+              message = 'Connection failed.';
             }
             file.status = 'error';
-            this.uploading = false;
-            this.$emit('error', { error, file });
-            return;
+            return { results: null, err: { error, file, message } };
           }
         }
       }
-      await this.postUpload();
+      return { results, err: null };
+    },
+
+    async start() {
+      this.uploading = true;
+      this.errorMessage = null;
+
+      await this.preUpload();
+
+      const { results, err } = this.upload !== undefined
+        ? await this.upload(this.files)
+        : await this._upload(this.files);
+
       this.uploading = false;
-      this.files = [];
-      this.$emit('done', results);
+
+      if (err !== null) {
+        this.errorMessage = err.message;
+        this.$emit('error', err);
+      } else {
+        await this.postUpload();
+        this.files = [];
+        this.$emit('done', results);
+      }
     },
   },
 };
