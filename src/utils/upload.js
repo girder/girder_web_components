@@ -7,16 +7,18 @@ const uploadBehaviors = { s3: S3Upload };
 export default class Upload {
   /**
    * Represents an upload of a single file to the server.
-   * @param $rest {Object} an axios instance used for communicating with Girder.
    * @param file {File | Blob} the file to upload
-   * @param parent {Object} upload destination. Must have ``_id`` and ``_modelType`` properties.
    * @param opts {Object} upload options.
+   * @param opts.$rest {Object} an axios instance used for communicating with Girder.
+   * @param opts.parent {Object} upload destination. Must have ``_id`` and ``_modelType``.
    * @param opts.progress {Function} A progress callback for the upload. It will receive an Object
-   * argument with either ``"indeterminate": true``, or numeric ``current`` and ``total`` fields.
+   *   argument with either ``"indeterminate": true``, or numeric ``current`` and ``total`` fields.
    * @param opts.params {Object} Additional parameters to pass on the upload init request.
    * @param opts.chunkLen {Number} Chunk size for sending the file (integer number of bytes).
    */
-  constructor($rest, file, parent, {
+  constructor(file, {
+    $rest,
+    parent,
     progress = () => null,
     params = {},
     chunkLen = UPLOAD_CHUNK_SIZE,
@@ -82,4 +84,10 @@ export default class Upload {
     this.offset = (await this.$rest.get(`file/offset?uploadId=${this.upload._id}`)).data.offset;
     return this._sendChunks();
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  beforeUpload() {}
+
+  // eslint-disable-next-line class-methods-use-this
+  afterUpload() {}
 }
