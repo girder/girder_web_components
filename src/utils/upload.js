@@ -90,4 +90,7 @@ export default class Upload {
 
   // eslint-disable-next-line class-methods-use-this
   afterUpload() {}
+
+  // eslint-disable-next-line class-methods-use-this
+  onError() {}
 }

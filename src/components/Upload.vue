@@ -149,6 +149,13 @@ export default {
             results.push(file.result);
             file.status = 'done';
           } catch (error) {
+            // eslint-disable-next-line no-await-in-loop
+            await file.upload.onError({
+              error,
+              current: i,
+              total: this.files.length,
+            });
+
             if (error.response) {
               this.errorMessage = error.response.data.message || 'An error occurred during upload.';
             } else {
