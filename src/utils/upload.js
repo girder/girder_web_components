@@ -31,7 +31,6 @@ export default class Upload {
   async _sendChunks() {
     const onUploadProgress = e => this.progress({
       current: this.offset + e.loaded,
-      total: this.file.size,
       indeterminate: !e.lengthComputable,
     });
 

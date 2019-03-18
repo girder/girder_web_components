@@ -83,7 +83,7 @@ export default {
       return `${this.files.length} selected (${this.formatSize(this.totalSize)} total)`;
     },
     totalProgress() {
-      return this.files.reduce((v, f) => v + (f.progress.current || 0), 0);
+      return this.files.reduce((v, f) => v + (f.progress.current), 0);
     },
     totalSize() {
       return this.files.reduce((v, f) => v + f.file.size, 0);
@@ -100,7 +100,10 @@ export default {
       this.files = files.map(file => ({
         file,
         status: 'pending',
-        progress: {},
+        progress: {
+          indeterminate: false,
+          current: 0,
+        },
         upload: null,
         result: null,
       }));
@@ -118,7 +121,7 @@ export default {
           results.push(file.result);
         } else {
           const progress = (event) => {
-            file.progress = Object.assign({}, file.progress, event);
+            Object.assign(file.progress, event);
           };
           file.status = 'uploading';
           try {
