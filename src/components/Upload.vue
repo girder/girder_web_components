@@ -52,6 +52,14 @@ export default {
       default: true,
       type: Boolean,
     },
+    preUpload: {
+      default: () => {},
+      type: Function,
+    },
+    postUpload: {
+      default: () => {},
+      type: Function,
+    },
     uploadCls: {
       default: Upload,
       type: Function,
@@ -108,7 +116,7 @@ export default {
       const results = [];
       this.uploading = true;
       this.errorMessage = null;
-
+      await this.preUpload();
       for (let i = 0; i < this.files.length; i += 1) {
         const file = this.files[i];
         if (file.status === 'done') {
@@ -175,6 +183,7 @@ export default {
           }
         }
       }
+      await this.postUpload();
       this.uploading = false;
       this.files = [];
       this.$emit('done', results);
