@@ -20,7 +20,8 @@ v-card(flat, height="100%")
       dropzone(v-if="!files.length",
           @change="filesChanged",
           :message="dropzoneMessage",
-          :multiple="multiple")
+          :multiple="multiple",
+          :accept="accept")
 
     div(v-if="errorMessage")
       v-alert(:value="true", dark, type="error") {{ errorMessage }}
@@ -59,6 +60,10 @@ export default {
     postUpload: {
       default: () => {},
       type: Function,
+    },
+    accept: {
+      default: null,
+      type: String,
     },
   },
   data: () => ({

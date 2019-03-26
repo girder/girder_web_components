@@ -6,7 +6,7 @@
     v-layout.dropzone-message(column, justify-center, align-center, fill-height)
       v-icon(size="50px") $vuetify.icons.fileUpload
       .title.mt-3 {{ message }}
-    input.file-input(type="file", :multiple="multiple",
+    input.file-input(type="file", :multiple="multiple", :accept="accept",
         @change="$emit('change',Array(...$event.target.files))")
 </template>
 
@@ -20,6 +20,10 @@ export default {
     multiple: {
       type: Boolean,
       required: true,
+    },
+    accept: {
+      type: String,
+      default: null,
     },
   },
   data() {
