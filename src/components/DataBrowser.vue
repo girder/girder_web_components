@@ -13,6 +13,10 @@ export default {
   },
   mixins: [sizeFormatter],
   props: {
+    draggable: {
+      type: Boolean,
+      default: false,
+    },
     location: {
       type: Object,
       required: true,
@@ -168,12 +172,17 @@ export default {
 <template lang="pug">
 girder-data-table.girder-file-browser(
     v-model="selected",
+    :draggable="draggable",
     :rows="rows",
     :pagination.sync="pagination",
     :total-items="totalItems",
     :loading="loading",
     :select-enabled="selectEnabled",
-    @rowclick="changeLocation")
+    @rowclick="changeLocation",
+    @drag="$emit('drag', $event)",
+    @dragstart="$emit('dragstart', $event)",
+    @dragend="$emit('dragend', $event)",
+    @drop="$emit('drop', $event)")
 
   template(slot="header", slot-scope="props")
     tr.secondary.lighten-5
