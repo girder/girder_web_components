@@ -29,7 +29,7 @@
           v-model="otp",
           type="text",
           mask="######",
-          label="TOTP Token",
+          label="Authentication code",
           prepend-icon="$vuetify.icons.otp")
       v-layout(row)
         v-btn.ml-0(type="submit",
