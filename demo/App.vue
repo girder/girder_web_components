@@ -24,6 +24,7 @@ v-app.app
       v-icon $vuetify.icons.logout
   v-dialog(:value="loggedOut", persistent, full-width, max-width="600px")
     girder-auth(
+        :force-otp="false",
         :register="true",
         :oauth="true",
         :key="girderRest.token",

@@ -5,6 +5,7 @@ v-card.girder-authentication-component
     v-tab(key="registration", v-if="register") Register
     v-tab-item(key="login-box")
       girder-login(:oauth-providers="oauthProviders",
+          :force-otp="forceOtp",
           :forgot-password-url="forgotPasswordUrl",
           :forgot-password-route="forgotPasswordRoute",
           @forgotpassword="$emit('forgotpassword')")
@@ -42,6 +43,11 @@ export default {
     forgotPasswordRoute: {
       type: [Object, String],
       default: null,
+    },
+    /* If you enforce 2FA, show that field automatically */
+    forceOtp: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

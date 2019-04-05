@@ -10,7 +10,7 @@
   v-container
     v-form(@submit.prevent="login", ref="login")
       v-text-field(
-          v-if="!otpFormVisible",
+          v-if="!otpFormVisible || forceOtp",
           v-model="username",
           label="Username or e-mail",
           autofocus,
@@ -18,20 +18,21 @@
           prepend-icon="$vuetify.icons.user",
           type="text")
       v-text-field(
-          v-if="!otpFormVisible",
+          v-if="!otpFormVisible || forceOtp",
           v-model="password",
           type="password",
           label="Password",
           :rules="nonEmptyRules",
           prepend-icon="$vuetify.icons.lock")
       v-text-field(
-          v-if="otpFormVisible",
+          v-if="otpFormVisible || forceOtp",
           v-model="otp",
           type="text",
           mask="######",
           label="Authentication code",
+          :rules="forceOtp && nonEmptyRules",
           prepend-icon="$vuetify.icons.otp")
-      v-layout(row)
+      v-layout.mt-2(row)
         v-btn.ml-0(type="submit",
             color="primary",
             :disabled="inProgress",
@@ -59,6 +60,10 @@ export default {
     GirderOauth,
   },
   props: {
+    forceOtp: {
+      type: Boolean,
+      default: false,
+    },
     forgotPasswordUrl: {
       type: String,
       default: null,
@@ -106,6 +111,7 @@ export default {
         } else {
           const { message } = err.response.data;
           if (message && message.indexOf(OTP_MAGIC_SUBSTRING) >= 0) {
+            this.otp = null;
             this.otpFormVisible = true;
           } else {
             this.alerts.errors.push(message || 'Unauthorized.');
