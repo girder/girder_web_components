@@ -3,6 +3,7 @@ import Girder from '@/index';
 
 const girderVue = () => {
   Vue.use(Girder);
+  Vue.config.silent = true;
   return Vue;
 };
 

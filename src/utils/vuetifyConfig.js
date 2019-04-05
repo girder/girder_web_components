@@ -39,6 +39,7 @@ export default {
     login: 'mdi-login',
     logout: 'mdi-logout',
     more: 'mdi-dots-horizontal',
+    otp: 'mdi-shield-key',
     preview: 'mdi-file-find',
     search: 'mdi-magnify',
     settings: 'mdi-tune',
