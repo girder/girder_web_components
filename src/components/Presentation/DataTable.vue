@@ -71,10 +71,10 @@ v-data-table.girder-data-table(
   template(slot="items", slot-scope="props")
     tr.itemRow(:draggable="draggable", :active="props.selected",
         @click="handleRowSelect($event, props)",
-        @drag="$emit('drag', { props, event: $event })",
-        @dragstart="$emit('dragstart', { props, event: $event })",
-        @dragend="$emit('dragend', { props, event: $event })",
-        @drop="$emit('drop', { props, event: $event })",
+        @drag="$emit('drag', { items: [props], event: $event })",
+        @dragstart="$emit('dragstart', { items: [props], event: $event })",
+        @dragend="$emit('dragend', { items: [props], event: $event })",
+        @drop="$emit('drop', { items: [props], event: $event })",
         :key="props.index")
       td.pl-3.pr-0(v-if="selectEnabled")
         v-checkbox.secondary--text.text--darken-1.pr-2(
