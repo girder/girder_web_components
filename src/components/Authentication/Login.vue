@@ -30,7 +30,7 @@
           type="text",
           mask="######",
           label="Authentication code",
-          :rules="forceOtp && nonEmptyRules",
+          :rules="nonEmptyRules",
           prepend-icon="$vuetify.icons.otp")
       v-layout.mt-2(row)
         v-btn.ml-0(type="submit",
@@ -113,6 +113,7 @@ export default {
           if (message && message.indexOf(OTP_MAGIC_SUBSTRING) >= 0) {
             this.otp = null;
             this.otpFormVisible = true;
+            this.$refs.login.resetValidation();
           } else {
             this.alerts.errors.push(message || 'Unauthorized.');
           }

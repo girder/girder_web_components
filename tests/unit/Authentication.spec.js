@@ -68,6 +68,11 @@ describe('Authentication', () => {
       message: 'User authentication must include a one-time password (typically in the "Girder-OTP" header).',
       type: 'access',
     });
+    mock.onGet(/user\/authentication/).replyOnce(200, {
+      message: 'Login Succeeded',
+      authToken: { token: 'foo' },
+      user: {},
+    });
     const wrapper = mount(Login, {
       localVue,
       provide: { girderRest },
@@ -82,5 +87,12 @@ describe('Authentication', () => {
     wrapper.setData({ otp: '123456' });
     await flushPromises();
     expect(wrapper.vm.otp).toBe('123456'); // Test masking
+    // Validate that the username and password persist through login
+    expect(wrapper.vm.username).toBe('foo');
+    expect(wrapper.vm.password).toBe('bar');
+    // validate that the token is cleared on success.
+    await wrapper.vm.login();
+    expect(wrapper.vm.password).toBe('');
+    expect(wrapper.vm.otp).toBeNull();
   });
 });
