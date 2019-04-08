@@ -15,6 +15,7 @@ v-app.app
           v-card-actions
             v-layout(column)
               v-checkbox.mt-2(hide-details, label="Select", v-model="selectEnabled")
+              v-checkbox.mt-1(hide-details, label="Draggable", v-model="dragEnabled")
               v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
               v-checkbox.mt-1(hide-details, label="Upload", v-model="newItemEnabled")
               v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
@@ -50,6 +51,7 @@ v-app.app
               v-if="location",
               :location.sync="location",
               :select-enabled="selectEnabled",
+              :draggable="dragEnabled",
               :new-item-enabled="newItemEnabled",
               :new-folder-enabled="newFolderEnabled",
               @click:newitem="uploader = true",
@@ -84,6 +86,7 @@ export default {
       uiOptionsMenu: false,
       browserLocation: null,
       forgotPasswordUrl: '/#?dialog=resetpassword',
+      dragEnabled: false,
       selectEnabled: true,
       newItemEnabled: true,
       newFolderEnabled: true,
