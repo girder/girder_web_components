@@ -15,7 +15,7 @@ export default class RestClient extends Vue {
     apiRoot = '/api/v1',
     token = cookies.get('girderToken'),
     axios = axios_.create(),
-    cors = true,
+    setLocalCookie = true,
   } = {}) {
     super({
       data: {
@@ -26,7 +26,7 @@ export default class RestClient extends Vue {
 
     Object.assign(this, axios, {
       apiRoot,
-      cors,
+      setLocalCookie,
     });
 
     this.interceptors.request.use(config => ({
@@ -55,7 +55,7 @@ export default class RestClient extends Vue {
     this.token = resp.data.authToken.token;
     this.user = resp.data.user;
 
-    if (this.cors) {
+    if (this.setLocalCookie) {
       setCookieFromAuth(resp.data.authToken);
     }
     this.$emit('login', this.user);
@@ -98,7 +98,7 @@ export default class RestClient extends Vue {
     }
     this.token = resp.data.authToken.token;
     this.user = resp.data;
-    if (this.cors) {
+    if (this.setLocalCookie) {
       setCookieFromAuth(resp.data.authToken);
     }
     this.$emit('register', this.user);
