@@ -50,7 +50,7 @@
       v-btn.ml-0(type="submit",
           color="primary",
           :loading="inProgress") Register
-  template(v-if="oauthProviders && oauthProviders.length")
+  template(#default, v-if="oauthProviders && oauthProviders.length")
     v-divider
     girder-oauth(verb="register", :providers="oauthProviders")
 </template>

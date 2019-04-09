@@ -9,8 +9,9 @@ v-app.app
           :close-on-content-click="false",
           content-class="girder-search-arrow-menu",
           v-model="uiOptionsMenu")
-        v-btn(icon, slot="activator")
-          v-icon.mdi-24px {{ $vuetify.icons.more }}
+        template(#activator="{ on }")
+          v-btn(icon, v-on="on")
+            v-icon.mdi-24px {{ $vuetify.icons.more }}
         v-card
           v-card-actions
             v-layout(column)
@@ -121,7 +122,7 @@ export default {
       get() {
         if (this.browserLocation) {
           return this.browserLocation;
-        } else if (this.girderRest.user) {
+        } if (this.girderRest.user) {
           return { _modelType: 'user', _id: this.girderRest.user._id };
         }
         return null;

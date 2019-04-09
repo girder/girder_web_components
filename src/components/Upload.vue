@@ -81,8 +81,8 @@ export default {
     },
     statusMessage() {
       if (this.uploading) {
-        return `${this.formatSize(this.totalProgress)} / ${this.formatSize(this.totalSize)} ` +
-          `(${this.totalProgressPercent}%)`;
+        return `${this.formatSize(this.totalProgress)} / ${this.formatSize(this.totalSize)} `
+          + `(${this.totalProgressPercent}%)`;
       }
       return `${this.files.length} selected (${this.formatSize(this.totalSize)} total)`;
     },

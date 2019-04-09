@@ -112,8 +112,8 @@ export default {
     },
     changeLocation(item) {
       const { _modelType, _id } = item;
-      if ((this.location._id !== _id || this.location._modelType !== _modelType) &&
-          _modelType !== 'item') {
+      if ((this.location._id !== _id || this.location._modelType !== _modelType)
+          && _modelType !== 'item') {
         this.$emit('update:location', item);
       } else if (_modelType === 'item') {
         this.$emit('itemclick', item);
@@ -184,14 +184,14 @@ girder-data-table.girder-file-browser(
     @dragend="$emit('dragend', $event)",
     @drop="$emit('drop', $event)")
 
-  template(slot="header", slot-scope="props")
+  template(#header="{ all }")
     tr.secondary.lighten-5
       th.pl-3.pr-0(width="1%", v-if="selectEnabled")
         v-checkbox.secondary--text.text--darken-1.pr-2(
             color="accent",
             hide-details,
-            :input-value="props.all",
-            :indeterminate="selected.length > 0 && !props.all",
+            :input-value="all",
+            :indeterminate="selected.length > 0 && !all",
             @click.native="toggleAll")
       th.pl-3(colspan="100", width="99%")
         v-layout(row, align-center)

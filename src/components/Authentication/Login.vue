@@ -43,7 +43,7 @@
         v-btn(
             flat, color="primary", :to="forgotPasswordRoute", :href="forgotPasswordUrl",
             @click="$emit('forgotpassword')") Forgot Password?
-  template(v-if="oauthProviders && oauthProviders.length")
+  template(#default, v-if="oauthProviders && oauthProviders.length")
     v-divider
     girder-oauth(:providers="oauthProviders")
 </template>
