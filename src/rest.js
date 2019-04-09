@@ -39,19 +39,21 @@ export default class RestClient extends Vue {
     }));
   }
 
-  async login(username, password) {
+  async login(username, password, otp = null) {
     try {
       await this.logout();
     } catch (err) {
       // noop
     }
 
-    const resp = await this.get('user/authentication', {
-      headers: {
-        'Girder-Authorization': `Basic ${window.btoa(`${username}:${password}`)}`,
-        'Girder-Token': null,
-      },
-    });
+    const headers = {
+      'Girder-Authorization': `Basic ${window.btoa(`${username}:${password}`)}`,
+      'Girder-Token': null,
+    };
+    if (otp) {
+      headers['Girder-OTP'] = otp;
+    }
+    const resp = await this.get('user/authentication', { headers });
     this.token = resp.data.authToken.token;
     this.user = resp.data.user;
 
