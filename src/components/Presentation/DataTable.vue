@@ -74,7 +74,7 @@ v-data-table.girder-data-table(
 
   template(slot="items", slot-scope="props")
     tr.itemRow(:draggable="draggable", :active="props.selected",
-        :class="{ selectable: !selectEnabled && props.item._modelType !== 'item' }",
+        :class="{ selectable: !selectEnabled }",
         @click="handleRowSelect($event, props)",
         @drag="$emit('drag', { items: [props], event: $event })",
         @dragstart="$emit('dragstart', { items: [props], event: $event })",
