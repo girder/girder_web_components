@@ -35,15 +35,19 @@ export default {
   },
   methods: {
     handleRowSelect({ shiftKey }, props) {
-      props.selected = this.selectEnabled ? !props.selected : false;
-      if (this.selectEnabled && shiftKey && this.lastCheckBoxIdx !== null) {
-        const [start, end] = [this.lastCheckBoxIdx, props.index + 1].sort();
-        const newlySelectedRows = this.rows
-          .slice(start, end)
-          .filter(row => this.value.find(el => el._id === row._id) === undefined);
-        this.$emit('input', newlySelectedRows.concat(this.value));
+      if (this.selectEnabled) {
+        props.selected = !props.selected;
+        if (shiftKey && this.lastCheckBoxIdx !== null) {
+          const [start, end] = [this.lastCheckBoxIdx, props.index + 1].sort();
+          const newlySelectedRows = this.rows
+            .slice(start, end)
+            .filter(row => this.value.find(el => el._id === row._id) === undefined);
+          this.$emit('input', newlySelectedRows.concat(this.value));
+        }
+        this.lastCheckBoxIdx = props.index;
+      } else {
+        this.$emit('rowclick', props.item);
       }
-      this.lastCheckBoxIdx = props.index;
     },
   },
 };
@@ -70,6 +74,7 @@ v-data-table.girder-data-table(
 
   template(slot="items", slot-scope="props")
     tr.itemRow(:draggable="draggable", :active="props.selected",
+        :class="{ selectable: !selectEnabled && props.item._modelType !== 'item' }",
         @click="handleRowSelect($event, props)",
         @drag="$emit('drag', { items: [props], event: $event })",
         @dragstart="$emit('dragstart', { items: [props], event: $event })",
@@ -81,7 +86,7 @@ v-data-table.girder-data-table(
             :input-value="props.selected", accent, hide-details)
       td.pl-3(colspan="2")
         span.text-container.secondary--text.text--darken-3.nobreak(
-            :class="{selectable: props.item._modelType !== 'item'}",
+            :class="{ selectable: selectEnabled && props.item._modelType !== 'item' }",
             @click.stop="$emit('rowclick', props.item)")
           v-icon.pr-2(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons[props.item.icon] }}
           | {{ props.item.name }}
