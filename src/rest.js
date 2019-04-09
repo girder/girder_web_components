@@ -11,11 +11,20 @@ function setCookieFromAuth(auth) {
  * This is a subclass of axios that is meant to add Girder-specific helper functionality.
  */
 export default class RestClient extends Vue {
+  /**
+   * @param {Object} [opts] Options for this instance.
+   * @param {String} [opts.apiRoot="/api/v1"] The base path of the destination Girder's API
+   *     (typically ending with "/api/v1").
+   * @param {String} [opts.token] An initial value for the authentication token.
+   * @param {Object} [opts.axios]  An axios instance to use for all requests.
+   * @param {Boolean} [opts.setLocalCookie=true] Whether to set the authentication token to a local
+   *     cookie (via Javascript) after login to a server.
+   */
   constructor({
     apiRoot = '/api/v1',
     token = cookies.get('girderToken'),
     axios = axios_.create(),
-    cors = true,
+    setLocalCookie = true,
   } = {}) {
     super({
       data: {
@@ -26,7 +35,7 @@ export default class RestClient extends Vue {
 
     Object.assign(this, axios, {
       apiRoot,
-      cors,
+      setLocalCookie,
     });
 
     this.interceptors.request.use(config => ({
@@ -57,7 +66,7 @@ export default class RestClient extends Vue {
     this.token = resp.data.authToken.token;
     this.user = resp.data.user;
 
-    if (this.cors) {
+    if (this.setLocalCookie) {
       setCookieFromAuth(resp.data.authToken);
     }
     this.$emit('login', this.user);
@@ -100,7 +109,7 @@ export default class RestClient extends Vue {
     }
     this.token = resp.data.authToken.token;
     this.user = resp.data;
-    if (this.cors) {
+    if (this.setLocalCookie) {
       setCookieFromAuth(resp.data.authToken);
     }
     this.$emit('register', this.user);
