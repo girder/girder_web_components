@@ -83,6 +83,7 @@ For example, to create a login / registration widget in `src/App.vue`:
 <template>
   <v-app>
     <v-content>
+      <h1>Welcome {{ currentUserLogin }}</h1>
       <GirderAuthentication register />
     </v-content>
   </v-app>
@@ -99,12 +100,9 @@ export default {
   // Injecting is not necessary to use the component,
   // but is required to access the results of API calls
   inject: ['girderRest'],
-  created() {
-    this.girderRest.$on('login', this.onLogin);
-  },
-  methods: {
-    onLogin(user) {
-      console.log('Login succeeded for', user);
+  computed: {
+    currentUserLogin() {
+      return this.girderRest.user ? this.girderRest.user.login : 'anonymous';
     },
   },
 };
