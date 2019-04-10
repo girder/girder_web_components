@@ -1,5 +1,5 @@
 import VueAsyncComputed from 'vue-async-computed';
-import Vuetify from 'vuetify';
+import Vuetify from 'vuetify/lib';
 import * as components from './components';
 import * as constants from './constants';
 import RestClient from './rest';
