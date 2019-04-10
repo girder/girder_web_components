@@ -1,8 +1,9 @@
 # Girder web component library
 
-Try the [demo app](https://girder.github.io/girder_web_components/).  It works with [data.kitware.com](https://data.kitware.com/).
+Try the [demo app](https://girder.github.io/girder_web_components/).
+It works with [data.kitware.com](https://data.kitware.com/).
 
-## For users
+## Usage Quckstart
 
 ### Installation
 
@@ -12,8 +13,133 @@ npm install @girder/components
 yarn add @girder/components
 ```
 
-### Use as a prebuilt UMD module
+[VueCLI](https://cli.vuejs.org/) is required for building applications with Girder web components.
+However, a few additional packages must still be manually installed:
+```bash
+npm install -D sass-loader node-sass pug-plain-loader pug
+# or
+yarn add -D sass-loader node-sass pug-plain-loader pug
+```
 
+### Initialization
+
+Encapsulating the configuration in another file (typically `src/plugins/girder.js`) is a good practice:
+
+```javascript
+/* src/plugins/girder.js */
+import Vue from 'vue';
+import Girder, { RestClient } from '@girder/components/src';
+
+// Install the Vue plugin that lets us use the components
+Vue.use(Girder);
+
+// This connects to another server if the VUE_APP_API_ROOT
+// environment variable is set at build-time
+const apiRoot = process.env.VUE_APP_API_ROOT || 'http://localhost:8080/api/v1';
+
+// Create the axios-based client to be used for all API requests
+const girderRest = new RestClient({
+  apiRoot,
+});
+
+// This is passed to our Vue instance; it will be available in all components
+const GirderProvider = {
+  girderRest,
+};
+export default GirderProvider;
+```
+
+Reference the configuration from your application initialization (typically `src/main.js`):
+
+```javascript
+/* src/main.js */
+import GirderProvider from '@/plugins/girder';
+
+// ...
+
+new Vue({
+  provide: GirderProvider,
+  // ...
+}).$mount('#app');
+```
+
+### Using Components
+
+Components should be imported by name from `@girder/components/src/components`, as this location will be stable across releases.
+For instance:
+```javascript
+import { Upload as GirderUpload } from '@girder/components/src/components';  // Good
+import GirderUpload from '@girder/components/src/components/Upload.vue'; // Unsafe -- may move in future
+```
+
+Since Girder web components uses Vuetify, your application must provide
+[`v-app` and `v-content` containers](https://vuetifyjs.com/en/framework/default-markup#all-about-app)
+at some ancestor level.
+
+For example, to create a login / registration widget in `src/App.vue`:
+
+```html
+<!-- src/App.vue -->
+<template>
+  <v-app>
+    <v-content>
+      <h1>Welcome {{ currentUserLogin }}</h1>
+      <GirderAuthentication register />
+    </v-content>
+  </v-app>
+</template>
+
+<script>
+import { Authentication as GirderAuthentication } from '@girder/components/src/components';
+
+export default {
+  components: {
+    GirderAuthentication,
+  },
+
+  // Injecting is not necessary to use the component,
+  // but is required to access the results of API calls
+  inject: ['girderRest'],
+  computed: {
+    currentUserLogin() {
+      return this.girderRest.user ? this.girderRest.user.login : 'anonymous';
+    },
+  },
+};
+</script>
+```
+
+See [the demo app](demo/App.vue) for a more comprehensive example.
+
+## Advanced Usage
+
+### Customizing Styling
+
+If your downstream application is also using Vuetify, and needs to pass additional configuration
+options to Vuetify, it must be careful to coordinate with Girder web components.
+
+Additional Vuetify configuration should inherit from Girder web components own configuration:
+```javascript
+import { merge } from 'lodash';
+import { vuetifyConfig as girderVuetifyConfig } from '@girder/components/src/utils';
+
+// More complicated merging could use Lodash's _.merge
+const appVuetifyConfig = merge(girderVuetifyConfig, {
+  icons: {
+    'myCustomIcon': 'mdi-custom-icon'
+  }
+});
+```
+
+Any custom configuration must be passed to Vuetify before Girder web components is
+installed to Vue:
+```javascript
+// This order is important
+Vue.use(Vuetify, appVuetifyConfig);
+Vue.use(Girder);
+```
+
+### Other installation methods
 It's not necessary to install Girder web components yourself, you can import the prebuilt bundle
 into your page by including the following tags:
 
@@ -26,110 +152,11 @@ into your page by including the following tags:
 This will expose all the library's components under the global variable `girder`, e.g.
 `girder.components.Upload`.
 
-### Import components into your project
-
-#### Girder RestClient
-
-Many components in this library will require a `RestClient` named `girderRest` through provide/inject.
-The client can be provided through any common ancestor.  For example:
-
-```javascript
-import * as girder from '@girder/components';
-// apiRoot should point to your girder instance
-const restClient = new girder.RestClient({ apiRoot: 'http://localhost:8080/api/v1' });
-
-// Provide "girderRest" to the root
-new Vue({
-  provide: { girderRest },
-  ...
-}).$mount('#app');
-```
-
-#### Components
-
-If you're building your own downstream application, you can include individual components from the library. Because these are vuetify components, your consumer application is responsible for creating the `v-app` container.  [Read more](https://vuetifyjs.com/en/layout/pre-defined#all-about-app).  See `demo/main.js` for a more comprehensive example.
-
-Either import the full UMD module:
-
-```javascript
-import Girder, * as girder from '@girder/components';
-```
-
-Or import specific components from the `src` directory:
-
-```html
-<!-- Downstream.vue -->
-<template>
-    <girder-upload ... />
-</template>
-
-<script>
-import { Upload as GirderUpload } from '@girder/components/src/components';
-
-export default {
-    components: { GirderUpload },
-    ...
-};
-</script>
-```
-
-> **Note:** When importing components from the source tree, you should import
-> them from `index.js` rather than importing the `.vue` files yourself, as the
-> latter is prone to break if files get moved in future releases. For example:
-> ```javascript
->  import { Upload as GirderUpload } from '@girder/components/src/components';  // Good
->  import GirderUpload from '@girder/components/src/components/Upload.vue'; // Unsafe -- may move in future
-> ```
-> Files and symbols that do not appear in an index.js should be considered private and it
-> is unsafe to use them in downstream projects since they are not part of the supported API surface.
-
-Before you use the components, you'll need to do a little bit of boilerplate configuration to
-install the Vue plugin associated with this library and instantiate a ``RestClient`` for interaction
-with the Girder server. That REST client must be passed via ``provide`` to an ancestor component
-of any components from this library, which is often most convenient to do at the root component
-of your application.
-
-```javascript
-import Girder, { RestClient } from '@girder/components';
-
-// Install the Vue plugin that lets us use the components
-Vue.use(Girder);
-
-// Create a REST client to communicate with Girder server
-const girderRest = new RestClient();
-
-// Example: fetch currently logged in Girder user, then start the app
-girderRest.fetchUser().then(() => {
-  new Vue({
-    render: h => h(App),
-    provide: { girderRest },
-  }).$mount('#app');
-});
-```
-
 > **Note:** If importing this library's UMD bundle via a ``<script>`` tag, the incantation for
 > installing the Vue plugin is slightly different:
 > ```javascript
 > Vue.use(girder.default);
 > ```
-
-If your downstream application is also using Vuetify, there is no need to instantiate it yourself
-as Girder's Vue plugin will do it for you. However, if you need to pass your own configuration
-options when installing the ``Vuetify`` plugin, do so *before* installing the Girder Vue plugin,
-and make sure your configuration extends Girder's own Vuetify config options, e.g.:
-
-```javascript
-import Girder, { utils } from '@girder/components';
-
-const vuetifyConfig = _.merge(utils.vuetifyConfig, {
-  icons: {
-    'myCustomIcon': 'mdi-custom-icon'
-  }
-});
-
-Vue.use(Vuetify, vuetifyConfig);
-Vue.use(Girder);
-```
 
 ## For developers
 
