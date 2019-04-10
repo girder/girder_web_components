@@ -3,7 +3,7 @@
 Try the [demo app](https://girder.github.io/girder_web_components/).
 It works with [data.kitware.com](https://data.kitware.com/).
 
-## For users
+## Usage Quckstart
 
 ### Installation
 
@@ -26,6 +26,7 @@ yarn add -D sass-loader node-sass pug-plain-loader pug
 Encapsulating the configuration in another file (typically `src/plugins/girder.js`) is a good practice:
 
 ```javascript
+/* src/plugins/girder.js */
 import Vue from 'vue';
 import Girder, { RestClient } from '@girder/components/src';
 
@@ -51,6 +52,7 @@ export default GirderProvider;
 Reference the configuration from your application initialization (typically `src/main.js`):
 
 ```javascript
+/* src/main.js */
 import GirderProvider from '@/plugins/girder';
 
 // ...
@@ -63,7 +65,12 @@ new Vue({
 
 ### Using Components
 
-Components should be imported from `@girder/components/src/components`, as this path will be stable across releases.
+Components should be imported by name from `@girder/components/src/components`, as this location will be stable across releases.
+For instance:
+```javascript
+import { Upload as GirderUpload } from '@girder/components/src/components';  // Good
+import GirderUpload from '@girder/components/src/components/Upload.vue'; // Unsafe -- may move in future
+```
 
 Since Girder web components uses Vuetify, your application must provide
 [`v-app` and `v-content` containers](https://vuetifyjs.com/en/framework/default-markup#all-about-app)
@@ -72,6 +79,7 @@ at some ancestor level.
 For example, to create a login / registration widget in `src/App.vue`:
 
 ```html
+<!-- src/App.vue -->
 <template>
   <v-app>
     <v-content>
