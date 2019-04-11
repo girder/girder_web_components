@@ -136,7 +136,7 @@ export default {
           try {
             if (file.upload) {
               // eslint-disable-next-line no-await-in-loop
-              file.result = await (file.upload.resume ? file.upload.resume() : file.upload.start());
+              file.result = await file.upload.resume();
             } else {
               // eslint-disable-next-line new-cap
               file.upload = new this.uploadCls(file.file, {
@@ -144,37 +144,30 @@ export default {
                 parent: this.dest,
                 progress,
               });
-              if (file.upload.beforeUpload) {
-                // eslint-disable-next-line no-await-in-loop
-                await file.upload.beforeUpload({
-                  current: i,
-                  total: this.files.length,
-                });
-              }
-
               // eslint-disable-next-line no-await-in-loop
-              file.result = await file.upload.start();
-            }
-            if (file.upload.afterUpload) {
-              // eslint-disable-next-line no-await-in-loop
-              await file.upload.afterUpload({
+              await file.upload.beforeUpload({
                 current: i,
                 total: this.files.length,
               });
+              // eslint-disable-next-line no-await-in-loop
+              file.result = await file.upload.start();
             }
+            // eslint-disable-next-line no-await-in-loop
+            await file.upload.afterUpload({
+              current: i,
+              total: this.files.length,
+            });
             delete file.upload;
             results.push(file.result);
             file.status = 'done';
             file.progress.current = file.file.size;
           } catch (error) {
-            if (file.upload.onError) {
-              // eslint-disable-next-line no-await-in-loop
-              await file.upload.onError({
-                error,
-                current: i,
-                total: this.files.length,
-              });
-            }
+            // eslint-disable-next-line no-await-in-loop
+            await file.upload.onError({
+              error,
+              current: i,
+              total: this.files.length,
+            });
 
             if (error.response) {
               this.errorMessage = error.response.data.message || 'An error occurred during upload.';
