@@ -53,8 +53,8 @@ const INIT_XML = `
 </InitiateMultipartUploadResult>`;
 
 describe('S3 upload behavior', () => {
-  const rc = new RestClient();
-  const mock = new MockAdapter(rc);
+  const $rest = new RestClient();
+  const mock = new MockAdapter($rest);
   const s3Mock = new MockAdapter(axios);
   const blob = new Blob(['hello world'], { type: 'text/plain' });
   blob.name = 'hello.txt';
@@ -72,7 +72,10 @@ describe('S3 upload behavior', () => {
       return [200];
     });
 
-    const upload = new Upload(rc, blob, { _id: '123', _modelType: 'folder' });
+    const upload = new Upload(blob, {
+      $rest,
+      parent: { _id: '123', _modelType: 'folder' },
+    });
     expect((await upload.start())._id).toBe('789');
   });
 
@@ -84,7 +87,10 @@ describe('S3 upload behavior', () => {
     s3Mock.onPut(S3_SINGLE_CHUNK_RESP.s3.request.url).replyOnce(200);
 
     let error;
-    const upload = new Upload(rc, blob, { _id: '123', _modelType: 'folder' });
+    const upload = new Upload(blob, {
+      $rest,
+      parent: { _id: '123', _modelType: 'folder' },
+    });
     try {
       await upload.start();
     } catch (e) {
@@ -96,7 +102,10 @@ describe('S3 upload behavior', () => {
 
   it('fail and resume a multipart upload', async () => {
     let finalized = false;
-    const upload = new Upload(rc, blob, { _id: '123', _modelType: 'folder' });
+    const upload = new Upload(blob, {
+      $rest,
+      parent: { _id: '123', _modelType: 'folder' },
+    });
 
     mock.onPost('file').replyOnce(200, S3_MULTIPART_INIT_RESP);
     mock.onPost('file/chunk').reply(200, S3_MULTIPART_CHUNK_RESP);

@@ -53,12 +53,8 @@ export default {
       default: true,
       type: Boolean,
     },
-    preUpload: {
-      default: () => {},
-      type: Function,
-    },
-    postUpload: {
-      default: () => {},
+    uploadCls: {
+      default: Upload,
       type: Function,
     },
     accept: {
@@ -114,7 +110,7 @@ export default {
       const results = [];
       this.uploading = true;
       this.errorMessage = null;
-      await this.preUpload();
+
       for (let i = 0; i < this.files.length; i += 1) {
         const file = this.files[i];
         if (file.status === 'done') {
@@ -130,14 +126,36 @@ export default {
               // eslint-disable-next-line no-await-in-loop
               file.result = await file.upload.resume();
             } else {
-              file.upload = new Upload(this.girderRest, file.file, this.dest, { progress });
+              // eslint-disable-next-line new-cap
+              file.upload = new this.uploadCls(file.file, {
+                $rest: this.girderRest,
+                parent: this.dest,
+                progress,
+              });
+              // eslint-disable-next-line no-await-in-loop
+              await file.upload.beforeUpload({
+                current: i,
+                total: this.files.length,
+              });
               // eslint-disable-next-line no-await-in-loop
               file.result = await file.upload.start();
             }
+            // eslint-disable-next-line no-await-in-loop
+            await file.upload.afterUpload({
+              current: i,
+              total: this.files.length,
+            });
             delete file.upload;
             results.push(file.result);
             file.status = 'done';
           } catch (error) {
+            // eslint-disable-next-line no-await-in-loop
+            await file.upload.onError({
+              error,
+              current: i,
+              total: this.files.length,
+            });
+
             if (error.response) {
               this.errorMessage = error.response.data.message || 'An error occurred during upload.';
             } else {
@@ -150,7 +168,6 @@ export default {
           }
         }
       }
-      await this.postUpload();
       this.uploading = false;
       this.files = [];
       this.$emit('done', results);
