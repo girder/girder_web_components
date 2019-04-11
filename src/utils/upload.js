@@ -88,10 +88,7 @@ export default class Upload {
   /**
    * This callback is called before the upload is started. This callback is asynchronous.
    * If it returns a Promise, the caller will await its resolution before continuing.
-   * This callback is passed the index of this file in the overall list of files being uploaded,
-   * which is mostly done to allow asynchronous hooks to be performed only before the first file or
-   * after the last file, which is a common use case.
-   * @param current {Number} The index of this file in the list.
+   * @param current {Number} The index of this file in the list of files being uploaded.
    * @param total {Number} The total number of files being uploaded.
    */
   // eslint-disable-next-line class-methods-use-this, no-unused-vars
@@ -100,10 +97,7 @@ export default class Upload {
   /**
    * This callback is called after the upload is completed. This callback is asynchronous.
    * If it returns a Promise, the caller will await its resolution before continuing.
-   * This callback is passed the index of this file in the overall list of files being uploaded,
-   * which is mostly done to allow asynchronous hooks to be performed only before the first file or
-   * after the last file, which is a common use case.
-   * @param current {Number} The index of this file in the list.
+   * @param current {Number} The index of this file in the list of files being uploaded.
    * @param total {Number} The total number of files being uploaded.
    */
   // eslint-disable-next-line class-methods-use-this, no-unused-vars
@@ -112,9 +106,8 @@ export default class Upload {
   /**
    * This callback is called if an error occurs during the upload. This callback is asynchronous.
    * If it returns a Promise, the caller will await its resolution before continuing.
-   * This callback is passed the index of this file in the overall list of files being uploaded.
    * @param error {Exception} The exception object.
-   * @param current {Number} The index of this file in the list.
+   * @param current {Number} The index of this file in the list of files being uploaded.
    * @param total {Number} The total number of files being uploaded.
    */
   // eslint-disable-next-line class-methods-use-this, no-unused-vars
