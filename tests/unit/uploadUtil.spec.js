@@ -4,8 +4,8 @@ import RestClient from '@/rest';
 import Upload from '@/utils/upload';
 
 describe('Upload module', () => {
-  const rc = new RestClient();
-  const mock = new MockAdapter(rc);
+  const $rest = new RestClient();
+  const mock = new MockAdapter($rest);
   const blob = new Blob(['hello world'], { type: 'text/plain' });
   blob.name = 'hello.txt';
 
@@ -34,7 +34,10 @@ describe('Upload module', () => {
       return [200, { _id: '789' }];
     });
 
-    const upload = new Upload(rc, blob, { _id: '123', _modelType: 'folder' });
+    const upload = new Upload(blob, {
+      $rest,
+      parent: { _id: '123', _modelType: 'folder' },
+    });
     expect((await upload.start())._id).toBe('789');
   });
 
@@ -42,7 +45,10 @@ describe('Upload module', () => {
     mock.onPost('file').networkError();
 
     let error;
-    const upload = new Upload(rc, blob, { _id: '123', _modelType: 'folder' });
+    const upload = new Upload(blob, {
+      $rest,
+      parent: { _id: '123', _modelType: 'folder' },
+    });
 
     try {
       await upload.start();
@@ -65,7 +71,11 @@ describe('Upload module', () => {
     mock.onPost(/file\/chunk/).replyOnce(500, { message: 'Internal error' });
 
     let error;
-    const upload = new Upload(rc, blob, { _id: '123', _modelType: 'folder' }, { chunkLen: 8 });
+    const upload = new Upload(blob, {
+      $rest,
+      parent: { _id: '123', _modelType: 'folder' },
+      chunkLen: 8,
+    });
 
     try {
       await upload.start();
