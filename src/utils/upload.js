@@ -54,7 +54,6 @@ export default class Upload extends UploadBase {
   }
 
   async start() {
-    this.progress({ indeterminate: true });
     this.upload = (await this.$rest.post('/file', stringify({
       parentType: this.parent._modelType,
       parentId: this.parent._id,
