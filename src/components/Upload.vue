@@ -145,29 +145,19 @@ export default {
                 progress,
               });
               // eslint-disable-next-line no-await-in-loop
-              await file.upload.beforeUpload({
-                current: i,
-                total: this.files.length,
-              });
+              await file.upload.beforeUpload();
               // eslint-disable-next-line no-await-in-loop
               file.result = await file.upload.start();
             }
             // eslint-disable-next-line no-await-in-loop
-            await file.upload.afterUpload({
-              current: i,
-              total: this.files.length,
-            });
+            await file.upload.afterUpload();
             delete file.upload;
             results.push(file.result);
             file.status = 'done';
             file.progress.current = file.file.size;
           } catch (error) {
             // eslint-disable-next-line no-await-in-loop
-            await file.upload.onError({
-              error,
-              current: i,
-              total: this.files.length,
-            });
+            await file.upload.onError(error);
 
             if (error.response) {
               this.errorMessage = error.response.data.message || 'An error occurred during upload.';

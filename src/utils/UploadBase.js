@@ -22,9 +22,6 @@ export default class UploadBase {
       file,
       parent,
       progress,
-      upload: null,
-      offset: 0,
-      behavior: null,
     });
   }
 
@@ -48,28 +45,22 @@ export default class UploadBase {
   /**
    * This callback is called before the upload is started. This callback is asynchronous.
    * If it returns a Promise, the caller will await its resolution before continuing.
-   * @param current {Number} The index of this file in the list of files being uploaded.
-   * @param total {Number} The total number of files being uploaded.
    */
   // eslint-disable-next-line class-methods-use-this, no-unused-vars
-  beforeUpload({ current, total }) {}
+  beforeUpload() {}
 
   /**
    * This callback is called after the upload is completed. This callback is asynchronous.
    * If it returns a Promise, the caller will await its resolution before continuing.
-   * @param current {Number} The index of this file in the list of files being uploaded.
-   * @param total {Number} The total number of files being uploaded.
    */
   // eslint-disable-next-line class-methods-use-this, no-unused-vars
-  afterUpload({ current, total }) {}
+  afterUpload() {}
 
   /**
    * This callback is called if an error occurs during the upload. This callback is asynchronous.
    * If it returns a Promise, the caller will await its resolution before continuing.
    * @param error {Exception} The exception object.
-   * @param current {Number} The index of this file in the list of files being uploaded.
-   * @param total {Number} The total number of files being uploaded.
    */
   // eslint-disable-next-line class-methods-use-this, no-unused-vars
-  onError({ error, current, total }) {}
+  onError(error) {}
 }
