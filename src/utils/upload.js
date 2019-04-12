@@ -9,14 +9,14 @@ const uploadBehaviors = { s3: S3Upload };
 export default class Upload extends UploadBase {
   /**
    * Represents an upload of a single file to the server.
-   * @param file {File | Blob} the file to upload
-   * @param opts {Object} upload options.
-   * @param opts.$rest {Object} an axios instance used for communicating with Girder.
-   * @param opts.parent {Object} upload destination. Must have ``_id`` and ``_modelType``.
-   * @param opts.progress {Function} A progress callback for the upload. It can take an Object
+   * @param {File | Blob} file the file to upload
+   * @param {Object} opts upload options.
+   * @param {Object} opts.$rest an axios instance used for communicating with Girder.
+   * @param {Object} opts.parent upload destination. Must have ``_id`` and ``_modelType``.
+   * @param {Function} opts.progress A progress callback for the upload. It can take an Object
    *   argument with either ``"indeterminate": true``, or numeric ``current`` and ``size`` fields.
-   * @param opts.params {Object} Additional parameters to pass on the upload init request.
-   * @param opts.chunkLen {Number} Chunk size for sending the file (integer number of bytes).
+   * @param {Object} opts.params Additional parameters to pass on the upload init request.
+   * @param {Number} opts.chunkLen Chunk size for sending the file (integer number of bytes).
    */
   constructor(file, {
     $rest,

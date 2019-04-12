@@ -2,11 +2,11 @@ export default class UploadBase {
   /**
    * The abstract base class of a single file uploader.
    * @abstract
-   * @param file {File | Blob} the file to upload
-   * @param opts {Object} upload options.
-   * @param opts.$rest {Object} an axios instance used for communicating with Girder.
-   * @param opts.parent {Object} upload destination. Must have ``_id`` and ``_modelType``.
-   * @param opts.progress {Function} A progress callback for the upload. It can take an Object
+   * @param {File | Blob} file the file to upload
+   * @param {Object} opts upload options.
+   * @param {Object} opts.$rest an axios instance used for communicating with Girder.
+   * @param {Object} opts.parent upload destination. Must have ``_id`` and ``_modelType``.
+   * @param {Function} opts.progress A progress callback for the upload. It can take an Object
    *   argument with either ``"indeterminate": true``, or numeric ``current`` and ``size`` fields.
    */
   constructor(
@@ -59,7 +59,7 @@ export default class UploadBase {
   /**
    * This callback is called if an error occurs during the upload. This callback is asynchronous.
    * If it returns a Promise, the caller will await its resolution before continuing.
-   * @param error {Exception} The exception object.
+   * @param {Exception} error The exception object.
    */
   // eslint-disable-next-line class-methods-use-this, no-unused-vars
   onError(error) {}

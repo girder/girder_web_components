@@ -8,7 +8,7 @@ import * as utils from './utils';
 /**
  * This installs the Vue plugin for this library. This is exported in the top level module,
  * making it a Vue plugin.
- * @param Vue the Vue prototype to install the plugin into.
+ * @param {Object} Vue the Vue prototype to install the plugin into.
  */
 function install(Vue) {
   Vue.use(Vuetify, utils.vuetifyConfig);
