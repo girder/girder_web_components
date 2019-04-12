@@ -53,6 +53,14 @@ export default {
       default: true,
       type: Boolean,
     },
+    preUpload: {
+      default: () => {},
+      type: Function,
+    },
+    postUpload: {
+      default: () => {},
+      type: Function,
+    },
     uploadCls: {
       default: Upload,
       type: Function,
@@ -83,7 +91,7 @@ export default {
       return `${this.files.length} selected (${this.formatSize(this.totalSize)} total)`;
     },
     totalProgress() {
-      return this.files.reduce((v, f) => v + (f.progress.current || 0), 0);
+      return this.files.reduce((v, f) => v + (f.progress.current), 0);
     },
     totalSize() {
       return this.files.reduce((v, f) => v + f.file.size, 0);
@@ -100,7 +108,11 @@ export default {
       this.files = files.map(file => ({
         file,
         status: 'pending',
-        progress: {},
+        progress: {
+          indeterminate: false,
+          current: 0,
+          size: file.size,
+        },
         upload: null,
         result: null,
       }));
@@ -110,7 +122,7 @@ export default {
       const results = [];
       this.uploading = true;
       this.errorMessage = null;
-
+      await this.preUpload();
       for (let i = 0; i < this.files.length; i += 1) {
         const file = this.files[i];
         if (file.status === 'done') {
@@ -118,9 +130,10 @@ export default {
           results.push(file.result);
         } else {
           const progress = (event) => {
-            file.progress = Object.assign({}, file.progress, event);
+            Object.assign(file.progress, event);
           };
           file.status = 'uploading';
+          file.progress.indeterminate = true;
           try {
             if (file.upload) {
               // eslint-disable-next-line no-await-in-loop
@@ -133,28 +146,19 @@ export default {
                 progress,
               });
               // eslint-disable-next-line no-await-in-loop
-              await file.upload.beforeUpload({
-                current: i,
-                total: this.files.length,
-              });
+              await file.upload.beforeUpload();
               // eslint-disable-next-line no-await-in-loop
               file.result = await file.upload.start();
             }
             // eslint-disable-next-line no-await-in-loop
-            await file.upload.afterUpload({
-              current: i,
-              total: this.files.length,
-            });
+            await file.upload.afterUpload();
             delete file.upload;
             results.push(file.result);
             file.status = 'done';
+            file.progress.current = file.file.size;
           } catch (error) {
             // eslint-disable-next-line no-await-in-loop
-            await file.upload.onError({
-              error,
-              current: i,
-              total: this.files.length,
-            });
+            await file.upload.onError(error);
 
             if (error.response) {
               this.errorMessage = error.response.data.message || 'An error occurred during upload.';
@@ -168,6 +172,7 @@ export default {
           }
         }
       }
+      await this.postUpload();
       this.uploading = false;
       this.files = [];
       this.$emit('done', results);

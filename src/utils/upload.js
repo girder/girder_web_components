@@ -1,20 +1,22 @@
 import { stringify } from 'qs';
+
 import S3Upload from './s3';
+import UploadBase from './UploadBase';
 
 const UPLOAD_CHUNK_SIZE = 1024 * 1024 * 64;
 const uploadBehaviors = { s3: S3Upload };
 
-export default class Upload {
+export default class Upload extends UploadBase {
   /**
    * Represents an upload of a single file to the server.
-   * @param file {File | Blob} the file to upload
-   * @param opts {Object} upload options.
-   * @param opts.$rest {Object} an axios instance used for communicating with Girder.
-   * @param opts.parent {Object} upload destination. Must have ``_id`` and ``_modelType``.
-   * @param opts.progress {Function} A progress callback for the upload. It will receive an Object
-   *   argument with either ``"indeterminate": true``, or numeric ``current`` and ``total`` fields.
-   * @param opts.params {Object} Additional parameters to pass on the upload init request.
-   * @param opts.chunkLen {Number} Chunk size for sending the file (integer number of bytes).
+   * @param {File | Blob} file the file to upload
+   * @param {Object} opts upload options.
+   * @param {Object} opts.$rest an axios instance used for communicating with Girder.
+   * @param {Object} opts.parent upload destination. Must have ``_id`` and ``_modelType``.
+   * @param {Function} opts.progress A progress callback for the upload. It can take an Object
+   *   argument with either ``"indeterminate": true``, or numeric ``current`` and ``size`` fields.
+   * @param {Object} opts.params Additional parameters to pass on the upload init request.
+   * @param {Number} opts.chunkLen Chunk size for sending the file (integer number of bytes).
    */
   constructor(file, {
     $rest,
@@ -23,16 +25,19 @@ export default class Upload {
     params = {},
     chunkLen = UPLOAD_CHUNK_SIZE,
   } = {}) {
+    super(file, {
+      $rest, parent, progress,
+    });
     Object.assign(this, {
-      $rest, file, params, parent, progress, chunkLen, upload: null, offset: 0, behavior: null,
+      params, chunkLen, upload: null, offset: 0, behavior: null,
     });
   }
 
   async _sendChunks() {
     const onUploadProgress = e => this.progress({
-      current: this.offset + e.loaded,
-      total: this.file.size,
       indeterminate: !e.lengthComputable,
+      current: this.offset + e.loaded,
+      size: this.file.size,
     });
 
     while (this.offset < this.file.size) {
@@ -49,12 +54,7 @@ export default class Upload {
     return this.upload;
   }
 
-  /**
-   * Start the upload. The returned Promise will be resolved with the Girder file that was created
-   * or rejected with an ``Error`` that has ``config``, ``request``, and ``response`` properties.
-   */
   async start() {
-    this.progress({ indeterminate: true });
     this.upload = (await this.$rest.post('/file', stringify({
       parentType: this.parent._modelType,
       parentId: this.parent._id,
@@ -84,32 +84,4 @@ export default class Upload {
     this.offset = (await this.$rest.get(`file/offset?uploadId=${this.upload._id}`)).data.offset;
     return this._sendChunks();
   }
-
-  /**
-   * This callback is called before the upload is started. This callback is asynchronous.
-   * If it returns a Promise, the caller will await its resolution before continuing.
-   * @param current {Number} The index of this file in the list of files being uploaded.
-   * @param total {Number} The total number of files being uploaded.
-   */
-  // eslint-disable-next-line class-methods-use-this, no-unused-vars
-  beforeUpload({ current, total }) {}
-
-  /**
-   * This callback is called after the upload is completed. This callback is asynchronous.
-   * If it returns a Promise, the caller will await its resolution before continuing.
-   * @param current {Number} The index of this file in the list of files being uploaded.
-   * @param total {Number} The total number of files being uploaded.
-   */
-  // eslint-disable-next-line class-methods-use-this, no-unused-vars
-  afterUpload({ current, total }) {}
-
-  /**
-   * This callback is called if an error occurs during the upload. This callback is asynchronous.
-   * If it returns a Promise, the caller will await its resolution before continuing.
-   * @param error {Exception} The exception object.
-   * @param current {Number} The index of this file in the list of files being uploaded.
-   * @param total {Number} The total number of files being uploaded.
-   */
-  // eslint-disable-next-line class-methods-use-this, no-unused-vars
-  onError({ error, current, total }) {}
 }
