@@ -14,7 +14,7 @@ export default class Upload extends UploadBase {
    * @param opts.$rest {Object} an axios instance used for communicating with Girder.
    * @param opts.parent {Object} upload destination. Must have ``_id`` and ``_modelType``.
    * @param opts.progress {Function} A progress callback for the upload. It can take an Object
-   *   argument with either ``"indeterminate": true``, or numeric ``current`` fields.
+   *   argument with either ``"indeterminate": true``, or numeric ``current`` and ``size`` fields.
    * @param opts.params {Object} Additional parameters to pass on the upload init request.
    * @param opts.chunkLen {Number} Chunk size for sending the file (integer number of bytes).
    */
@@ -35,8 +35,9 @@ export default class Upload extends UploadBase {
 
   async _sendChunks() {
     const onUploadProgress = e => this.progress({
-      current: this.offset + e.loaded,
       indeterminate: !e.lengthComputable,
+      current: this.offset + e.loaded,
+      size: this.file.size,
     });
 
     while (this.offset < this.file.size) {

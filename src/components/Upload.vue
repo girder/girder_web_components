@@ -111,6 +111,7 @@ export default {
         progress: {
           indeterminate: false,
           current: 0,
+          size: file.size,
         },
         upload: null,
         result: null,
