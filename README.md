@@ -190,3 +190,5 @@ yarn serve
 This variable value defaults to `http://localhost:8080/api/v1` for
 normal development (which assumes the developer has a local instance of
 the Girder API server running).
+When running against your own instance of the Girder API server,
+make sure to set [CORS](https://girder.readthedocs.io/en/stable/security.html#cors-cross-origin-resource-sharing) accordingly.
