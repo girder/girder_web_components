@@ -2,8 +2,6 @@
 <script>
 import { DebounceCounter } from '../utils';
 
-const counter = new DebounceCounter();
-
 export default {
   props: {
     maxQuickResults: {
@@ -26,7 +24,7 @@ export default {
   },
   computed: {
     loading() {
-      return counter.flag;
+      return this.counter.flag;
     },
     quickResults() {
       return this.searchResults.slice(0, this.maxQuickResults);
@@ -46,7 +44,7 @@ export default {
       default: [],
       async get() {
         let results = [];
-        counter.inc();
+        this.counter.inc();
         try {
           if (this.searchText) {
             const { data } = await this.girderRest.get('resource/search', {
@@ -57,10 +55,13 @@ export default {
         } catch (err) {
           this.$emit('error', err.message || 'Unknown error during search');
         }
-        counter.dec();
+        this.counter.dec();
         return results;
       },
     },
+  },
+  beforeCreate() {
+    this.counter = new DebounceCounter();
   },
   methods: {
     formatUsername(user) {
