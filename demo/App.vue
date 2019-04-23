@@ -64,7 +64,8 @@ v-app.app
             h3.headline Drop Zone
           v-card-text
             p(v-if="!(dropped.length)") Drag a row here to see results
-            p(v-else, v-for="drop in dropped") {{ drop.item._modelType }} {{ drop.item.name }} {{ drop.item.size }} 
+            p(v-else, v-for="drop in dropped")
+              | {{ drop.item._modelType }} {{ drop.item.name }} {{ drop.item.size }}
 </template>
 
 <script>
@@ -101,6 +102,7 @@ export default {
       searchEnabled: true,
       selected: [],
       dropped: [],
+      droppedIDs: [],
     };
   },
   asyncComputed: {
@@ -152,12 +154,11 @@ export default {
     prev(event) {
       event.preventDefault();
     },
-    dragend({ items, event }) {
+    dragend({ items }) {
       this.dropped = items;
     },
     drop(event) {
-      const identifiers = event.dataTransfer.getData('application/x-girder-items');
-      console.log(identifiers);
+      this.droppedIDs = event.dataTransfer.getData('application/x-girder-items');
     },
     postUpload() {
       // postUpload is an example of using hooks for greater control of component behavior.
