@@ -49,6 +49,11 @@ export default {
         this.$emit('rowclick', props.item);
       }
     },
+    emitDrag(eventname, event, items) {
+      const idStrings = JSON.stringify(items.map(i => i.item._id));
+      event.dataTransfer.setData('application/x-girder-items', idStrings);
+      this.$emit(eventname, { event, items });
+    },
   },
 };
 </script>
@@ -76,10 +81,9 @@ v-data-table.girder-data-table(
     tr.itemRow(:draggable="draggable", :active="props.selected",
         :class="{ selectable: !selectEnabled }",
         @click="handleRowSelect($event, props)",
-        @drag="$emit('drag', { items: [props], event: $event })",
-        @dragstart="$emit('dragstart', { items: [props], event: $event })",
-        @dragend="$emit('dragend', { items: [props], event: $event })",
-        @drop="$emit('drop', { items: [props], event: $event })",
+        @drag="emitDrag('drag', $event, [props])",
+        @dragstart="emitDrag('dragstart', $event, [props])",
+        @dragend="emitDrag('dragend', $event, [props])",
         :key="props.index")
       td.pl-3.pr-0(v-if="selectEnabled")
         v-checkbox.secondary--text.text--darken-1.pr-2(

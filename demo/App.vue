@@ -57,7 +57,14 @@ v-app.app
               :new-folder-enabled="newFolderEnabled",
               @click:newitem="uploader = true",
               @click:newfolder="newFolder = true",
-              @selection-changed="selected = $event")
+              @selection-changed="selected = $event",
+              @dragend="dragend")
+        v-card.mt-3(v-if="dragEnabled", @dragenter="prev", @dragover="prev", @drop="drop")
+          v-card-title
+            h3.headline Drop Zone
+          v-card-text
+            p(v-if="!(dropped.length)") Drag a row here to see results
+            p(v-else, v-for="drop in dropped") {{ drop.item._modelType }} {{ drop.item.name }} {{ drop.item.size }} 
 </template>
 
 <script>
@@ -87,12 +94,13 @@ export default {
       uiOptionsMenu: false,
       browserLocation: null,
       forgotPasswordUrl: '/#?dialog=resetpassword',
-      dragEnabled: false,
+      dragEnabled: true,
       selectEnabled: true,
       newItemEnabled: true,
       newFolderEnabled: true,
       searchEnabled: true,
       selected: [],
+      dropped: [],
     };
   },
   asyncComputed: {
@@ -141,6 +149,16 @@ export default {
     },
   },
   methods: {
+    prev(event) {
+      event.preventDefault();
+    },
+    dragend({ items, event }) {
+      this.dropped = items;
+    },
+    drop(event) {
+      const identifiers = event.dataTransfer.getData('application/x-girder-items');
+      console.log(identifiers);
+    },
     postUpload() {
       // postUpload is an example of using hooks for greater control of component behavior.
       // here, we can complete the dialog disappear animation before the upload UI resets.
