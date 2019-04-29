@@ -2,6 +2,7 @@
 import { sizeFormatter } from '../utils/mixins';
 import GirderBreadcrumb from './Breadcrumb.vue';
 import GirderDataTable from './Presentation/DataTable.vue';
+import { getLocationValidator } from '../utils';
 
 const GIRDER_FOLDER_ENDPOINT = 'folder';
 const GIRDER_ITEM_ENDPOINT = 'item';
@@ -19,8 +20,10 @@ export default {
     },
     location: {
       type: Object,
-      required: true,
-      validator: val => val._modelType && val._id,
+      default: () => ({
+        type: 'root',
+      }),
+      validator: getLocationValidator(true),
     },
     selectEnabled: {
       type: Boolean,
@@ -42,6 +45,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    noRoot: {
+      type: Boolean,
+      default: false,
+    },
   },
   inject: ['girderRest'],
   data() {
@@ -54,6 +61,8 @@ export default {
       rows: [],
       rowsLoading: false,
       selected: [],
+      // make an internal copy so doesn't have to require the location prop
+      location_: this.location,
     };
   },
   computed: {
@@ -61,33 +70,75 @@ export default {
       return (this.$refs.breadcrumb && this.$refs.breadcrumb.loading) || this.rowsLoading;
     },
     totalItems() {
-      return this.counts.nFolders + this.counts.nItems;
+      return Object.values(this.counts).reduce(
+        (total, value) => total + value,
+        0,
+      );
+    },
+    _selectEnabled() {
+      if (!this.location_) {
+        return false;
+      }
+      const { _modelType } = this.location_;
+      return (
+        this.selectEnabled &&
+        ['folder', 'user', 'collection'].indexOf(_modelType) !== -1
+      );
+    },
+    nonRootLocation() {
+      return getLocationValidator(false)(this.location_);
     },
   },
   asyncComputed: {
     counts: {
-      default: { nFolders: 0, nItems: 0 },
+      default: {
+        nFolders: 0,
+        nItems: 0,
+        nUsers: 0,
+        nCollections: 0,
+      },
       async get() {
-        const { _modelType, _id } = this.location;
-        const endpoint = `${_modelType}/${_id}/details`;
-        const { data } = await this.girderRest.get(endpoint);
-        return {
-          nFolders: data.nFolders || 0,
-          nItems: data.nItems || 0,
+        this.rows = [];
+        const counts = {
+          nFolders: 0,
+          nItems: 0,
+          nUsers: 0,
+          nCollections: 0,
         };
+        const type = this.location_._modelType || this.location_.type;
+        const { _id } = this.location_;
+        if (['folder', 'user', 'collection'].indexOf(type) !== -1) {
+          const { data } = await this.girderRest.get(`${type}/${_id}/details`);
+          return {
+            ...counts,
+            ...{
+              nFolders: data.nFolders || 0,
+              nItems: data.nItems || 0,
+            },
+          };
+        } else if (type === 'users' || type === 'collections') {
+          const { data } = await this.girderRest.get(`${this.getResourceType(type)}/details`);
+          return {
+            ...counts,
+            ...{
+              [Object.keys(data)[0]]: Object.values(data)[0],
+            },
+          };
+        } else if (type === 'root') {
+          return { ...counts, ...{ nUsers: 1, nCollections: 1 } };
+        }
+        return counts;
       },
       watch() {
-        return [
-          this.refreshCounter_,
-          this.location,
-        ];
+        return [this.refreshCounter_, this.location_, this.girderRest.user];
       },
     },
   },
   watch: {
-    location(newval, oldval) {
-      // force reset pagination when location changes.
-      if (newval._id !== oldval._id) {
+    location(location) {
+      if (getLocationValidator(!this.noRoot)(location)) {
+        this.location_ = location;
+        // force reset pagination when location changes.
         this.pagination.page = 1;
       }
     },
@@ -102,6 +153,11 @@ export default {
       this.rows = await this.fetchPaginatedRows();
     },
   },
+  created() {
+    if (!getLocationValidator(false)(this.location_) && this.noRoot) {
+      throw new Error("non root location can't be used with no-root at the same time");
+    }
+  },
   methods: {
     toggleAll() {
       if (this.selected.length === this.rows.length) {
@@ -110,28 +166,54 @@ export default {
         this.selected = this.rows.slice();
       }
     },
-    changeLocation(item) {
+    rowClick(item) {
       const { _modelType, _id } = item;
-      if ((this.location._id !== _id || this.location._modelType !== _modelType) &&
-          _modelType !== 'item') {
-        this.$emit('update:location', item);
-      } else if (_modelType === 'item') {
+      const type = this.location._modelType || this.location.type;
+      if (
+        (this.location_.id !== _id || type !== _modelType) &&
+        _modelType !== 'item'
+      ) {
+        if (['collections', 'users', 'root'].indexOf(_modelType) !== -1) {
+          this.changeLocation({ type: _modelType });
+        } else {
+          this.changeLocation(item);
+        }
+      } else {
         this.$emit('itemclick', item);
+      }
+    },
+    changeLocation(location) {
+      const newType = location._modelType || location.type;
+      const oldType = this.location._modelType || this.location.type;
+      if (this.location_._id !== location._id || newType !== oldType) {
+        this.location_ = location;
+        this.$emit('update:location', location);
       }
     },
     refresh() {
       this.refreshCounter_ += 1;
     },
     async fetchPaginatedRows() {
-      if (!this.counts.nFolders && !this.counts.nItems) {
-        return [];
+      if (this.counts.nFolders || this.counts.nItems) {
+        return this.fetchPaginatedFolderRows();
       }
+      const type = this.location._modelType || this.location.type;
+      if (type === 'users' || type === 'collections') {
+        if (this.counts.nUsers || this.counts.nCollections) {
+          return this.fetchPaginatedCollectionOrUserRows(this.getResourceType(type));
+        }
+      } else if (type === 'root') {
+        return this.generateRootRows();
+      }
+      return [];
+    },
+    async fetchPaginatedFolderRows() {
       this.rowsLoading = true;
-      const { counts, location, pagination } = this;
+      const { counts, location_, pagination } = this;
       const { page, rowsPerPage } = pagination;
       const folderParams = {
-        parentType: location._modelType,
-        parentId: location._id,
+        parentType: location_._modelType,
+        parentId: location_._id,
         limit: rowsPerPage >= 0 ? rowsPerPage : null,
         offset: (page - 1) * rowsPerPage,
       };
@@ -143,7 +225,7 @@ export default {
         : rowsPerPage;
       const itemOffset = folderParams.offset - counts.nFolders;
       const itemParams = {
-        folderId: location._id,
+        folderId: location_._id,
         limit: rowsPerPage >= 0 ? itemLimit : null,
         offset: itemOffset > 0 ? itemOffset : 0,
       };
@@ -151,7 +233,10 @@ export default {
       promises.push(this.girderRest.get(GIRDER_FOLDER_ENDPOINT, { params: folderParams }));
       // a limit of < 0 signifies the current page only includes folders
       // a limit of null signifies no pagination: fetch all entities
-      if ((itemParams.limit > 0 || itemParams.limit === null) && location._modelType === 'folder') {
+      if (
+        (itemParams.limit > 0 || itemParams.limit === null) &&
+        location_._modelType === 'folder'
+      ) {
         promises.push(this.girderRest.get(GIRDER_ITEM_ENDPOINT, { params: itemParams }));
       }
       const responses = (await Promise.all(promises)).map(response => response.data);
@@ -165,6 +250,46 @@ export default {
       this.rowsLoading = false;
       return rows;
     },
+    async fetchPaginatedCollectionOrUserRows(type) {
+      this.rowsLoading = true;
+      const { page, rowsPerPage } = this.pagination;
+      const { data: items } = await this.girderRest.get(type, {
+        params: {
+          limit: rowsPerPage >= 0 ? rowsPerPage : null,
+          offset: (page - 1) * rowsPerPage,
+        },
+      });
+      const rows = items.map(item => ({
+        ...item,
+        name:
+          item._modelType === 'user'
+            ? `${item.firstName} ${item.lastName}`
+            : item.name,
+        size: item.size ? this.formatSize(item.size) : '',
+        icon: item._modelType,
+      }));
+      this.rowsLoading = false;
+      return rows;
+    },
+    generateRootRows() {
+      const rows = [
+        { _modelType: 'collections', name: 'Collections', icon: 'collection' },
+      ];
+      if (this.girderRest.user) {
+        rows.push({ _modelType: 'users', name: 'Users', icon: 'user' });
+      }
+      return rows;
+    },
+    getResourceType(locationType) {
+      switch (locationType) {
+        case 'collections':
+          return 'collection';
+        case 'users':
+          return 'user';
+        default:
+          return '';
+      }
+    },
   },
 };
 </script>
@@ -177,8 +302,8 @@ girder-data-table.girder-file-browser(
     :pagination.sync="pagination",
     :total-items="totalItems",
     :loading="loading",
-    :select-enabled="selectEnabled",
-    @rowclick="changeLocation",
+    :select-enabled="_selectEnabled",
+    @rowclick="rowClick",
     @drag="$emit('drag', $event)",
     @dragstart="$emit('dragstart', $event)",
     @dragend="$emit('dragend', $event)",
@@ -186,7 +311,7 @@ girder-data-table.girder-file-browser(
 
   template(slot="header", slot-scope="props")
     tr.secondary.lighten-5
-      th.pl-3.pr-0(width="1%", v-if="selectEnabled")
+      th.pl-3.pr-0(width="1%", v-if="_selectEnabled")
         v-checkbox.secondary--text.text--darken-1.pr-2(
             color="accent",
             hide-details,
@@ -197,21 +322,22 @@ girder-data-table.girder-file-browser(
         v-layout(row, align-center)
           girder-breadcrumb(
               ref="breadcrumb",
-              :location="location",
-              @crumbclick="changeLocation")
+              :location="location_",
+              @crumbclick="changeLocation",
+              :no-root="noRoot")
           v-spacer
           slot(name="headerwidget")
           v-btn.ma-0(flat,
               small,
               color="secondary darken-2",
-              v-if="newFolderEnabled",
+              v-if="newFolderEnabled && nonRootLocation",
               @click="$emit('click:newfolder')")
             v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.folderNew }}
             span.hidden-xs-only New Folder
           v-btn.ma-0(flat,
               small,
               color="secondary darken-2",
-              v-if="newItemEnabled",
+              v-if="newItemEnabled && nonRootLocation",
               @click="$emit('click:newitem')")
             v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.fileNew }}
             span.hidden-xs-only New Item
