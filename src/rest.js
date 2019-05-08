@@ -56,13 +56,18 @@ export default class RestClient extends Vue {
     }
 
     const headers = {
-      'Girder-Authorization': `Basic ${window.btoa(`${username}:${password}`)}`,
       'Girder-Token': null,
     };
     if (otp) {
       headers['Girder-OTP'] = otp;
     }
-    const resp = await this.get('user/authentication', { headers });
+    const resp = await this.get('user/authentication', {
+      headers,
+      auth: {
+        username,
+        password,
+      },
+    });
     this.token = resp.data.authToken.token;
     this.user = resp.data.user;
 
