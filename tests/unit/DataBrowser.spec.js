@@ -2,7 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
 import DataBrowser from '@/components/DataBrowser.vue';
-import { flushPromises, girderVue } from './utils';
+import { flushPromises, girderVue, authenticateRestClient } from './utils';
 
 const localVue = girderVue();
 
@@ -49,7 +49,7 @@ function getMockItemQueryResponse(count = 1) {
   return (new Array(count)).fill(getMockItemResponse());
 }
 
-describe('File Browser', () => {
+describe('DataBrowser', () => {
   const girderRest = new RestClient();
   const mock = new MockAdapter(girderRest);
 
@@ -79,7 +79,7 @@ describe('File Browser', () => {
     });
     await flushPromises();
     const { location } = wrapper.vm.$options.props;
-    expect(location.required).toBeTruthy();
+    expect(location.required).toBeFalsy();
     expect(location.type).toBe(Object);
     expect(wrapper.vm.rows.length).toBe(1);
 
@@ -227,5 +227,95 @@ describe('File Browser', () => {
     });
     await flushPromises();
     expect(wrapper.vm.rows.length).toBe(32);
+  });
+
+  it('location validator', () => {
+    const wrapper = shallowMount(DataBrowser, {
+      localVue,
+      provide: { girderRest },
+    });
+
+    const { validator } = wrapper.vm.$options.props.location;
+    expect(validator({ _modelType: 'root' })).toBe(false);
+    expect(validator({ _modelType: 'item' })).toBe(false);
+    expect(validator({ _modelType: 'users' })).toBe(false);
+    expect(validator({ _modelType: 'folder' })).toBe(false);
+    expect(validator({ _modelType: 'user' })).toBe(false);
+    expect(validator({ _modelType: 'collection' })).toBe(false);
+    expect(validator({ _modelType: 'folder', _id: 'fake_folder_id' })).toBe(true);
+    expect(validator({ _modelType: 'user', _id: 'fake_user_id' })).toBe(true);
+    expect(validator({ type: 'root' })).toBe(true);
+    expect(validator({ type: 'users' })).toBe(true);
+    expect(validator({ type: 'collections' })).toBe(true);
+  });
+
+  it('default root location', async () => {
+    let wrapper = shallowMount(DataBrowser, {
+      localVue,
+      provide: { girderRest },
+    });
+
+    await flushPromises();
+    expect(wrapper.vm.rows.length).toBe(1);
+    expect(wrapper.vm.rows[0]._modelType).toBe('collections');
+
+    const girderRest_ = new RestClient();
+    const mock_ = new MockAdapter(girderRest_);
+    wrapper = shallowMount(DataBrowser, {
+      localVue,
+      provide: { girderRest: await authenticateRestClient(girderRest_, mock_) },
+    });
+
+    await flushPromises();
+    expect(wrapper.vm.rows.length).toBe(2);
+    expect(wrapper.vm.rows[0]._modelType).toBe('collections');
+    expect(wrapper.vm.rows[1]._modelType).toBe('users');
+  });
+
+  it('users locations', async () => {
+    const girderRest_ = new RestClient();
+    const mock_ = new MockAdapter(girderRest_);
+    mock_.onGet('user/details').reply(200, { nUsers: 1 });
+    mock_
+      .onGet('user', {
+        params: {
+          limit: 10,
+          offset: 0,
+        },
+      })
+      .reply(200, [
+        {
+          _accessLevel: 2,
+          _id: 'fake_user_id',
+          _modelType: 'user',
+          admin: true,
+          created: '2019-03-14T14:03:02.636000+00:00',
+          email: 'girder@email.com',
+          emailVerified: true,
+          firstName: 'girder',
+          groupInvites: [],
+          groups: [],
+          lastName: 'girder',
+          login: 'girder',
+          otp: false,
+          public: true,
+          size: 0,
+          status: 'enabled',
+        },
+      ]);
+
+    const wrapper = shallowMount(DataBrowser, {
+      localVue,
+      provide: { girderRest: await authenticateRestClient(girderRest_, mock_) },
+      propsData: {
+        location: {
+          type: 'users',
+        },
+      },
+    });
+
+    await flushPromises();
+    expect(wrapper.vm.rows.length).toBe(1);
+    expect(wrapper.vm.rows[0]._modelType).toBe('user');
   });
 });
