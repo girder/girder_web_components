@@ -44,5 +44,6 @@ export default {
     search: 'mdi-magnify',
     settings: 'mdi-tune',
     user: 'mdi-account',
+    userHome: 'mdi-home-account',
   },
 };

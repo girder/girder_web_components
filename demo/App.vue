@@ -38,7 +38,7 @@ v-app.app
         multiple="multiple")
   v-dialog(v-model="newFolder", full-width, max-width="800px")
     girder-upsert-folder(
-        v-if="location",
+        v-if="nonRootLocation(location)",
         :key="location._id",
         :location="location",
         :post-upsert="postUpsert",
@@ -49,7 +49,6 @@ v-app.app
         v-card
           girder-data-browser(
               ref="girderBrowser",
-              v-if="location",
               :location.sync="location",
               :select-enabled="selectEnabled",
               :draggable="dragEnabled",
@@ -68,6 +67,7 @@ import {
   Upload as GirderUpload,
   UpsertFolder as GirderUpsertFolder,
 } from '@/components';
+import { createLocationValidator } from '@/utils';
 
 export default {
   name: 'App',
@@ -124,7 +124,7 @@ export default {
         } else if (this.girderRest.user) {
           return { _modelType: 'user', _id: this.girderRest.user._id };
         }
-        return null;
+        return { type: 'root' };
       },
       set(newVal) {
         this.browserLocation = newVal;
@@ -141,6 +141,7 @@ export default {
     },
   },
   methods: {
+    nonRootLocation: createLocationValidator(false),
     postUpload() {
       // postUpload is an example of using hooks for greater control of component behavior.
       // here, we can complete the dialog disappear animation before the upload UI resets.

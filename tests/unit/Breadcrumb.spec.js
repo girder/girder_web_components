@@ -2,7 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
 import Breadcrumb from '@/components/Breadcrumb.vue';
-import { flushPromises, girderVue } from './utils';
+import { flushPromises, girderVue, authenticateRestClient } from './utils';
 
 const localVue = girderVue();
 
@@ -48,6 +48,10 @@ function getMockFolderResponse() {
 function getMockRootpathResponse(parentId, parentCollection = 'user') {
   return [
     {
+      object: getMockEntityResponse(parentId, parentCollection),
+      type: parentCollection,
+    },
+    {
       object: {
         _accessLevel: 2,
         _id: 'parent_fake_folderId',
@@ -66,10 +70,6 @@ function getMockRootpathResponse(parentId, parentCollection = 'user') {
       },
       type: 'folder',
     },
-    {
-      object: getMockEntityResponse(parentId, parentCollection),
-      type: parentCollection,
-    },
   ];
 }
 
@@ -77,15 +77,19 @@ describe('Breadcrumb', () => {
   const girderRest = new RestClient();
   const mock = new MockAdapter(girderRest);
 
-  afterEach(() => {
-    mock.reset();
-  });
+  mock.onGet('folder/fake_folder_id').reply(200, getMockFolderResponse());
+  mock.onGet('folder/fake_folder_id_2').reply(200, getMockFolderResponse());
+  mock
+    .onGet('folder/fake_folder_id/rootpath')
+    .reply(200, getMockRootpathResponse('rootid', 'user'));
+  mock
+    .onGet('folder/fake_folder_id_2/rootpath')
+    .reply(200, getMockRootpathResponse('rootid2', 'collection'));
+  mock
+    .onGet('user/fake_userid')
+    .reply(200, getMockEntityResponse('fake_userid', 'user'));
 
   it('will construct the breadcrumb for a folder', async () => {
-    mock.onGet(/folder\/fake_folder_id/).replyOnce(200, getMockFolderResponse());
-    mock.onGet(/folder\/fake_folder_id_2/).replyOnce(200, getMockFolderResponse());
-    mock.onGet(/folder\/fake_folder_id\/rootpath/).replyOnce(200, getMockRootpathResponse('rootid', 'user'));
-    mock.onGet(/folder\/fake_folder_id_2\/rootpath/).replyOnce(200, getMockRootpathResponse('rootid2', 'collection'));
     const wrapper = shallowMount(Breadcrumb, {
       localVue,
       propsData: {
@@ -93,6 +97,7 @@ describe('Breadcrumb', () => {
           _modelType: 'folder',
           _id: 'fake_folder_id',
         },
+        noRoot: true,
       },
       provide: { girderRest },
     });
@@ -100,12 +105,12 @@ describe('Breadcrumb', () => {
     const { location } = wrapper.vm.$options.props;
     expect(location.required).toBeTruthy();
     expect(location.type).toBe(Object);
-    expect(wrapper.vm.breadcrumb.path.length).toBe(2);
-    expect(wrapper.vm.breadcrumb.root._id).toBe('rootid');
-    expect(wrapper.vm.breadcrumb.root._modelType).toBe('user');
-    expect(wrapper.vm.breadcrumb.root.name).toBe('fake_user');
+    expect(wrapper.vm.breadcrumb.length).toBe(3);
+    expect(wrapper.vm.breadcrumb[0]._id).toBe('rootid');
+    expect(wrapper.vm.breadcrumb[0]._modelType).toBe('user');
+    expect(wrapper.vm.breadcrumb[0].name).toBe('fake_user');
 
-    wrapper.vm.breadcrumb.path.forEach((p) => {
+    wrapper.vm.breadcrumb.forEach((p) => {
       expect(p.name).toBeTruthy();
     });
 
@@ -117,14 +122,65 @@ describe('Breadcrumb', () => {
       },
     });
     await flushPromises();
-    expect(wrapper.vm.breadcrumb.path.length).toBe(2);
-    expect(wrapper.vm.breadcrumb.root._id).toBe('rootid2');
-    expect(wrapper.vm.breadcrumb.root._modelType).toBe('collection');
+    expect(wrapper.vm.breadcrumb.length).toBe(3);
+    expect(wrapper.vm.breadcrumb[0]._id).toBe('rootid2');
+    expect(wrapper.vm.breadcrumb[0]._modelType).toBe('collection');
   });
 
   it('will construct the breadcrumb for a user', async () => {
-    mock.onGet(/user\/fake_userid/).replyOnce(200, getMockEntityResponse('fake_userid', 'user'));
     const wrapper = shallowMount(Breadcrumb, {
+      localVue,
+      propsData: {
+        location: {
+          _modelType: 'user',
+          _id: 'fake_userid',
+        },
+        noRoot: true,
+      },
+      provide: { girderRest },
+    });
+    await flushPromises();
+    expect(wrapper.vm.breadcrumb.length).toBe(1);
+    expect(wrapper.vm.breadcrumb[0].name).toBe('fake_user');
+  });
+
+  it('Test with root enabled', async () => {
+    const wrapper = shallowMount(Breadcrumb, {
+      localVue,
+      propsData: {
+        location: {
+          type: 'root',
+        },
+      },
+      provide: { girderRest },
+    });
+    await flushPromises();
+    expect(wrapper.vm.breadcrumb[0].type).toBe('root');
+    expect(wrapper.findAll('vbreadcrumbs-stub vicon-stub').at(0).text()).toBe('mdi-earth');
+
+    wrapper.setProps({
+      location: {
+        type: 'collections',
+      },
+    });
+    await flushPromises();
+    expect(wrapper.vm.breadcrumb.length).toBe(2);
+    expect(wrapper.vm.breadcrumb[1].type).toBe('collections');
+    expect(wrapper.findAll('vbreadcrumbs-stub vicon-stub').at(0).text()).toBe('mdi-earth');
+    expect(wrapper.findAll('vbreadcrumbs-stub vicon-stub').at(1).text()).toBe('mdi-file-tree');
+
+    wrapper.setProps({
+      location: {
+        _modelType: 'folder',
+        _id: 'fake_folder_id_2',
+      },
+    });
+    await flushPromises();
+    expect(wrapper.vm.breadcrumb.length).toBe(4);
+  });
+
+  it('Test user root w/o authentication', async () => {
+    let wrapper = shallowMount(Breadcrumb, {
       localVue,
       propsData: {
         location: {
@@ -135,6 +191,23 @@ describe('Breadcrumb', () => {
       provide: { girderRest },
     });
     await flushPromises();
-    expect(wrapper.vm.breadcrumb.root.name).toBe('fake_user');
+    expect(wrapper.vm.breadcrumb.length).toBe(2);
+    expect(wrapper.find('.home-button').exists()).toBe(false);
+
+    wrapper = shallowMount(Breadcrumb, {
+      localVue,
+      propsData: {
+        location: {
+          _modelType: 'user',
+          _id: 'fake_userid',
+        },
+      },
+      provide: { girderRest: await authenticateRestClient(girderRest, mock) },
+    });
+    await flushPromises();
+    expect(wrapper.vm.breadcrumb.length).toBe(3);
+    expect(wrapper.vm.breadcrumb[1].type).toBe('users');
+    expect(wrapper.findAll('vbreadcrumbs-stub vicon-stub').at(1).text()).toBe('mdi-account');
+    expect(wrapper.find('.home-button').exists()).toBe(true);
   });
 });

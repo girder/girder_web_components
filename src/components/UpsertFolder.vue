@@ -2,6 +2,7 @@
 import { stringify } from 'qs';
 import GirderBreadcrumb from './Breadcrumb.vue';
 import GirderMarkdownEditor from './MarkdownEditor.vue';
+import { createLocationValidator } from '../utils';
 
 const GIRDER_FOLDER_ENDPOINT = 'folder';
 
@@ -14,7 +15,7 @@ export default {
     location: {
       type: Object,
       required: true,
-      validator: val => val._modelType && val._id,
+      validator: createLocationValidator(false),
     },
     edit: {
       type: Boolean,
@@ -123,7 +124,8 @@ v-form(@submit.prevent="upsert")
         girder-breadcrumb.mb-3(
             :location="location",
             :disabled="true",
-            :append="append")
+            :append="append",
+            no-root)
         girder-markdown-editor(
             v-model="description",
             label="Description (Optional)")

@@ -141,7 +141,7 @@ v-data-table.girder-data-table(
     }
   }
 
-  .theme--light.v-icon {
+  .v-icon {
     color: inherit;
   }
 
