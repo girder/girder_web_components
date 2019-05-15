@@ -1,12 +1,12 @@
 <script>
-import { getLocationValidator } from '../utils';
+import { createLocationValidator } from '../utils';
 
 export default {
   props: {
     location: {
       type: Object,
       required: true,
-      validator: getLocationValidator(true),
+      validator: createLocationValidator(true),
     },
     disabled: {
       type: Boolean,
@@ -76,7 +76,7 @@ export default {
     },
   },
   created() {
-    if (!getLocationValidator(false)(this.location) && this.noRoot) {
+    if (!createLocationValidator(false)(this.location) && this.noRoot) {
       throw new Error("non root location can't be used with no-root prop at the same time");
     }
   },

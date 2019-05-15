@@ -2,7 +2,7 @@
 import { stringify } from 'qs';
 import GirderBreadcrumb from './Breadcrumb.vue';
 import GirderMarkdownEditor from './MarkdownEditor.vue';
-import { getLocationValidator } from '../utils';
+import { createLocationValidator } from '../utils';
 
 const GIRDER_FOLDER_ENDPOINT = 'folder';
 
@@ -15,7 +15,7 @@ export default {
     location: {
       type: Object,
       required: true,
-      validator: getLocationValidator(false),
+      validator: createLocationValidator(false),
     },
     edit: {
       type: Boolean,

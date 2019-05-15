@@ -67,7 +67,7 @@ import {
   Upload as GirderUpload,
   UpsertFolder as GirderUpsertFolder,
 } from '@/components';
-import { getLocationValidator } from '@/utils';
+import { createLocationValidator } from '@/utils';
 
 export default {
   name: 'App',
@@ -141,7 +141,7 @@ export default {
     },
   },
   methods: {
-    nonRootLocation: getLocationValidator(false),
+    nonRootLocation: createLocationValidator(false),
     postUpload() {
       // postUpload is an example of using hooks for greater control of component behavior.
       // here, we can complete the dialog disappear animation before the upload UI resets.

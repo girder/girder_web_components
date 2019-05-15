@@ -2,7 +2,7 @@
 import { sizeFormatter } from '../utils/mixins';
 import GirderBreadcrumb from './Breadcrumb.vue';
 import GirderDataTable from './Presentation/DataTable.vue';
-import { getLocationValidator } from '../utils';
+import { createLocationValidator } from '../utils';
 
 const GIRDER_FOLDER_ENDPOINT = 'folder';
 const GIRDER_ITEM_ENDPOINT = 'item';
@@ -23,7 +23,7 @@ export default {
       default: () => ({
         type: 'root',
       }),
-      validator: getLocationValidator(true),
+      validator: createLocationValidator(true),
     },
     selectEnabled: {
       type: Boolean,
@@ -86,7 +86,7 @@ export default {
       );
     },
     nonRootLocation() {
-      return getLocationValidator(false)(this.location_);
+      return createLocationValidator(false)(this.location_);
     },
   },
   asyncComputed: {
@@ -136,7 +136,7 @@ export default {
   },
   watch: {
     location(location) {
-      if (getLocationValidator(!this.noRoot)(location)) {
+      if (createLocationValidator(!this.noRoot)(location)) {
         this.location_ = location;
         // force reset pagination when location changes.
         this.pagination.page = 1;
@@ -154,7 +154,7 @@ export default {
     },
   },
   created() {
-    if (!getLocationValidator(false)(this.location_) && this.noRoot) {
+    if (!createLocationValidator(false)(this.location_) && this.noRoot) {
       throw new Error("non root location can't be used with no-root at the same time");
     }
   },
