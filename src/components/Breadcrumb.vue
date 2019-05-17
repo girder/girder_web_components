@@ -8,7 +8,7 @@ export default {
       required: true,
       validator: createLocationValidator(true),
     },
-    disabled: {
+    readonly: {
       type: Boolean,
       default: false,
     },
@@ -27,8 +27,15 @@ export default {
       loading: false,
     };
   },
+  computed: {
+    // have a separate computed to prevent append triggering remote requests
+    breadcrumb() {
+      const { append } = this;
+      return [...this.pathBreadcrumb, ...append];
+    },
+  },
   asyncComputed: {
-    breadcrumb: {
+    pathBreadcrumb: {
       default: [],
       async get() {
         this.loading = true;
@@ -41,7 +48,7 @@ export default {
         if (type === 'folder') {
           // The last breadcrumb isn't returned by rootpath.
           if (name) {
-            breadcrumb.unshift(this.location);
+            breadcrumb.unshift(this.extractCrumbData(this.location));
           } else {
             const { data } = await this.girderRest.get(`folder/${_id}`);
             breadcrumb.unshift(this.extractCrumbData(data));
@@ -94,32 +101,29 @@ export default {
 
 <template lang="pug">
 .girder-breadcrumb-component
-  v-icon.home-button(
-      v-if="girderRest.user",
+  v-icon.home-button.mr-3(
+      v-if="girderRest.user && !readonly",
       color="accent",
       @click="$emit('crumbclick', girderRest.user)",
       :disabled="location._id === girderRest.user._id") {{$vuetify.icons.userHome}}
-  v-breadcrumbs.font-weight-bold.pa-0.ml-3
-    span.subheading.font-weight-bold(:disabled="disabled", slot="divider") /
-    v-breadcrumbs-item(
-        v-for="(item, index) in breadcrumb",
-        :disabled="(disabled || index == breadcrumb.length-1)",
-        :key="index",
-        @click.native="$emit('crumbclick', item)")
-      template(
-        v-if="['folder', 'user', 'collection'].indexOf(item.type) !== -1") {{ item.name }}
-      template(
-        v-else-if="item.type==='users'")
-        v-icon.mdi-18px {{ $vuetify.icons.user }}
-      template(
-        v-else-if="item.type==='collections'")
-        v-icon.mdi-18px {{ $vuetify.icons.collection }}
-      template(
-        v-else-if="item.type==='root'")
-        v-icon.mdi-18px {{ $vuetify.icons.globe }}
-    v-breadcrumbs-item(
-        v-for="item in append",
-        :key="item._id") {{ item }}
+  v-breadcrumbs.font-weight-bold.pa-0(:items="breadcrumb")
+    span.subheading.font-weight-bold(:disabled="readonly", slot="divider") /
+    template(slot="item", slot-scope="{item}")
+      v-breadcrumbs-item(
+          :disabled="(readonly || breadcrumb.indexOf(item) == breadcrumb.length-1)",
+          @click.native="$emit('crumbclick', item)")
+        template(
+          v-if="['folder', 'user', 'collection'].indexOf(item.type) !== -1") {{ item.name }}
+        template(
+          v-else-if="item.type==='users'")
+          v-icon.mdi-18px {{ $vuetify.icons.user }}
+        template(
+          v-else-if="item.type==='collections'")
+          v-icon.mdi-18px {{ $vuetify.icons.collection }}
+        template(
+          v-else-if="item.type==='root'")
+          v-icon.mdi-18px {{ $vuetify.icons.globe }}
+        span.accent--text(v-else) {{ item }}
 </template>
 
 <style lang="scss">

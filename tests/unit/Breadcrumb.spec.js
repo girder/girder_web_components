@@ -156,7 +156,6 @@ describe('Breadcrumb', () => {
     });
     await flushPromises();
     expect(wrapper.vm.breadcrumb[0].type).toBe('root');
-    expect(wrapper.findAll('vbreadcrumbs-stub vicon-stub').at(0).text()).toBe('mdi-earth');
 
     wrapper.setProps({
       location: {
@@ -166,8 +165,6 @@ describe('Breadcrumb', () => {
     await flushPromises();
     expect(wrapper.vm.breadcrumb.length).toBe(2);
     expect(wrapper.vm.breadcrumb[1].type).toBe('collections');
-    expect(wrapper.findAll('vbreadcrumbs-stub vicon-stub').at(0).text()).toBe('mdi-earth');
-    expect(wrapper.findAll('vbreadcrumbs-stub vicon-stub').at(1).text()).toBe('mdi-file-tree');
 
     wrapper.setProps({
       location: {
@@ -207,7 +204,6 @@ describe('Breadcrumb', () => {
     await flushPromises();
     expect(wrapper.vm.breadcrumb.length).toBe(3);
     expect(wrapper.vm.breadcrumb[1].type).toBe('users');
-    expect(wrapper.findAll('vbreadcrumbs-stub vicon-stub').at(1).text()).toBe('mdi-account');
     expect(wrapper.find('.home-button').exists()).toBe(true);
   });
 });
