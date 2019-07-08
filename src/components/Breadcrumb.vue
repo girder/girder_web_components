@@ -144,6 +144,12 @@ export default {
     .v-icon {
       color: inherit;
     }
+
+    // Good to always hold vertical space
+    &::after {
+      content: "\00a0";
+      line-height: 24px;
+    }
   }
 }
 </style>
