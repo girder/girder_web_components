@@ -12,13 +12,31 @@ export default {
       type: Boolean,
       default: false,
     },
+    noSearchIcon: {
+      type: Boolean,
+      default: false,
+    },
+    searchTypes: {
+      type: Array,
+      default: () => ['user', 'folder', 'item'],
+      validator(types) {
+        return !types.find(type => ['user', 'folder', 'item', 'group'].indexOf(type) === -1);
+      },
+    },
+    textFieldProps: {
+      type: Object,
+      default: () => ({
+        light: true,
+        solo: true,
+      }),
+    },
   },
   inject: ['girderRest'],
   data() {
     return {
       searchText: '',
       searchMode: 'prefix',
-      searchTypes: ['user', 'folder', 'item'],
+      searchTypes_: this.searchTypes,
       searchOptionsMenu: false,
     };
   },
@@ -33,7 +51,7 @@ export default {
       return {
         q: this.searchText,
         mode: this.searchMode,
-        types: JSON.stringify(this.searchTypes),
+        types: JSON.stringify(this.searchTypes_),
         // + 1 to determine if total results > maxQuickResults
         limit: this.maxQuickResults + 1,
       };
@@ -50,7 +68,7 @@ export default {
             const { data } = await this.girderRest.get('resource/search', {
               params: this.searchParams,
             });
-            results = [].concat(...this.searchTypes.map(t => data[t]));
+            results = [].concat(...this.searchTypes_.map(t => data[t]));
           }
         } catch (err) {
           this.$emit('error', err.message || 'Unknown error during search');
@@ -73,17 +91,17 @@ export default {
 
 <template lang="pug">
 v-layout.girder-searchbar(row, align-center)
-  v-icon.mdi-24px(color="white") {{ $vuetify.icons.search }}
-  v-menu.grow.mx-3(
+  v-icon.mdi-24px.mr-3(v-if="!noSearchIcon", color="white") {{ $vuetify.icons.search }}
+  v-menu.grow.mr-3(
       offset-y, content-class="girder-searchbar-menu", :open-on-click="false",
       :value="searchText", :nudge-bottom="6", transition="slide-y-transition")
     v-text-field(
-        slot="activator", v-model="searchText", light, solo, hide-details, clearable)
+        slot="activator", v-model="searchText", clearable, hide-details, v-bind="textFieldProps")
     v-list
       v-list-tile(
           v-show="!loading",
           v-for="r in quickResults",
-          @click="$emit('select', r)",
+          @click="searchText=''; $emit('select', r);",
           :key="r._id")
         v-list-tile-action
           v-icon {{ $vuetify.icons[r._modelType] }}
@@ -104,7 +122,7 @@ v-layout.girder-searchbar(row, align-center)
       //- Skeleton search results shown as "loading" animation
       v-list-tile(
           v-show="loading",
-          v-for="i in (maxQuickResults + (showMore ? 1 : 0))",
+          v-for="i in [0,1]",
           :key="`skeleton-${i}`")
         v-list-tile-action
           v-icon.grey--text.text--lighten-1 {{ $vuetify.icons.circle }}
@@ -128,9 +146,11 @@ v-layout.girder-searchbar(row, align-center)
             v-radio.mb-1(key="text", label="Text Search", value="text")
             v-radio(key="prefix", label="Prefix Search", value="prefix")
           v-divider
-          v-checkbox.mt-2(hide-details, v-model="searchTypes", label="User", value="user")
-          v-checkbox.mt-1(hide-details, v-model="searchTypes", label="Folder", value="folder")
-          v-checkbox.mt-1.mb-1(hide-details, v-model="searchTypes", label="Item", value="item")
+          v-checkbox.mt-2(v-for="type of searchTypes",
+              :key="type",
+              hide-details,
+              v-model="searchTypes_",
+              :label="type.charAt(0).toUpperCase() + type.slice(1)", :value="type")
 </template>
 
 <style lang="scss">
@@ -139,7 +159,7 @@ v-layout.girder-searchbar(row, align-center)
     min-height: 40px;
   }
 
-  .v-menu__activator * {
+  .v-menu__activator .v-text-field__slot input {
     cursor: text !important;
   }
 }

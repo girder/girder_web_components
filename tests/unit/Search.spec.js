@@ -111,12 +111,14 @@ describe('Search', () => {
 
     const wrapper = shallowMount(Search, {
       localVue,
+      propsData: {
+        searchTypes: ['user', 'folder'],
+      },
       provide: { girderRest },
     });
     await flushPromises();
     wrapper.setData({
       searchMode: 'text',
-      searchTypes: ['user', 'folder'],
       searchText: 'a third thing',
     });
     await flushPromises();
