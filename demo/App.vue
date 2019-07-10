@@ -19,6 +19,10 @@ v-app.app
               v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
               v-checkbox.mt-1(hide-details, label="Upload", v-model="newItemEnabled")
               v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
+              v-divider
+              v-list(dense)
+                v-list-tile(@click="jobDialog=!jobDialog")
+                  v-list-tile-title Jobs
     v-spacer
     girder-search(v-if="searchEnabled", @select="handleSearchSelect")
     v-btn(flat, icon, @click="girderRest.logout()")
@@ -57,6 +61,8 @@ v-app.app
               @click:newitem="uploader = true",
               @click:newfolder="newFolder = true",
               @selection-changed="selected = $event")
+  v-dialog(v-model="jobDialog", full-width)
+    girder-job-list
 </template>
 
 <script>
@@ -67,6 +73,7 @@ import {
   Upload as GirderUpload,
   UpsertFolder as GirderUpsertFolder,
 } from '@/components';
+import { JobList as GirderJobList } from '@/components/job';
 import { createLocationValidator } from '@/utils';
 
 export default {
@@ -78,6 +85,7 @@ export default {
     GirderSearch,
     GirderUpload,
     GirderUpsertFolder,
+    GirderJobList,
   },
   data() {
     return {
@@ -93,6 +101,7 @@ export default {
       newFolderEnabled: true,
       searchEnabled: true,
       selected: [],
+      jobDialog: false,
     };
   },
   asyncComputed: {
