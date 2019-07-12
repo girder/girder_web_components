@@ -17,7 +17,7 @@ v-app.app
               v-checkbox.mt-2(hide-details, label="Select", v-model="selectEnabled")
               v-checkbox.mt-1(hide-details, label="Draggable", v-model="dragEnabled")
               v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
-              v-checkbox.mt-1(hide-details, label="Upload", v-model="newItemEnabled")
+              v-checkbox.mt-1(hide-details, label="Upload", v-model="uploadEnabled")
               v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
               v-divider
               v-list(dense)
@@ -34,32 +34,16 @@ v-app.app
         :oauth="true",
         :key="girderRest.token",
         :forgot-password-url="forgotPasswordUrl")
-  v-dialog(v-model="uploader", full-width, max-width="800px")
-    girder-upload(
-        v-if="uploadDest",
-        :dest="uploadDest",
-        :post-upload="postUpload",
-        multiple="multiple")
-  v-dialog(v-model="newFolder", full-width, max-width="800px")
-    girder-upsert-folder(
-        v-if="nonRootLocation(location)",
-        :key="location._id",
-        :location="location",
-        :post-upsert="postUpsert",
-        @dismiss="newFolder = false")
   v-container(v-show="!loggedOut", fluid)
     v-layout(row, wrap)
       v-flex.mr-2(grow)
         v-card
           girder-data-browser(
-              ref="girderBrowser",
               :location.sync="location",
-              :select-enabled="selectEnabled",
+              :selection="selectEnabled",
               :draggable="dragEnabled",
-              :new-item-enabled="newItemEnabled",
-              :new-folder-enabled="newFolderEnabled",
-              @click:newitem="uploader = true",
-              @click:newfolder="newFolder = true",
+              :upload="uploadEnabled",
+              :new-folder="newFolderEnabled",
               @selection-changed="selected = $event")
   v-dialog(v-model="jobDialog", full-width)
     girder-job-list
@@ -74,7 +58,6 @@ import {
   UpsertFolder as GirderUpsertFolder,
 } from '@/components';
 import { JobList as GirderJobList } from '@/components/job';
-import { createLocationValidator } from '@/utils';
 
 export default {
   name: 'App',
@@ -89,15 +72,12 @@ export default {
   },
   data() {
     return {
-      multiple: true,
-      uploader: false,
-      newFolder: false,
       uiOptionsMenu: false,
       browserLocation: null,
       forgotPasswordUrl: '/#?dialog=resetpassword',
       dragEnabled: false,
       selectEnabled: true,
-      newItemEnabled: true,
+      uploadEnabled: true,
       newFolderEnabled: true,
       searchEnabled: true,
       selected: [],
@@ -150,19 +130,6 @@ export default {
     },
   },
   methods: {
-    nonRootLocation: createLocationValidator(false),
-    postUpload() {
-      // postUpload is an example of using hooks for greater control of component behavior.
-      // here, we can complete the dialog disappear animation before the upload UI resets.
-      this.$refs.girderBrowser.refresh();
-      this.uploader = false;
-      return new Promise(resolve => setTimeout(resolve, 400));
-    },
-    postUpsert() {
-      this.$refs.girderBrowser.refresh();
-      this.newFolder = false;
-      return new Promise(resolve => setTimeout(resolve, 400));
-    },
     handleSearchSelect(item) {
       if (['user', 'folder'].indexOf(item._modelType) >= 0) {
         this.browserLocation = item;

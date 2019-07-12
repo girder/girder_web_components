@@ -2,6 +2,8 @@
 import { sizeFormatter } from '../utils/mixins';
 import GirderBreadcrumb from './Breadcrumb.vue';
 import GirderDataTable from './Presentation/DataTable.vue';
+import UpsertFolder from './UpsertFolder.vue';
+import Upload from './Upload.vue';
 import { createLocationValidator } from '../utils';
 
 const GIRDER_FOLDER_ENDPOINT = 'folder';
@@ -11,6 +13,8 @@ export default {
   components: {
     GirderBreadcrumb,
     GirderDataTable,
+    UpsertFolder,
+    Upload,
   },
   mixins: [sizeFormatter],
   props: {
@@ -25,29 +29,49 @@ export default {
       }),
       validator: createLocationValidator(true),
     },
-    selectEnabled: {
-      type: Boolean,
-      default: true,
-    },
-    multiSelectEnabled: {
+    selection: {
       type: Boolean,
       default: false,
     },
-    uploadEnabled: {
+    noRootLocation: {
       type: Boolean,
       default: false,
     },
-    newItemEnabled: {
-      type: Boolean,
-      default: true,
-    },
-    newFolderEnabled: {
-      type: Boolean,
-      default: true,
-    },
-    noRoot: {
+    upload: {
       type: Boolean,
       default: false,
+    },
+    uploadMultiple: {
+      type: Boolean,
+      default: undefined,
+    },
+    uploadAccept: {
+      type: String,
+      default: undefined,
+    },
+    uploadCls: {
+      type: Function,
+      default: undefined,
+    },
+    preUpload: {
+      type: Function,
+      default: undefined,
+    },
+    postUpload: {
+      type: Function,
+      default: undefined,
+    },
+    newFolder: {
+      type: Boolean,
+      default: false,
+    },
+    preUpsert: {
+      type: Function,
+      default: undefined,
+    },
+    postUpsert: {
+      type: Function,
+      default: undefined,
     },
   },
   inject: ['girderRest'],
@@ -63,6 +87,8 @@ export default {
       selected: [],
       // make an internal copy so doesn't have to require the location prop
       location_: this.location,
+      upsertFolder: false,
+      uploader: false,
     };
   },
   computed: {
@@ -75,17 +101,18 @@ export default {
         0,
       );
     },
-    _selectEnabled() {
+    selection_() {
       if (!this.location_) {
         return false;
       }
-      const { _modelType } = this.location_;
+      const { type } = this.location_;
       return (
-        this.selectEnabled &&
-        ['folder', 'user', 'collection'].indexOf(_modelType) !== -1
+        this.selection &&
+        ['root', 'users', 'collections'].indexOf(type) === -1
       );
     },
-    nonRootLocation() {
+
+    isNonRootLocation() {
       return createLocationValidator(false)(this.location_);
     },
   },
@@ -136,7 +163,7 @@ export default {
   },
   watch: {
     location(location) {
-      if (createLocationValidator(!this.noRoot)(location)) {
+      if (createLocationValidator(!this.noRootLocation)(location)) {
         this.location_ = location;
         // force reset pagination when location changes.
         this.pagination.page = 1;
@@ -154,8 +181,8 @@ export default {
     },
   },
   created() {
-    if (!createLocationValidator(false)(this.location_) && this.noRoot) {
-      throw new Error("non root location can't be used with no-root at the same time");
+    if (!createLocationValidator(false)(this.location_) && this.noRootLocation) {
+      throw new Error("Root location can't be used with no-root prop at the same time");
     }
   },
   methods: {
@@ -168,7 +195,7 @@ export default {
     },
     rowClick(item) {
       const { _modelType, _id } = item;
-      const type = this.location._modelType || this.location.type;
+      const type = this.location_._modelType || this.location_.type;
       if (
         (this.location_.id !== _id || type !== _modelType) &&
         _modelType !== 'item'
@@ -184,7 +211,7 @@ export default {
     },
     changeLocation(location) {
       const newType = location._modelType || location.type;
-      const oldType = this.location._modelType || this.location.type;
+      const oldType = this.location_._modelType || this.location_.type;
       if (this.location_._id !== location._id || newType !== oldType) {
         this.location_ = location;
         this.$emit('update:location', location);
@@ -197,7 +224,7 @@ export default {
       if (this.counts.nFolders || this.counts.nItems) {
         return this.fetchPaginatedFolderRows();
       }
-      const type = this.location._modelType || this.location.type;
+      const type = this.location_._modelType || this.location_.type;
       if (type === 'users' || type === 'collections') {
         if (this.counts.nUsers || this.counts.nCollections) {
           return this.fetchPaginatedCollectionOrUserRows(this.getResourceType(type));
@@ -290,6 +317,25 @@ export default {
           return '';
       }
     },
+    postUpsert_() {
+      // postUpload is an example of using hooks for greater control of component behavior.
+      // here, we can complete the dialog disappear animation before the upload UI resets.
+      this.refresh();
+      this.upsertFolder = false;
+      return Promise.all([
+        new Promise(resolve => setTimeout(resolve, 400)),
+        this.postUpsert ? this.postUpsert() : null,
+      ]);
+    },
+    postUpload_() {
+      // here, we can complete the dialog disappear animation before the upload UI resets.
+      this.refresh();
+      this.uploader = false;
+      return Promise.all([
+        new Promise(resolve => setTimeout(resolve, 400)),
+        this.postUpload ? this.postUpload() : null,
+      ]);
+    },
   },
 };
 </script>
@@ -302,7 +348,7 @@ girder-data-table.girder-file-browser(
     :pagination.sync="pagination",
     :total-items="totalItems",
     :loading="loading",
-    :select-enabled="_selectEnabled",
+    :selection="selection_",
     @rowclick="rowClick",
     @drag="$emit('drag', $event)",
     @dragstart="$emit('dragstart', $event)",
@@ -311,7 +357,7 @@ girder-data-table.girder-file-browser(
 
   template(slot="header", slot-scope="props")
     tr.secondary.lighten-5
-      th.pl-3.pr-0(width="1%", v-if="_selectEnabled")
+      th.pl-3.pr-0(width="1%", v-if="selection_")
         v-checkbox.secondary--text.text--darken-1.pr-2(
             color="accent",
             hide-details,
@@ -324,21 +370,38 @@ girder-data-table.girder-file-browser(
               ref="breadcrumb",
               :location="location_",
               @crumbclick="changeLocation",
-              :no-root="noRoot")
+              :root="!noRootLocation")
           v-spacer
           slot(name="headerwidget")
-          v-btn.ma-0(flat,
-              small,
-              color="secondary darken-2",
-              v-if="newFolderEnabled && nonRootLocation",
-              @click="$emit('click:newfolder')")
-            v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.folderNew }}
-            span.hidden-xs-only New Folder
-          v-btn.ma-0(flat,
-              small,
-              color="secondary darken-2",
-              v-if="newItemEnabled && nonRootLocation",
-              @click="$emit('click:newitem')")
-            v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.fileNew }}
-            span.hidden-xs-only New Item
+          v-dialog(v-if="newFolder && isNonRootLocation",
+              v-model="upsertFolder",
+              full-width,
+              max-width="800px")
+            v-btn.ma-0(slot="activator",
+                flat,
+                small,
+                color="secondary darken-2")
+              v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.folderNew }}
+              span.hidden-xs-only New Folder
+            upsert-folder(
+                :location="location_",
+                :post-upsert="postUpsert_",
+                :pre-upsert="preUpsert",
+                @dismiss="upsertFolder = false")
+          v-dialog(v-if="upload && location_._modelType==='folder'",
+              v-model="uploader",
+              full-width,
+              max-width="800px")
+            v-btn.ma-0(slot="activator",
+                flat,
+                small,
+                color="secondary darken-2")
+              v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.fileUpload }}
+              span.hidden-xs-only Upload Item
+            upload(:dest="location_",
+                :post-upload="postUpload_",
+                :pre-upload="preUpload",
+                :multiple="uploadMultiple",
+                :accept="uploadAccept",
+                :upload-cls="uploadCls")
 </template>

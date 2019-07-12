@@ -5,10 +5,10 @@ export default function (allowRoot) {
     }
     const { type, _modelType, _id } = location;
     if (['user', 'collection', 'folder'].indexOf(_modelType) !== -1 && _id) {
-      return true;
+      return 'model';
     }
     if (allowRoot && ['collections', 'users', 'root'].indexOf(type) !== -1) {
-      return true;
+      return 'root';
     }
     return false;
   };
