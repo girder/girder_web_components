@@ -1,172 +1,99 @@
 <template lang="pug">
 v-app.app
-  v-toolbar.toolbar-main(v-show="!loggedOut", color="primary", dark)
-    v-toolbar-title Girder Web Components
-    v-toolbar-items
-      v-menu(
-          offset-y,
-          left,
-          :close-on-content-click="false",
-          content-class="girder-search-arrow-menu",
-          v-model="uiOptionsMenu")
-        v-btn(icon, slot="activator")
-          v-icon.mdi-24px {{ $vuetify.icons.more }}
-        v-card
-          v-card-actions
-            v-layout(column)
-              v-checkbox.mt-2(hide-details, label="Select", v-model="selectEnabled")
-              v-checkbox.mt-1(hide-details, label="Draggable", v-model="dragEnabled")
-              v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
-              v-checkbox.mt-1(hide-details, label="Upload", v-model="uploadEnabled")
-              v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
-              v-divider
-              v-list(dense)
-                v-list-tile(@click="jobDialog=!jobDialog")
-                  v-list-tile-title Jobs
-    v-spacer
-    girder-search(v-if="searchEnabled", @select="handleSearchSelect")
-    v-btn(flat, icon, @click="girderRest.logout()")
-      v-icon $vuetify.icons.logout
-  v-dialog(:value="loggedOut", persistent, full-width, max-width="600px")
-    girder-auth(
-        :force-otp="false",
-        :register="true",
-        :oauth="true",
-        :key="girderRest.token",
-        :forgot-password-url="forgotPasswordUrl")
-  v-dialog(v-model="uploader", full-width, max-width="800px")
-    girder-upload(
-        v-if="uploadDest",
-        :dest="uploadDest",
-        :post-upload="postUpload",
-        multiple="multiple")
-  v-dialog(v-model="newFolder", full-width, max-width="800px")
-    girder-upsert-folder(
-        v-if="nonRootLocation(location)",
-        :key="location._id",
-        :location="location",
-        :post-upsert="postUpsert",
-        @dismiss="newFolder = false")
-  v-container(v-show="!loggedOut", fluid)
-    v-layout(row, wrap)
-      v-flex.mr-2(grow)
-        v-card
-          girder-data-browser(
-              ref="girderBrowser",
-              :location.sync="location",
-              :selection="selectEnabled",
-              :draggable="dragEnabled",
-              :upload="uploadEnabled",
-              :new-folder="newFolderEnabled",
-              @click:newitem="uploader = true",
-              @click:newfolder="newFolder = true",
-              @selection-changed="selected = $event")
-  v-dialog(v-model="jobDialog", full-width)
-    girder-job-list
+  v-content
+    v-toolbar.toolbar-main(color="primary", dark)
+      v-toolbar-title Girder Web Components
+      v-toolbar-items
+        v-menu(
+            offset-y,
+            left,
+            :close-on-content-click="false",
+            content-class="girder-search-arrow-menu",
+            v-model="uiOptionsMenu")
+          v-btn(icon, slot="activator")
+            v-icon.mdi-24px {{ $vuetify.icons.more }}
+          v-card
+            v-card-actions
+              v-layout(column)
+                v-checkbox.mt-1(hide-details, label="Worker Jobs", v-model="jobsEnabled")
+                v-divider.mt-2.mb-1
+                v-checkbox.mt-1(hide-details, label="Data Browser", v-model="browserEnabled")
+                v-checkbox.mt-1(hide-details, label="Select", v-model="selectable")
+                v-checkbox.mt-1(hide-details, label="Draggable", v-model="dragEnabled")
+                v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
+                v-checkbox.mt-1(hide-details, label="Upload", v-model="uploadEnabled")
+                v-checkbox.mt-1(hide-details, label="Root", v-model="rootLocationAllowed")
+                v-divider.mt-2.mb-1
+                v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
+
+      v-spacer
+      girder-search(v-if="searchEnabled", @select="handleSearchSelect")
+      v-btn(flat, icon, @click="girderRest.logout()")
+        v-icon $vuetify.icons.logout
+
+    v-container(fluid)
+      girder-auth.mb-4(
+          v-if="loggedOut",
+          :force-otp="false",
+          :register="true",
+          :oauth="true",
+          :key="girderRest.token",
+          :forgot-password-url="forgotPasswordUrl")
+      girder-file-manager.mb-4(v-if="browserEnabled",
+        v-bind="{ dragEnabled, uploadEnabled, uploadMultiple, newFolderEnabled, selectable, rootLocationAllowed }",
+        @selection-changed="selected = $event")
+      girder-job-list(v-if="jobsEnabled")
 </template>
 
 <script>
 import {
   Authentication as GirderAuth,
-  DataBrowser as GirderDataBrowser,
   Search as GirderSearch,
-  Upload as GirderUpload,
-  UpsertFolder as GirderUpsertFolder,
 } from '@/components';
-import { JobList as GirderJobList } from '@/components/job';
-import { createLocationValidator } from '@/utils';
+import { FileManager as GirderFileManager } from '@/Snippet';
+import { JobList as GirderJobList } from '@/components/Job';
 
 export default {
   name: 'App',
   inject: ['girderRest'],
+
   components: {
     GirderAuth,
-    GirderDataBrowser,
+    GirderFileManager,
     GirderSearch,
-    GirderUpload,
-    GirderUpsertFolder,
     GirderJobList,
   },
+
   data() {
     return {
-      uploader: false,
-      newFolder: false,
-      uiOptionsMenu: false,
-      browserLocation: null,
-      forgotPasswordUrl: '/#?dialog=resetpassword',
+      browserEnabled: true,
       dragEnabled: false,
-      selectEnabled: true,
-      uploadEnabled: true,
-      newFolderEnabled: true,
+      forgotPasswordUrl: '/#?dialog=resetpassword',
+      jobsEnabled: false,
+      location: null,
+      rootLocationAllowed: true,
       searchEnabled: true,
       selected: [],
-      jobDialog: false,
+      selectable: true,
+      uiOptionsMenu: false,
+      uploadEnabled: true,
+      uploadMultiple: true,
+      newFolderEnabled: true,
     };
   },
-  asyncComputed: {
-    async folder() {
-      if (this.girderRest.user) {
-        try {
-          return (await this.girderRest.get('folder', {
-            params: {
-              parentType: 'user',
-              parentId: this.girderRest.user._id,
-            },
-          })).data[0];
-        } catch ({ response }) {
-          if (response) {
-            this.error = response.data.message;
-          } else {
-            this.error = `Could not connect to server: ${this.girderRest.apiRoot}`;
-          }
-        }
-      }
-      return null;
-    },
-  },
+
   computed: {
-    location: {
-      get() {
-        if (this.browserLocation) {
-          return this.browserLocation;
-        } else if (this.girderRest.user) {
-          return { _modelType: 'user', _id: this.girderRest.user._id };
-        }
-        return { type: 'root' };
-      },
-      set(newVal) {
-        this.browserLocation = newVal;
-      },
-    },
     loggedOut() {
       return this.girderRest.user === null;
     },
-    uploadDest() {
-      if (this.location) {
-        return this.location._modelType === 'folder' ? this.location : this.folder;
-      }
-      return null;
-    },
   },
+
   methods: {
-    nonRootLocation: createLocationValidator(false),
-    postUpload() {
-      // postUpload is an example of using hooks for greater control of component behavior.
-      // here, we can complete the dialog disappear animation before the upload UI resets.
-      this.$refs.girderBrowser.refresh();
-      this.uploader = false;
-      return new Promise(resolve => setTimeout(resolve, 400));
-    },
-    postUpsert() {
-      this.$refs.girderBrowser.refresh();
-      this.newFolder = false;
-      return new Promise(resolve => setTimeout(resolve, 400));
-    },
     handleSearchSelect(item) {
       if (['user', 'folder'].indexOf(item._modelType) >= 0) {
-        this.browserLocation = item;
+        this.location = item;
       } else {
-        this.browserLocation = { _modelType: 'folder', _id: item.folderId };
+        this.location = { _modelType: 'folder', _id: item.folderId };
       }
     },
   },

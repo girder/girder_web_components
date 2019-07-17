@@ -1,5 +1,6 @@
 <script>
-import { createLocationValidator } from '../utils';
+import { createLocationValidator, isRootLocation, getLocationType } from '../utils';
+import { create } from 'domain';
 
 export default {
   props: {
@@ -16,7 +17,7 @@ export default {
       type: Array,
       default: () => [],
     },
-    rootLocation: {
+    rootLocationAllowed: {
       type: Boolean,
       default: false,
     },
@@ -43,8 +44,9 @@ export default {
         // The reason for this local user variable is that
         // we have to set up reactivity dependancy before the first async function call
         const { user } = this.girderRest;
-        const type = this.location._modelType || this.location.type;
-        const { name, _id } = this.location;
+        const { location, rootLocationAllowed } = this;
+        const type = getLocationType(location);
+        const { name, _id } = location;
         if (type === 'folder') {
           // The last breadcrumb isn't returned by rootpath.
           if (name) {
@@ -62,7 +64,7 @@ export default {
           const { data } = await this.girderRest.get(`${type}/${_id}`);
           breadcrumb.unshift(this.extractCrumbData(data));
         }
-        if (this.rootLocation) {
+        if (rootLocationAllowed) {
           if (
             type === 'users' ||
             (user && breadcrumb.length && breadcrumb[0].type === 'user')
@@ -83,8 +85,8 @@ export default {
     },
   },
   created() {
-    if (!createLocationValidator(true)(this.location) === 'root' && !this.rootLocation) {
-      throw new Error("Root location can't be used without root-location prop");
+    if (!createLocationValidator(this.rootLocationAllowed)(this.location)) {
+      throw new Error('root location cannot be used when root-location-allowed is false');
     }
   },
   methods: {

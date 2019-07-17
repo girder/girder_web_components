@@ -86,7 +86,7 @@ v-data-table.girder-data-table(
             :input-value="props.selected", accent, hide-details)
       td.pl-3(colspan="2")
         span.text-container.secondary--text.text--darken-3.nobreak(
-            :class="{ selectable: selection && props.item._modelType !== 'item' }",
+            :class="{ selectable: props.item._modelType !== 'item' }",
             @click.stop="$emit('rowclick', props.item)")
           v-icon.pr-2(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons[props.item.icon] }}
           | {{ props.item.name }}
