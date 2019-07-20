@@ -16,7 +16,7 @@ export default {
       type: Array,
       default: () => [],
     },
-    noRoot: {
+    rootLocation: {
       type: Boolean,
       default: false,
     },
@@ -62,7 +62,7 @@ export default {
           const { data } = await this.girderRest.get(`${type}/${_id}`);
           breadcrumb.unshift(this.extractCrumbData(data));
         }
-        if (!this.noRoot) {
+        if (this.rootLocation) {
           if (
             type === 'users' ||
             (user && breadcrumb.length && breadcrumb[0].type === 'user')
@@ -83,8 +83,8 @@ export default {
     },
   },
   created() {
-    if (!createLocationValidator(false)(this.location) && this.noRoot) {
-      throw new Error("non root location can't be used with no-root prop at the same time");
+    if (!createLocationValidator(true)(this.location) === 'root' && !this.rootLocation) {
+      throw new Error("Root location can't be used without root-location prop");
     }
   },
   methods: {

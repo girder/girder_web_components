@@ -17,7 +17,7 @@ export default {
       type: Array,
       required: true,
     },
-    selectEnabled: {
+    selection: {
       type: Boolean,
       required: true,
     },
@@ -35,7 +35,7 @@ export default {
   },
   methods: {
     handleRowSelect({ shiftKey }, props) {
-      if (this.selectEnabled) {
+      if (this.selection) {
         props.selected = !props.selected;
         if (shiftKey && this.lastCheckBoxIdx !== null) {
           const [start, end] = [this.lastCheckBoxIdx, props.index + 1].sort();
@@ -74,19 +74,19 @@ v-data-table.girder-data-table(
 
   template(slot="items", slot-scope="props")
     tr.itemRow(:draggable="draggable", :active="props.selected",
-        :class="{ selectable: !selectEnabled }",
+        :class="{ selectable: selection }",
         @click="handleRowSelect($event, props)",
         @drag="$emit('drag', { items: [props], event: $event })",
         @dragstart="$emit('dragstart', { items: [props], event: $event })",
         @dragend="$emit('dragend', { items: [props], event: $event })",
         @drop="$emit('drop', { items: [props], event: $event })",
         :key="props.index")
-      td.pl-3.pr-0(v-if="selectEnabled")
+      td.pl-3.pr-0(v-if="selection")
         v-checkbox.secondary--text.text--darken-1.pr-2(
             :input-value="props.selected", accent, hide-details)
       td.pl-3(colspan="2")
         span.text-container.secondary--text.text--darken-3.nobreak(
-            :class="{ selectable: selectEnabled && props.item._modelType !== 'item' }",
+            :class="{ selectable: selection && props.item._modelType !== 'item' }",
             @click.stop="$emit('rowclick', props.item)")
           v-icon.pr-2(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons[props.item.icon] }}
           | {{ props.item.name }}

@@ -69,11 +69,6 @@ describe('DataBrowser', () => {
           _modelType: 'user',
           _id: 'foo_user_id',
         },
-        selectEnabled: false,
-        multiSelectEnabled: false,
-        uploadEnabled: false,
-        newItemEnabled: false,
-        newFolderEnabled: false,
       },
       provide: { girderRest },
     });
@@ -120,11 +115,6 @@ describe('DataBrowser', () => {
           _modelType: 'folder',
           _id: 'fake_folder_id',
         },
-        selectEnabled: false,
-        multiSelectEnabled: false,
-        uploadEnabled: false,
-        newItemEnabled: false,
-        newFolderEnabled: false,
       },
       data: () => ({
         pagination: {
@@ -165,11 +155,6 @@ describe('DataBrowser', () => {
           _modelType: 'folder',
           _id: 'fake_folder_id',
         },
-        selectEnabled: false,
-        multiSelectEnabled: false,
-        uploadEnabled: false,
-        newItemEnabled: false,
-        newFolderEnabled: false,
       },
       data: () => ({
         pagination: {
@@ -211,11 +196,6 @@ describe('DataBrowser', () => {
           _modelType: 'folder',
           _id: 'fake_folder_id',
         },
-        selectEnabled: false,
-        multiSelectEnabled: false,
-        uploadEnabled: false,
-        newItemEnabled: false,
-        newFolderEnabled: false,
       },
       data: () => ({
         pagination: {
@@ -242,11 +222,11 @@ describe('DataBrowser', () => {
     expect(validator({ _modelType: 'folder' })).toBe(false);
     expect(validator({ _modelType: 'user' })).toBe(false);
     expect(validator({ _modelType: 'collection' })).toBe(false);
-    expect(validator({ _modelType: 'folder', _id: 'fake_folder_id' })).toBe(true);
-    expect(validator({ _modelType: 'user', _id: 'fake_user_id' })).toBe(true);
-    expect(validator({ type: 'root' })).toBe(true);
-    expect(validator({ type: 'users' })).toBe(true);
-    expect(validator({ type: 'collections' })).toBe(true);
+    expect(validator({ _modelType: 'folder', _id: 'fake_folder_id' })).toBe('model');
+    expect(validator({ _modelType: 'user', _id: 'fake_user_id' })).toBe('model');
+    expect(validator({ type: 'root' })).toBe('root');
+    expect(validator({ type: 'users' })).toBe('root');
+    expect(validator({ type: 'collections' })).toBe('root');
   });
 
   it('default root location', async () => {

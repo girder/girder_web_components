@@ -17,7 +17,7 @@ v-app.app
               v-checkbox.mt-2(hide-details, label="Select", v-model="selectEnabled")
               v-checkbox.mt-1(hide-details, label="Draggable", v-model="dragEnabled")
               v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
-              v-checkbox.mt-1(hide-details, label="Upload", v-model="newItemEnabled")
+              v-checkbox.mt-1(hide-details, label="Upload", v-model="uploadEnabled")
               v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
               v-divider
               v-list(dense)
@@ -54,10 +54,10 @@ v-app.app
           girder-data-browser(
               ref="girderBrowser",
               :location.sync="location",
-              :select-enabled="selectEnabled",
+              :selection="selectEnabled",
               :draggable="dragEnabled",
-              :new-item-enabled="newItemEnabled",
-              :new-folder-enabled="newFolderEnabled",
+              :upload="uploadEnabled",
+              :new-folder="newFolderEnabled",
               @click:newitem="uploader = true",
               @click:newfolder="newFolder = true",
               @selection-changed="selected = $event")
@@ -89,7 +89,6 @@ export default {
   },
   data() {
     return {
-      multiple: true,
       uploader: false,
       newFolder: false,
       uiOptionsMenu: false,
@@ -97,7 +96,7 @@ export default {
       forgotPasswordUrl: '/#?dialog=resetpassword',
       dragEnabled: false,
       selectEnabled: true,
-      newItemEnabled: true,
+      uploadEnabled: true,
       newFolderEnabled: true,
       searchEnabled: true,
       selected: [],

@@ -97,7 +97,6 @@ describe('Breadcrumb', () => {
           _modelType: 'folder',
           _id: 'fake_folder_id',
         },
-        noRoot: true,
       },
       provide: { girderRest },
     });
@@ -135,7 +134,6 @@ describe('Breadcrumb', () => {
           _modelType: 'user',
           _id: 'fake_userid',
         },
-        noRoot: true,
       },
       provide: { girderRest },
     });
@@ -151,6 +149,7 @@ describe('Breadcrumb', () => {
         location: {
           type: 'root',
         },
+        rootLocation: true,
       },
       provide: { girderRest },
     });
@@ -184,6 +183,7 @@ describe('Breadcrumb', () => {
           _modelType: 'user',
           _id: 'fake_userid',
         },
+        rootLocation: true,
       },
       provide: { girderRest },
     });
@@ -198,6 +198,7 @@ describe('Breadcrumb', () => {
           _modelType: 'user',
           _id: 'fake_userid',
         },
+        rootLocation: true,
       },
       provide: { girderRest: await authenticateRestClient(girderRest, mock) },
     });
