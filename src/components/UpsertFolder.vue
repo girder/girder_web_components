@@ -123,9 +123,8 @@ v-form(@submit.prevent="upsert")
               label="Folder Name")
         girder-breadcrumb.mb-3(
             :location="location",
-            :disabled="true",
             :append="append",
-            no-root)
+            readonly)
         girder-markdown-editor(
             v-model="description",
             label="Description (Optional)")

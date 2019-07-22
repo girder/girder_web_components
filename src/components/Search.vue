@@ -10,7 +10,7 @@ export default {
     },
     showMore: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   inject: ['girderRest'],
