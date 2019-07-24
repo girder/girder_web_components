@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import RestClient from '@/rest';
-import JobList from '@/components/job/JobList.vue';
+import JobList from '@/components/Job/JobList.vue';
 
 import { girderVue } from '../utils';
 

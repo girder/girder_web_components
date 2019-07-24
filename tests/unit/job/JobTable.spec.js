@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import JobTable from '@/components/job/JobTable.vue';
+import JobTable from '@/components/Job/JobTable.vue';
 
 import { girderVue } from '../utils';
 

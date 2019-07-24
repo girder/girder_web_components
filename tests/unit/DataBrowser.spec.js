@@ -74,7 +74,7 @@ describe('DataBrowser', () => {
     });
     await flushPromises();
     const { location } = wrapper.vm.$options.props;
-    expect(location.required).toBeFalsy();
+    expect(location.required).toBe(true);
     expect(location.type).toBe(Object);
     expect(wrapper.vm.rows.length).toBe(1);
 
@@ -213,26 +213,41 @@ describe('DataBrowser', () => {
     const wrapper = shallowMount(DataBrowser, {
       localVue,
       provide: { girderRest },
+      propsData: {
+        location: {
+          _modelType: 'user',
+          _id: 'foo_user_id',
+        },
+      },
     });
 
     const { validator } = wrapper.vm.$options.props.location;
-    expect(validator({ _modelType: 'root' })).toBe(false);
+    expect(validator({ _modelType: 'folder', _id: 'fake_folder_id' })).toBe(true);
+    expect(validator({ _modelType: 'user', _id: 'fake_user_id' })).toBe(true);
+    // These fail because they require _id
     expect(validator({ _modelType: 'item' })).toBe(false);
-    expect(validator({ _modelType: 'users' })).toBe(false);
     expect(validator({ _modelType: 'folder' })).toBe(false);
     expect(validator({ _modelType: 'user' })).toBe(false);
     expect(validator({ _modelType: 'collection' })).toBe(false);
-    expect(validator({ _modelType: 'folder', _id: 'fake_folder_id' })).toBe('model');
-    expect(validator({ _modelType: 'user', _id: 'fake_user_id' })).toBe('model');
-    expect(validator({ type: 'root' })).toBe('root');
-    expect(validator({ type: 'users' })).toBe('root');
-    expect(validator({ type: 'collections' })).toBe('root');
+    // Allow all root-type locations
+    expect(validator({ type: 'root' })).toBe(true);
+    expect(validator({ _modelType: 'root' })).toBe(true);
+    expect(validator({ type: 'users' })).toBe(true);
+    expect(validator({ _modelType: 'users' })).toBe(true);
+    expect(validator({ type: 'collections' })).toBe(true);
+    expect(validator({ _modelType: 'collections' })).toBe(true);
   });
 
-  it('default root location', async () => {
+  it('populates 2 rows for root location', async () => {
     let wrapper = shallowMount(DataBrowser, {
       localVue,
       provide: { girderRest },
+      propsData: {
+        location: {
+          _modelType: 'root',
+        },
+        rootLocationAllowed: true,
+      },
     });
 
     await flushPromises();
@@ -291,10 +306,13 @@ describe('DataBrowser', () => {
         location: {
           type: 'users',
         },
+        rootLocationAllowed: true,
+        foo: 'bar',
       },
     });
 
-    await flushPromises();
+    // await flushPromises();
+    expect(wrapper.vm.location).toBe(true);
     expect(wrapper.vm.rows.length).toBe(1);
     expect(wrapper.vm.rows[0]._modelType).toBe('user');
   });

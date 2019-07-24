@@ -1,4 +1,4 @@
-import * as status from '@/components/job/status';
+import * as status from '@/components/Job/status';
 
 describe('job/status', () => {
   it('get a built in status by key', () => {

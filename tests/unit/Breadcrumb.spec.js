@@ -149,7 +149,7 @@ describe('Breadcrumb', () => {
         location: {
           type: 'root',
         },
-        rootLocation: true,
+        rootLocationAllowed: true,
       },
       provide: { girderRest },
     });
@@ -183,7 +183,7 @@ describe('Breadcrumb', () => {
           _modelType: 'user',
           _id: 'fake_userid',
         },
-        rootLocation: true,
+        rootLocationAllowed: true,
       },
       provide: { girderRest },
     });
@@ -198,7 +198,7 @@ describe('Breadcrumb', () => {
           _modelType: 'user',
           _id: 'fake_userid',
         },
-        rootLocation: true,
+        rootLocationAllowed: true,
       },
       provide: { girderRest: await authenticateRestClient(girderRest, mock) },
     });
