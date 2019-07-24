@@ -50,7 +50,7 @@ import {
   Authentication as GirderAuth,
   Search as GirderSearch,
 } from '@/components';
-import { FileManager as GirderFileManager } from '@/Snippet';
+import { FileManager as GirderFileManager } from '@/components/Snippet';
 import { JobList as GirderJobList } from '@/components/Job';
 
 export default {

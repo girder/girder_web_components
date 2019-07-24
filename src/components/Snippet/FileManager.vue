@@ -6,12 +6,12 @@ import {
   UpsertFolder as GirderUpsertFolder,
   DataBrowser as GirderDataBrowser,
   Breadcrumb as GirderBreadcrumb,
-} from '../components';
+} from '../';
 import {
   getLocationType,
   isRootLocation,
   createLocationValidator,
-} from '../utils';
+} from '../../utils';
 
 export default {
   components: {
@@ -160,21 +160,6 @@ export default {
 
 <template lang="pug">
 .girder-data-browser-snippet
-  v-dialog(v-model="uploaderDialog", full-width, max-width="800px")
-    girder-upload(
-        v-if="uploadDest",
-        :dest="uploadDest",
-        :pre-upload="preUpload",
-        :post-upload="postUploadInternal",
-        :multiple="uploadMultiple")
-  v-dialog(v-model="newFolderDialog", full-width, max-width="800px")
-    girder-upsert-folder(
-        v-if="!isRootLocation(internalLocation)",
-        :location="internalLocation",
-        :pre-upsert="preUpsert",
-        :post-upsert="postUpsertInternal",
-        :key="internalLocation._id",
-        @dismiss="newFolderDialog = false")
   v-layout(row, wrap)
     v-flex(grow)
       v-card
@@ -195,7 +180,6 @@ export default {
                 @crumbclick="props.changeLocation($event)",
                 :root-location-allowed="props.rootLocationAllowed")
           template(slot="headerwidget")
-            
             v-dialog(v-model="uploaderDialog",
                 v-if="uploadEnabled && !isRootLocation(internalLocation) && girderRest.user",
                 full-width, max-width="800px")
@@ -223,11 +207,9 @@ export default {
                 v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.folderNew }}
                 span.hidden-xs-only New Folder
               girder-upsert-folder(
-                  v-if="!isRootLocation(internalLocation)",
                   :location="internalLocation",
                   :pre-upsert="preUpsert",
                   :post-upsert="postUpsertInternal",
                   :key="internalLocation._id",
                   @dismiss="newFolderDialog = false")
-
 </template>
