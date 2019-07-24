@@ -25,7 +25,7 @@ export default {
     location: {
       type: Object,
       validator: createLocationValidator(true),
-      default: () => { type: 'root' },
+      default: () => { type: 'root'; },
     },
     rootLocationAllowed: {
       type: Boolean,
@@ -57,19 +57,19 @@ export default {
     },
     preUpload: {
       type: Function,
-      default: () => {},
+      default: async () => {},
     },
     postUpload: {
       type: Function,
-      default: () => {},
+      default: async () => {},
     },
     preUpsert: {
       type: Function,
-      default: () => {},
+      default: async () => {},
     },
     postUpsert: {
       type: Function,
-      default: () => {},
+      default: async () => {},
     },
   },
 
@@ -142,15 +142,15 @@ export default {
       this.$refs.girderBrowser.refresh();
       this.uploaderDialog = false;
       return Promise.all([
-        new Promise(reolve => setTimeout(400)),
+        new Promise(resolve => setTimeout(resolve, 400)),
         this.postUpload(),
       ]);
     },
     postUpsertInternal() {
       this.$refs.girderBrowser.refresh();
-      this.uploaderDialog = false;
+      this.newFolderDialog = false;
       return Promise.all([
-        new Promise(reolve => setTimeout(400)),
+        new Promise(resolve => setTimeout(resolve, 400)),
         this.postUpsert(),
       ]);
     },
