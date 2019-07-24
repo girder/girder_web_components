@@ -15,7 +15,9 @@ export default {
   components: {
     GirderDataTable,
   },
+
   mixins: [sizeFormatter],
+  inject: ['girderRest'],
   props: {
     draggable: {
       type: Boolean,
@@ -43,7 +45,7 @@ export default {
       default: false,
     },
   },
-  inject: ['girderRest'],
+
   data() {
     return {
       pagination: {
@@ -56,6 +58,7 @@ export default {
       selected: [],
     };
   },
+
   computed: {
     loading() {
       return this.rowsLoading;
@@ -70,6 +73,7 @@ export default {
       return this.selectable && this.location && !isRootLocation(this.location);
     },
   },
+
   asyncComputed: {
     counts: {
       default: {
@@ -116,6 +120,7 @@ export default {
       },
     },
   },
+
   watch: {
     location(location) {
       if (createLocationValidator(this.rootLocationAllowed)(location)) {
@@ -134,11 +139,13 @@ export default {
       this.rows = await this.fetchPaginatedRows();
     },
   },
+
   created() {
     if (!createLocationValidator(this.rootLocationAllowed)(this.location)) {
       throw new Error('root location cannot be used when root-location-allowed is false');
     }
   },
+
   methods: {
     toggleAll() {
       if (this.selected.length === this.rows.length) {
@@ -299,5 +306,4 @@ girder-data-table.girder-file-browser(
           slot(name="breadcrumb", v-bind="{ location, changeLocation, rootLocationAllowed }")
           v-spacer
           slot(name="headerwidget", v-bind="{ location, changeLocation, rootLocationAllowed }")
-
 </template>

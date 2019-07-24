@@ -1,6 +1,5 @@
 <script>
-import { createLocationValidator, isRootLocation, getLocationType } from '../utils';
-import { create } from 'domain';
+import { createLocationValidator, getLocationType } from '../utils';
 
 export default {
   props: {

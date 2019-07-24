@@ -25,7 +25,7 @@ export default {
     location: {
       type: Object,
       validator: createLocationValidator(true),
-      default: () => { type: 'root'; },
+      default: () => { 'root'; },
     },
     rootLocationAllowed: {
       type: Boolean,
@@ -169,7 +169,7 @@ export default {
             :selectable="selectable",
             :draggable="dragEnabled",
             :root-location-allowed="rootLocationAllowed",
-            @selection-changed="$emit('selection-changed', $event)"
+            @selection-changed="$emit('selection-changed', $event)",
             @drag="$emit('drag', $event)",
             @dragstart="$emit('dragstart', $event)",
             @dragend="$emit('dragend', $event)",

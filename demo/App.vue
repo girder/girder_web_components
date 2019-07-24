@@ -39,9 +39,15 @@ v-app.app
           :oauth="true",
           :key="girderRest.token",
           :forgot-password-url="forgotPasswordUrl")
-      girder-file-manager.mb-4(v-if="browserEnabled",
-        v-bind="{ dragEnabled, uploadEnabled, uploadMultiple, newFolderEnabled, selectable, rootLocationAllowed }",
-        @selection-changed="selected = $event")
+      girder-file-manager.mb-4(
+          v-if="browserEnabled",
+          :drag-enabled="dragEnabled",
+          :new-folder-enabled="newFolderEnabled",
+          :selectable="selectable",
+          :root-location-allowed="rootLocationAllowed",
+          :upload-multiple="uploadMultiple",
+          :upload-enabled="uploadEnabled",
+          @selection-changed="selected = $event")
       girder-job-list(v-if="jobsEnabled")
 </template>
 

@@ -209,42 +209,13 @@ describe('DataBrowser', () => {
     expect(wrapper.vm.rows.length).toBe(32);
   });
 
-  it('location validator', () => {
-    const wrapper = shallowMount(DataBrowser, {
-      localVue,
-      provide: { girderRest },
-      propsData: {
-        location: {
-          _modelType: 'user',
-          _id: 'foo_user_id',
-        },
-      },
-    });
-
-    const { validator } = wrapper.vm.$options.props.location;
-    expect(validator({ _modelType: 'folder', _id: 'fake_folder_id' })).toBe(true);
-    expect(validator({ _modelType: 'user', _id: 'fake_user_id' })).toBe(true);
-    // These fail because they require _id
-    expect(validator({ _modelType: 'item' })).toBe(false);
-    expect(validator({ _modelType: 'folder' })).toBe(false);
-    expect(validator({ _modelType: 'user' })).toBe(false);
-    expect(validator({ _modelType: 'collection' })).toBe(false);
-    // Allow all root-type locations
-    expect(validator({ type: 'root' })).toBe(true);
-    expect(validator({ _modelType: 'root' })).toBe(true);
-    expect(validator({ type: 'users' })).toBe(true);
-    expect(validator({ _modelType: 'users' })).toBe(true);
-    expect(validator({ type: 'collections' })).toBe(true);
-    expect(validator({ _modelType: 'collections' })).toBe(true);
-  });
-
   it('populates 2 rows for root location', async () => {
     let wrapper = shallowMount(DataBrowser, {
       localVue,
       provide: { girderRest },
       propsData: {
         location: {
-          _modelType: 'root',
+          type: 'root',
         },
         rootLocationAllowed: true,
       },
@@ -258,7 +229,15 @@ describe('DataBrowser', () => {
     const mock_ = new MockAdapter(girderRest_);
     wrapper = shallowMount(DataBrowser, {
       localVue,
-      provide: { girderRest: await authenticateRestClient(girderRest_, mock_) },
+      provide: {
+        girderRest: await authenticateRestClient(girderRest_, mock_),
+      },
+      propsData: {
+        location: {
+          type: 'root',
+        },
+        rootLocationAllowed: true,
+      },
     });
 
     await flushPromises();
@@ -311,8 +290,8 @@ describe('DataBrowser', () => {
       },
     });
 
-    // await flushPromises();
-    expect(wrapper.vm.location).toBe(true);
+    await flushPromises();
+    expect(wrapper.vm.location.type).toBe('users');
     expect(wrapper.vm.rows.length).toBe(1);
     expect(wrapper.vm.rows[0]._modelType).toBe('user');
   });
