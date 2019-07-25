@@ -1,3 +1,5 @@
+![Screenshot](docs/databrowser.png)
+
 # Girder web component library
 
 Try the [demo app](https://girder.github.io/girder_web_components/).
