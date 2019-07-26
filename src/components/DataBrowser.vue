@@ -40,7 +40,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    rootLocationAllowed: {
+    rootLocationDisabled: {
       type: Boolean,
       default: false,
     },
@@ -123,7 +123,7 @@ export default {
 
   watch: {
     location(location) {
-      if (createLocationValidator(this.rootLocationAllowed)(location)) {
+      if (createLocationValidator(!this.rootLocationDisabled)(location)) {
         // force reset pagination when location changes.
         this.pagination.page = 1;
       }
@@ -141,8 +141,8 @@ export default {
   },
 
   created() {
-    if (!createLocationValidator(this.rootLocationAllowed)(this.location)) {
-      throw new Error('root location cannot be used when root-location-allowed is false');
+    if (!createLocationValidator(!this.rootLocationDisabled)(this.location)) {
+      throw new Error('root location cannot be used when root-location-disabled is true');
     }
   },
 
@@ -285,7 +285,7 @@ girder-data-table.girder-file-browser(
     :pagination.sync="pagination",
     :total-items="totalItems",
     :loading="loading",
-    :selection="internalSelectable",
+    :selectable="internalSelectable",
     @rowclick="rowClick",
     @drag="$emit('drag', $event)",
     @dragstart="$emit('dragstart', $event)",
@@ -303,7 +303,7 @@ girder-data-table.girder-file-browser(
             @click.native="toggleAll")
       th.pl-3(colspan="100", width="99%")
         v-layout(row)
-          slot(name="breadcrumb", v-bind="{ location, changeLocation, rootLocationAllowed }")
+          slot(name="breadcrumb", v-bind="{ location, changeLocation, rootLocationDisabled }")
           v-spacer
-          slot(name="headerwidget", v-bind="{ location, changeLocation, rootLocationAllowed }")
+          slot(name="headerwidget", v-bind="{ location, changeLocation, rootLocationDisabled }")
 </template>

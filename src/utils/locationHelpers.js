@@ -6,10 +6,8 @@ export function isRootLocation(location) {
   const locationType = getLocationType(location);
   if (['collections', 'users', 'root'].indexOf(locationType) >= 0) {
     return true;
-  } else if (['user', 'collection', 'folder'].indexOf(locationType) >= 0) {
-    return false;
   }
-  throw new Error(`Unrecognized location: ${locationType}`);
+  return false;
 }
 
 export function getSingularLocationTypeName(location) {
@@ -24,20 +22,16 @@ export function getSingularLocationTypeName(location) {
   }
 }
 
-export function createLocationValidator(allowRooot) {
+export function createLocationValidator(allowRoot) {
   return (location) => {
     if (!location) {
       return false;
     }
-    try {
-      if (isRootLocation(location)) {
-        return allowRooot;
-      // eslint-disable-next-line no-else-return
-      } else {
-        return !!location._id;
-      }
-    } catch (err) {
-      return false;
+    if (isRootLocation(location)) {
+      return allowRoot;
+    // eslint-disable-next-line no-else-return
+    } else {
+      return !!location._id;
     }
   };
 }

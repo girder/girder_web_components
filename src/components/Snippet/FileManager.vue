@@ -25,9 +25,9 @@ export default {
     location: {
       type: Object,
       validator: createLocationValidator(true),
-      default: () => { 'root'; },
+      default: null,
     },
-    rootLocationAllowed: {
+    rootLocationDisabled: {
       type: Boolean,
       default: false,
     },
@@ -83,40 +83,14 @@ export default {
     };
   },
 
-  asyncComputed: {
-    async defaultLocation() {
-      const { user, apiRoot } = this.girderRest;
-      if (user) {
-        try {
-          return (await this.girderRest.get('folder', {
-            params: {
-              parentType: 'user',
-              parentId: user._id,
-            },
-          })).data[0];
-        } catch ({ response }) {
-          if (response) {
-            this.error = response.data.message;
-          } else {
-            this.error = `Could not connect to server: ${apiRoot}`;
-          }
-        }
-      } else {
-        return { type: 'root' };
-      }
-      return null;
-    },
-  },
-
   computed: {
     internalLocation: {
       get() {
-        const { lazyLocation, girderRest } = this;
-        const { user } = girderRest;
-        if (lazyLocation) {
+        const { location, lazyLocation } = this;
+        if (location) {
+          return location;
+        } else if (lazyLocation) {
           return lazyLocation;
-        } else if (user) {
-          return { _modelType: 'user', _id: user._id };
         }
         return { type: 'root' };
       },
@@ -126,12 +100,23 @@ export default {
       },
     },
     uploadDest() {
-      const { internalLocation, defaultLocation } = this;
-      if (internalLocation) {
-        return getLocationType(internalLocation) === 'folder' ? internalLocation : defaultLocation;
-      }
-      return null;
+      const { internalLocation } = this;
+      return (internalLocation && getLocationType(internalLocation) === 'folder')
+        ? internalLocation
+        : null;
     },
+    shouldShowUpload() {
+      return this.uploadEnabled
+        && !isRootLocation(this.internalLocation)
+        && this.girderRest.user
+        && this.uploadDest;
+    },
+  },
+
+  created() {
+    if (!createLocationValidator(!this.rootLocationDisabled)(this.internalLocation)) {
+      throw new Error('root location cannot be used when root-location-disabled is true');
+    }
   },
 
   methods: {
@@ -168,7 +153,7 @@ export default {
             :location.sync="internalLocation",
             :selectable="selectable",
             :draggable="dragEnabled",
-            :root-location-allowed="rootLocationAllowed",
+            :root-location-disabled="rootLocationDisabled",
             @selection-changed="$emit('selection-changed', $event)",
             @drag="$emit('drag', $event)",
             @dragstart="$emit('dragstart', $event)",
@@ -178,10 +163,10 @@ export default {
             girder-breadcrumb(
                 :location="props.location",
                 @crumbclick="props.changeLocation($event)",
-                :root-location-allowed="props.rootLocationAllowed")
+                :root-location-disabled="props.rootLocationDisabled")
           template(slot="headerwidget")
             v-dialog(v-model="uploaderDialog",
-                v-if="uploadEnabled && !isRootLocation(internalLocation) && girderRest.user",
+                v-if="shouldShowUpload",
                 full-width, max-width="800px")
               v-btn.ma-0(
                   slot="activator",
@@ -191,7 +176,6 @@ export default {
                 v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.fileNew }}
                 span.hidden-xs-only New Item
               girder-upload(
-                  v-if="uploadDest",
                   :dest="uploadDest",
                   :pre-upload="preUpload",
                   :post-upload="postUploadInternal",

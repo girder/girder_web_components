@@ -217,7 +217,7 @@ describe('DataBrowser', () => {
         location: {
           type: 'root',
         },
-        rootLocationAllowed: true,
+        rootLocationDisabled: false,
       },
     });
 
@@ -236,7 +236,7 @@ describe('DataBrowser', () => {
         location: {
           type: 'root',
         },
-        rootLocationAllowed: true,
+        rootLocationDisabled: false,
       },
     });
 
@@ -285,7 +285,7 @@ describe('DataBrowser', () => {
         location: {
           type: 'users',
         },
-        rootLocationAllowed: true,
+        rootLocationDisabled: false,
         foo: 'bar',
       },
     });

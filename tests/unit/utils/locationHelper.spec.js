@@ -1,7 +1,7 @@
 import { createLocationValidator, isRootLocation } from '@/utils';
 
 describe('createLocationValidator', () => {
-  it('validates when root allowed', () => {
+  it('validates when root location allowed', () => {
     const validator = createLocationValidator(true);
     expect(validator({ _modelType: 'folder', _id: 'fake_folder_id' })).toBe(true);
     expect(validator({ _modelType: 'user', _id: 'fake_user_id' })).toBe(true);
@@ -19,7 +19,7 @@ describe('createLocationValidator', () => {
     expect(validator({ _modelType: 'collections' })).toBe(true);
   });
 
-  it('validates when root not allowed', () => {
+  it('validates when root location disabled', () => {
     const validator = createLocationValidator(false);
     expect(validator({ _modelType: 'folder', _id: 'fake_folder_id' })).toBe(true);
     expect(validator({ _modelType: 'user', _id: 'fake_user_id' })).toBe(true);
@@ -50,10 +50,6 @@ describe('isRootLocation', () => {
   expect(isRootLocation({ type: 'folder' })).toBe(false);
   expect(isRootLocation({ type: 'collection' })).toBe(false);
 
-  expect(() => {
-    isRootLocation({ type: 'item' });
-  }).toThrow();
-  expect(() => {
-    isRootLocation({ _modelType: 'foo' });
-  }).toThrow();
+  expect(isRootLocation({ type: 'item' })).toBe(false);
+  expect(isRootLocation({ _modelType: 'foo' })).toBe(false);
 });
