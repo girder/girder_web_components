@@ -98,7 +98,7 @@ v-data-table.girder-data-table(
       td.pl-3.pr-0(v-if="selectable")
         v-checkbox.secondary--text.text--darken-1.pr-2(
             :input-value="props.selected", accent, hide-details)
-      td.pl-3(colspan="2")
+      td.pl-3(colspan="2", @contextmenu="$emit('row-right-click', props.item, $event)")
         span.text-container.secondary--text.text--darken-3.nobreak(
             :class="getItemClass(props.item)",
             @click.stop="$emit('rowclick', props.item)")
