@@ -57,7 +57,7 @@ export default {
       const rowSelectable = (!this.selectable && getLocationType(item) === 'folder')
         || isRootLocation(item)
         || getLocationType(item) === 'user';
-      return { 'select-cursor': rowSelectable };
+      return { 'select-cursor': rowSelectable, 'not-public': item.notPublic };
     },
     getItemClass(item) {
       const itemSelectable = getLocationType(item) !== 'item';
@@ -87,14 +87,15 @@ v-data-table.girder-data-table(
         :headers="props.headers")
 
   template(slot="items", slot-scope="props")
-    tr.itemRow(:draggable="draggable", :active="props.selected",
+    tr.itemRow(:draggable="draggable",
+        :active="props.selected",
         :class="getRowClass(props.item)",
         @click="handleRowSelect($event, props)",
         @drag="$emit('drag', { items: [props], event: $event })",
         @dragstart="$emit('dragstart', { items: [props], event: $event })",
         @dragend="$emit('dragend', { items: [props], event: $event })",
         @drop="$emit('drop', { items: [props], event: $event })",
-        :key="props.index")
+        :key="props.item._id")
       td.pl-3.pr-0(v-if="selectable")
         v-checkbox.secondary--text.text--darken-1.pr-2(
             :input-value="props.selected", accent, hide-details)
@@ -141,6 +142,10 @@ v-data-table.girder-data-table(
 
       &.secondary {
         border-color: inherit !important;
+      }
+
+      &.not-public {
+        background: #fff9ea;
       }
 
       .v-input--checkbox {

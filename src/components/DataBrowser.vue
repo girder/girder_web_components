@@ -156,7 +156,7 @@ export default {
     },
     rowClick(row) {
       // Emit a row click regardless of type
-      this.$emit('rowclick', row);
+      this.$emit('rowclick', row, this.location);
       // If the row is not an item, call changeLocation
       if (getLocationType(row) !== 'item') {
         this.changeLocation(row);
@@ -173,7 +173,7 @@ export default {
     refresh() {
       this.internalRefreshCounter += 1;
     },
-    async fetchPaginatedRows() {
+    fetchPaginatedRows() {
       const { location, counts } = this;
       if (counts.nFolders || counts.nItems) {
         return this.fetchPaginatedFolderRows();
@@ -192,6 +192,11 @@ export default {
     async fetchPaginatedFolderRows() {
       this.rowsLoading = true;
       const { counts, location, pagination } = this;
+      // if needed, get folder public info
+      let folderNotPublic = false;
+      if (!location.created && location._modelType === 'folder') {
+        folderNotPublic = !(await this.girderRest.get(`folder/${location._id}`)).data.public;
+      }
       const { page, rowsPerPage } = pagination;
       const folderParams = {
         parentType: location._modelType,
@@ -224,10 +229,9 @@ export default {
       const responses = (await Promise.all(promises)).map(response => response.data);
       const rows = [].concat.apply(...responses).map(item => ({
         ...item,
+        notPublic: item._modelType === 'folder' ? !item.public : folderNotPublic,
         size: item.size ? this.formatSize(item.size) : '',
-        icon: item._modelType in this.$vuetify.icons
-          ? item._modelType
-          : 'file',
+        icon: this.getModelIcon(item),
       }));
       this.rowsLoading = false;
       return rows;
@@ -271,6 +275,21 @@ export default {
           return 'user';
         default:
           return '';
+      }
+    },
+    getModelIcon(model) {
+      switch (model._modelType) {
+        case 'folder':
+          if (model.public) {
+            return 'folder';
+          }
+          return 'folderNonPublic';
+
+        default:
+          if (model._modelType in this.$vuetify.icons) {
+            return model._modelType;
+          }
+          return 'file';
       }
     },
   },
