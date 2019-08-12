@@ -2,10 +2,7 @@ const webpack = require('webpack'); // eslint-disable-line import/no-extraneous-
 
 module.exports = {
   lintOnSave: false,
-  // publicPath only affects demo application deployed to GH pages.
-  publicPath: process.env.NODE_ENV === 'production'
-    ? '/girder_web_components'
-    : '/',
+  publicPath: '/',
   configureWebpack: {
     plugins: [
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
