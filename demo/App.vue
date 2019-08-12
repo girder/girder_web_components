@@ -28,28 +28,30 @@ v-app.app
 
       v-spacer
       girder-search(v-if="searchEnabled", @select="handleSearchSelect")
-      v-btn(flat, icon, @click="girderRest.logout()")
+      v-btn(v-if="!loggedOut", flat, icon, @click="girderRest.logout()")
         v-icon $vuetify.icons.logout
 
-    v-container(fluid)
-      girder-auth.mb-4(
-          v-if="loggedOut",
-          :force-otp="false",
-          :register="true",
-          :oauth="true",
-          :key="girderRest.token",
-          :forgot-password-url="forgotPasswordUrl")
-      girder-file-manager.mb-4(
-          v-if="browserEnabled",
-          :drag-enabled="dragEnabled",
-          :new-folder-enabled="newFolderEnabled",
-          :selectable="selectable",
-          :location.sync="location",
-          :root-location-disabled="rootLocationDisabled",
-          :upload-multiple="uploadMultiple",
-          :upload-enabled="uploadEnabled",
-          @selection-changed="selected = $event")
-      girder-job-list(v-if="jobsEnabled")
+    v-container.pa-3(fluid)
+      v-layout(row, wrap)
+        v-flex.ma-2(v-if="loggedOut")
+          girder-auth(
+              :force-otp="false",
+              :register="true",
+              :oauth="true",
+              :key="girderRest.token",
+              :forgot-password-url="forgotPasswordUrl")
+        v-layout.ma-2.grow(column)
+          girder-file-manager.mb-3(
+              v-if="browserEnabled",
+              :drag-enabled="dragEnabled",
+              :new-folder-enabled="newFolderEnabled",
+              :selectable="selectable",
+              :location.sync="location",
+              :root-location-disabled="rootLocationDisabled",
+              :upload-multiple="uploadMultiple",
+              :upload-enabled="uploadEnabled",
+              @selection-changed="selected = $event")
+          girder-job-list(v-if="jobsEnabled")
 </template>
 
 <script>
@@ -77,7 +79,7 @@ export default {
       dragEnabled: false,
       forgotPasswordUrl: '/#?dialog=resetpassword',
       jobsEnabled: false,
-      location: null,
+      internalLocation: null,
       rootLocationDisabled: false,
       searchEnabled: true,
       selected: [],
@@ -93,6 +95,16 @@ export default {
     loggedOut() {
       return this.girderRest.user === null;
     },
+    location: {
+      get() {
+        return this.internalLocation || (
+          this.loggedOut ? { type: 'collections' } : this.girderRest.user
+        );
+      },
+      set(value) {
+        this.internalLocation = value;
+      },
+    }
   },
 
   methods: {
