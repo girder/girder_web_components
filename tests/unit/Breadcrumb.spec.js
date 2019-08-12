@@ -97,6 +97,7 @@ describe('Breadcrumb', () => {
           _modelType: 'folder',
           _id: 'fake_folder_id',
         },
+        rootLocationDisabled: true,
       },
       provide: { girderRest },
     });
@@ -119,6 +120,7 @@ describe('Breadcrumb', () => {
         _modelType: 'folder',
         _id: 'fake_folder_id_2',
       },
+      rootLocationDisabled: true,
     });
     await flushPromises();
     expect(wrapper.vm.breadcrumb.length).toBe(3);
@@ -134,6 +136,7 @@ describe('Breadcrumb', () => {
           _modelType: 'user',
           _id: 'fake_userid',
         },
+        rootLocationDisabled: true,
       },
       provide: { girderRest },
     });
@@ -149,7 +152,7 @@ describe('Breadcrumb', () => {
         location: {
           type: 'root',
         },
-        rootLocation: true,
+        rootLocationDisabled: false,
       },
       provide: { girderRest },
     });
@@ -170,6 +173,7 @@ describe('Breadcrumb', () => {
         _modelType: 'folder',
         _id: 'fake_folder_id_2',
       },
+      rootLocationDisabled: false,
     });
     await flushPromises();
     expect(wrapper.vm.breadcrumb.length).toBe(4);
@@ -183,7 +187,7 @@ describe('Breadcrumb', () => {
           _modelType: 'user',
           _id: 'fake_userid',
         },
-        rootLocation: true,
+        rootLocationDisabled: false,
       },
       provide: { girderRest },
     });
@@ -198,7 +202,7 @@ describe('Breadcrumb', () => {
           _modelType: 'user',
           _id: 'fake_userid',
         },
-        rootLocation: true,
+        rootLocationDisabled: false,
       },
       provide: { girderRest: await authenticateRestClient(girderRest, mock) },
     });

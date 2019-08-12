@@ -1,4 +1,6 @@
 <script>
+import { getLocationType, isRootLocation } from '../../utils/locationHelpers';
+
 export default {
   props: {
     draggable: {
@@ -17,7 +19,7 @@ export default {
       type: Array,
       required: true,
     },
-    selection: {
+    selectable: {
       type: Boolean,
       required: true,
     },
@@ -34,8 +36,10 @@ export default {
     return { lastCheckBoxIdx: null };
   },
   methods: {
+    getLocationType,
+    isRootLocation,
     handleRowSelect({ shiftKey }, props) {
-      if (this.selection) {
+      if (this.selectable) {
         props.selected = !props.selected;
         if (shiftKey && this.lastCheckBoxIdx !== null) {
           const [start, end] = [this.lastCheckBoxIdx, props.index + 1].sort();
@@ -48,6 +52,16 @@ export default {
       } else {
         this.$emit('rowclick', props.item);
       }
+    },
+    getRowClass(item) {
+      const rowSelectable = (!this.selectable && getLocationType(item) === 'folder')
+        || isRootLocation(item)
+        || getLocationType(item) === 'user';
+      return { 'select-cursor': rowSelectable };
+    },
+    getItemClass(item) {
+      const itemSelectable = getLocationType(item) !== 'item';
+      return { 'select-cursor': itemSelectable };
     },
   },
 };
@@ -74,19 +88,19 @@ v-data-table.girder-data-table(
 
   template(slot="items", slot-scope="props")
     tr.itemRow(:draggable="draggable", :active="props.selected",
-        :class="{ selectable: selection }",
+        :class="getRowClass(props.item)",
         @click="handleRowSelect($event, props)",
         @drag="$emit('drag', { items: [props], event: $event })",
         @dragstart="$emit('dragstart', { items: [props], event: $event })",
         @dragend="$emit('dragend', { items: [props], event: $event })",
         @drop="$emit('drop', { items: [props], event: $event })",
         :key="props.index")
-      td.pl-3.pr-0(v-if="selection")
+      td.pl-3.pr-0(v-if="selectable")
         v-checkbox.secondary--text.text--darken-1.pr-2(
             :input-value="props.selected", accent, hide-details)
       td.pl-3(colspan="2")
         span.text-container.secondary--text.text--darken-3.nobreak(
-            :class="{ selectable: selection && props.item._modelType !== 'item' }",
+            :class="getItemClass(props.item)",
             @click.stop="$emit('rowclick', props.item)")
           v-icon.pr-2(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons[props.item.icon] }}
           | {{ props.item.name }}
@@ -102,7 +116,9 @@ v-data-table.girder-data-table(
 
 <style lang="scss">
 .girder-data-table {
-  .selectable {
+  cursor: default;
+
+  .select-cursor {
     opacity: 0.8;
 
     &:hover {

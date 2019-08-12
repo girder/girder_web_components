@@ -121,10 +121,7 @@ v-form(@submit.prevent="upsert")
               v-model="name",
               autofocus,
               label="Folder Name")
-        girder-breadcrumb.mb-3(
-            :location="location",
-            :append="append",
-            readonly)
+        girder-breadcrumb.mb-3(v-bind="{ location, append }", readonly)
         girder-markdown-editor(
             v-model="description",
             label="Description (Optional)")

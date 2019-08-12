@@ -49,11 +49,11 @@ export default {
 </script>
 
 <template lang="pug">
-v-card.job-filter(dark, color="primary darken-1")
+v-card.job-filter(dark, color="primary")
   v-container.py-2(fluid, grid-list-lg)
     v-layout(row)
       v-flex(sm12, d-flex)
-        h3.primary--text.text--lighten-2 Jobs
+        h3.subheading Girder Worker Jobs
     v-layout(row, justify-center)
       v-flex(sm3, d-flex)
         v-select(

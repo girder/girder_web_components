@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
-import FilterForm from '@/components/job/FilterForm.vue';
-import * as status from '@/components/job/status';
+import FilterForm from '@/components/Job/FilterForm.vue';
+import * as status from '@/components/Job/status';
 
 import { girderVue } from '../utils';
 

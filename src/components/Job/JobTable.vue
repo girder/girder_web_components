@@ -89,15 +89,15 @@ v-card
         td {{ props.item.title }}
         td.one-line {{ props.item.type }}
         td.one-line {{ props.item.updateString }}
-        td.one-line.status-line(nowrap, :title="props.item.statusText")
+        td.one-line.status-line(nowrap, :title="props.item.statusText", width="1%")
           v-layout(row)
-            v-flex(sm10)
-              v-progress-linear.mr-2.progress-bar(
+            v-flex.mr-3
+              v-progress-linear.progress-bar(
                   :color="props.item.statusColor",
                   :value="props.item.progressNumber",
                   :indeterminate="!!props.item.indeterminate",
                   height="10")
-            v-flex.txt-xs-right(s1, pl-1)
+            v-flex
               v-icon.status-icon(
                   :color="props.item.statusColor",
                   :class="{ rotate: props.item.spin }",
@@ -117,12 +117,6 @@ v-card
 .status-line {
   .progress-bar {
     width: 150px;
-  }
-
-  .progress-text {
-    position: relative;
-    top: 1px;
-    font-weight: 500;
   }
 
   .status-icon {

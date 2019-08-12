@@ -1,5 +1,5 @@
 <script>
-import { createLocationValidator } from '../utils';
+import { createLocationValidator, getLocationType } from '../utils';
 
 export default {
   props: {
@@ -16,7 +16,7 @@ export default {
       type: Array,
       default: () => [],
     },
-    rootLocation: {
+    rootLocationDisabled: {
       type: Boolean,
       default: false,
     },
@@ -40,15 +40,16 @@ export default {
       async get() {
         this.loading = true;
         const breadcrumb = [];
+        const { rootLocationDisabled, girderRest, location } = this;
         // The reason for this local user variable is that
         // we have to set up reactivity dependancy before the first async function call
-        const { user } = this.girderRest;
-        const type = this.location._modelType || this.location.type;
-        const { name, _id } = this.location;
+        const { user } = girderRest;
+        const type = getLocationType(location);
+        const { name, _id } = location;
         if (type === 'folder') {
           // The last breadcrumb isn't returned by rootpath.
           if (name) {
-            breadcrumb.unshift(this.extractCrumbData(this.location));
+            breadcrumb.unshift(this.extractCrumbData(location));
           } else {
             const { data } = await this.girderRest.get(`folder/${_id}`);
             breadcrumb.unshift(this.extractCrumbData(data));
@@ -62,7 +63,7 @@ export default {
           const { data } = await this.girderRest.get(`${type}/${_id}`);
           breadcrumb.unshift(this.extractCrumbData(data));
         }
-        if (this.rootLocation) {
+        if (!rootLocationDisabled) {
           if (
             type === 'users' ||
             (user && breadcrumb.length && breadcrumb[0].type === 'user')
@@ -83,8 +84,8 @@ export default {
     },
   },
   created() {
-    if (!createLocationValidator(true)(this.location) === 'root' && !this.rootLocation) {
-      throw new Error("Root location can't be used without root-location prop");
+    if (!createLocationValidator(!this.rootLocationDisabled)(this.location)) {
+      throw new Error('root location cannot be used when root-location-disabled is true');
     }
   },
   methods: {

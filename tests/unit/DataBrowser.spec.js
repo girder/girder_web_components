@@ -74,7 +74,7 @@ describe('DataBrowser', () => {
     });
     await flushPromises();
     const { location } = wrapper.vm.$options.props;
-    expect(location.required).toBeFalsy();
+    expect(location.required).toBe(true);
     expect(location.type).toBe(Object);
     expect(wrapper.vm.rows.length).toBe(1);
 
@@ -209,30 +209,16 @@ describe('DataBrowser', () => {
     expect(wrapper.vm.rows.length).toBe(32);
   });
 
-  it('location validator', () => {
-    const wrapper = shallowMount(DataBrowser, {
-      localVue,
-      provide: { girderRest },
-    });
-
-    const { validator } = wrapper.vm.$options.props.location;
-    expect(validator({ _modelType: 'root' })).toBe(false);
-    expect(validator({ _modelType: 'item' })).toBe(false);
-    expect(validator({ _modelType: 'users' })).toBe(false);
-    expect(validator({ _modelType: 'folder' })).toBe(false);
-    expect(validator({ _modelType: 'user' })).toBe(false);
-    expect(validator({ _modelType: 'collection' })).toBe(false);
-    expect(validator({ _modelType: 'folder', _id: 'fake_folder_id' })).toBe('model');
-    expect(validator({ _modelType: 'user', _id: 'fake_user_id' })).toBe('model');
-    expect(validator({ type: 'root' })).toBe('root');
-    expect(validator({ type: 'users' })).toBe('root');
-    expect(validator({ type: 'collections' })).toBe('root');
-  });
-
-  it('default root location', async () => {
+  it('populates 2 rows for root location', async () => {
     let wrapper = shallowMount(DataBrowser, {
       localVue,
       provide: { girderRest },
+      propsData: {
+        location: {
+          type: 'root',
+        },
+        rootLocationDisabled: false,
+      },
     });
 
     await flushPromises();
@@ -243,7 +229,15 @@ describe('DataBrowser', () => {
     const mock_ = new MockAdapter(girderRest_);
     wrapper = shallowMount(DataBrowser, {
       localVue,
-      provide: { girderRest: await authenticateRestClient(girderRest_, mock_) },
+      provide: {
+        girderRest: await authenticateRestClient(girderRest_, mock_),
+      },
+      propsData: {
+        location: {
+          type: 'root',
+        },
+        rootLocationDisabled: false,
+      },
     });
 
     await flushPromises();
@@ -291,10 +285,13 @@ describe('DataBrowser', () => {
         location: {
           type: 'users',
         },
+        rootLocationDisabled: false,
+        foo: 'bar',
       },
     });
 
     await flushPromises();
+    expect(wrapper.vm.location.type).toBe('users');
     expect(wrapper.vm.rows.length).toBe(1);
     expect(wrapper.vm.rows[0]._modelType).toBe('user');
   });
