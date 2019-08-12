@@ -127,10 +127,6 @@ v-data-table.girder-data-table(
     }
   }
 
-  // .default-cursor:hover {
-  //   cursor: default;
-  // }
-
   .v-table {
     tr {
       &.itemRow[active],
