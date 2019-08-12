@@ -104,7 +104,7 @@ export default {
       set(value) {
         this.internalLocation = value;
       },
-    }
+    },
   },
 
   methods: {
