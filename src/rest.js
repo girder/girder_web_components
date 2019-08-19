@@ -3,8 +3,28 @@ import cookies from 'js-cookie';
 import { stringify } from 'qs';
 import Vue from 'vue';
 
+const GirderTokenLength = 64;
+export const OauthTokenPrefix = '#girderToken=';
+export const OauthTokenSuffix = '__';
+
 function setCookieFromAuth(auth) {
   cookies.set('girderToken', auth.token, { expires: new Date(auth.expires) });
+}
+
+/**
+ * set cookie if special string is found in the hash.
+ * @param {Location} location
+ */
+function setCookieFromHash(location) {
+  const arr = location.hash.split(OauthTokenPrefix);
+  const token = arr[arr.length - 1].split(OauthTokenSuffix)[0];
+  if (token.length === GirderTokenLength) {
+    const expires = new Date();
+    expires.setDate((new Date()).getDate() + 7);
+    setCookieFromAuth({ token, expires });
+    location.hash = location.hash.replace(`${OauthTokenPrefix}${token}${OauthTokenSuffix}`, '');
+  }
+  return token;
 }
 
 /**
@@ -22,7 +42,7 @@ export default class RestClient extends Vue {
    */
   constructor({
     apiRoot = '/api/v1',
-    token = cookies.get('girderToken'),
+    token = cookies.get('girderToken') || setCookieFromHash(window.location),
     axios = axios_.create(),
     setLocalCookie = true,
   } = {}) {
