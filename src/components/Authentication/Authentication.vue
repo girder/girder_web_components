@@ -16,7 +16,7 @@ v-card.girder-authentication-component
 <script>
 import GirderLogin from './Login.vue';
 import GirderRegistration from './Register.vue';
-import { OauthTokenPrefix, OauthTokenSuffix } from '../../rest.js';
+import { OauthTokenPrefix, OauthTokenSuffix } from '../../rest';
 
 export default {
   inject: ['girderRest'],
