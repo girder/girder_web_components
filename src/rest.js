@@ -20,7 +20,7 @@ function setCookieFromHash(location) {
   const token = arr[arr.length - 1].split(OauthTokenSuffix)[0];
   if (token.length === GirderTokenLength) {
     const expires = new Date();
-    expires.setDate((new Date()).getDate() + 7);
+    expires.setDate((new Date()).getDate() + 365);
     setCookieFromAuth({ token, expires });
     location.hash = location.hash.replace(`${OauthTokenPrefix}${token}${OauthTokenSuffix}`, '');
   }
