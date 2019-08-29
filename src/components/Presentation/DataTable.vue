@@ -80,13 +80,10 @@ v-data-table.girder-data-table(
     :loading="loading ? 'accent' : false",
     item-key="_id")
 
-  template(slot="headers", slot-scope="props")
-    slot(name="header",
-        :all="props.all",
-        :indeterminate="props.indeterminate",
-        :headers="props.headers")
+  template(#headers="{ all, indeterminate, headers }")
+    slot(name="header", v-bind="{ all, indeterminate, headers }")
 
-  template(slot="items", slot-scope="props")
+  template(#items="props")
     tr.itemRow(:draggable="draggable", :active="props.selected",
         :class="getRowClass(props.item)",
         @click="handleRowSelect($event, props)",
@@ -106,10 +103,10 @@ v-data-table.girder-data-table(
           | {{ props.item.name }}
       td.text-xs-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
 
-  template(slot="no-data")
+  template(#no-data)
     td.text-xs-center(colspan="2", width="100%") No Data Available
 
-  template(slot="no-results")
+  template(#no-results)
     td.text-xs-center(colspan="2", width="100%") No Data Available
 </template>
 

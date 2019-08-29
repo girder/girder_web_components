@@ -109,20 +109,16 @@ export default {
       :disabled="location._id === girderRest.user._id") {{$vuetify.icons.userHome}}
   v-breadcrumbs.font-weight-bold.pa-0(:items="breadcrumb")
     span.subheading.font-weight-bold(:disabled="readonly", slot="divider") /
-    template(slot="item", slot-scope="{item}")
+    template(#item="{ item }")
       v-breadcrumbs-item(
           :disabled="(readonly || breadcrumb.indexOf(item) == breadcrumb.length-1)",
           @click.native="$emit('crumbclick', item)")
-        template(
-          v-if="['folder', 'user', 'collection'].indexOf(item.type) !== -1") {{ item.name }}
-        template(
-          v-else-if="item.type==='users'")
+        template(v-if="['folder', 'user', 'collection'].indexOf(item.type) !== -1") {{ item.name }}
+        template(v-else-if="item.type==='users'")
           v-icon.mdi-18px {{ $vuetify.icons.user }}
-        template(
-          v-else-if="item.type==='collections'")
+        template(v-else-if="item.type==='collections'")
           v-icon.mdi-18px {{ $vuetify.icons.collection }}
-        template(
-          v-else-if="item.type==='root'")
+        template(v-else-if="item.type==='root'")
           v-icon.mdi-18px {{ $vuetify.icons.globe }}
         span.accent--text(v-else) {{ item }}
 </template>

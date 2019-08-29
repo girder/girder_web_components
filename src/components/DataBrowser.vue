@@ -292,7 +292,7 @@ girder-data-table.girder-file-browser(
     @dragend="$emit('dragend', $event)",
     @drop="$emit('drop', $event)")
 
-  template(slot="header", slot-scope="props")
+  template(#header="props")
     tr.secondary.lighten-5
       th.pl-3.pr-0(width="1%", v-if="internalSelectable")
         v-checkbox.secondary--text.text--darken-1.pr-2(

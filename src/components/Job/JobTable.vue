@@ -84,7 +84,7 @@ v-card
       :total-items="totalItems",
       :pagination="pagination",
       @update:pagination="$emit('update:pagination', $event)")
-    template(slot="items", slot-scope="props")
+    template(#items="props")
       tr(@click="$emit('job-click', $event, props.item)")
         td {{ props.item.title }}
         td.one-line {{ props.item.type }}
@@ -103,7 +103,7 @@ v-card
                   :class="{ rotate: props.item.spin }",
                   :size="20") {{ props.item.statusIcon }}
 
-    template(slot="pageText", slot-scope="props")
+    template(#pageText)
       .v-datatable__actions__pagination {{ pageRange.first }}-{{ pageRange.last }}
 </template>
 
