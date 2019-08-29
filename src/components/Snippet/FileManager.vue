@@ -155,6 +155,7 @@ export default {
             :draggable="dragEnabled",
             :root-location-disabled="rootLocationDisabled",
             @selection-changed="$emit('selection-changed', $event)",
+            @rowclick="$emit('rowclick', $event)",
             @drag="$emit('drag', $event)",
             @dragstart="$emit('dragstart', $event)",
             @dragend="$emit('dragend', $event)",
