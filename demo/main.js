@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Girder from '@';
+import Girder, { vuetify } from '@';
 import NotificationBus from '@/utils/notifications';
 import RestClient from '@/rest';
 
@@ -15,6 +15,7 @@ notificationBus.connect();
 
 girderRest.fetchUser().then(() => {
   new Vue({
+    vuetify,
     render: h => h(App),
     provide: { girderRest, notificationBus },
   }).$mount('#app');

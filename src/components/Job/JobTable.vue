@@ -8,7 +8,7 @@ export default {
       type: Array,
       required: true,
     },
-    pagination: {
+    options: {
       type: Object,
       required: true,
     },
@@ -38,7 +38,7 @@ export default {
     items() {
       return this.jobs.map(this.mapJobToRow);
     },
-    totalItems() {
+    serverItemsLength() {
       let { last } = this.pageRange;
       if (this.morePages) {
         last += 1;
@@ -46,7 +46,7 @@ export default {
       return last;
     },
     pageRange() {
-      const first = (this.pagination.rowsPerPage * (this.pagination.page - 1)) + 1;
+      const first = (this.options.itemsPerPage * (this.options.page - 1)) + 1;
       const last = (first + this.jobs.length) - 1;
       return { first, last };
     },
@@ -81,9 +81,9 @@ v-card
       item-key="_id",
       :headers="headers",
       :items="items",
-      :total-items="totalItems",
-      :pagination="pagination",
-      @update:pagination="$emit('update:pagination', $event)")
+      :server-items-length="serverItemsLength",
+      :options="options",
+      @update:options="$emit('update:options', $event)")
     template(#items="props")
       tr(@click="$emit('job-click', $event, props.item)")
         td {{ props.item.title }}
@@ -104,7 +104,7 @@ v-card
                   :size="20") {{ props.item.statusIcon }}
 
     template(#pageText)
-      .v-datatable__actions__pagination {{ pageRange.first }}-{{ pageRange.last }}
+      .v-datatable__actions__options {{ pageRange.first }}-{{ pageRange.last }}
 </template>
 
 <style lang="scss" scoped>

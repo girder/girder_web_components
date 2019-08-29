@@ -10,8 +10,9 @@ v-app.app
             :close-on-content-click="false",
             content-class="girder-search-arrow-menu",
             v-model="uiOptionsMenu")
-          v-btn(icon, slot="activator")
-            v-icon.mdi-24px {{ $vuetify.icons.more }}
+          template(#activator="{ on }")
+            v-btn(icon, v-on="on")
+              v-icon.mdi-24px {{ $vuetify.icons.values.more }}
           v-card
             v-card-actions
               v-layout(column)
@@ -28,10 +29,10 @@ v-app.app
 
       v-spacer
       girder-search(v-if="searchEnabled", @select="handleSearchSelect")
-      v-btn(v-if="!loggedOut", flat, icon, @click="girderRest.logout()")
-        v-icon $vuetify.icons.logout
+      v-btn(v-if="!loggedOut", text, icon, @click="girderRest.logout()")
+        v-icon $vuetify.icons.values.logout
 
-    v-container.pa-3(fluid)
+    v-container
       v-layout(row, wrap)
         v-flex.ma-2(v-if="loggedOut")
           girder-auth(

@@ -6,12 +6,12 @@
       v-list-tile(avatar)
         v-list-tile-avatar
           v-btn(v-if="file.status === 'pending'", icon, @click="$emit('input', splice(i))")
-            v-icon $vuetify.icons.close
+            v-icon $vuetify.icons.values.close
           v-progress-circular(v-if="file.status === 'uploading'", color="primary",
               :rotate="-90", :value="progressPercent(file.progress)",
               :indeterminate="file.progress.indeterminate")
-          v-icon(v-if="file.status === 'done'", color="success", large) $vuetify.icons.complete
-          v-icon(v-if="file.status === 'error'", color="error", large) $vuetify.icons.error
+          v-icon(v-if="file.status === 'done'", color="success", large) $vuetify.icons.values.complete
+          v-icon(v-if="file.status === 'error'", color="error", large) $vuetify.icons.values.error
         v-list-tile-content
           v-list-tile-title {{ file.file.name }}
           v-list-tile-sub-title

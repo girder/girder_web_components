@@ -31,7 +31,7 @@ describe('JobTable.vue', () => {
       localVue,
       propsData: {
         jobs: [],
-        pagination: {},
+        options: {},
       },
     });
     expect(wrapper.find('tbody').text()).toBe('No data available');
@@ -42,9 +42,9 @@ describe('JobTable.vue', () => {
       localVue,
       propsData: {
         jobs: [job],
-        pagination: {
+        options: {
           page: 1,
-          rowsPerPage: 10,
+          itemsPerPage: 10,
         },
         morePages: false,
       },
@@ -53,17 +53,17 @@ describe('JobTable.vue', () => {
       first: 1,
       last: 1,
     });
-    expect(wrapper.vm.totalItems).toBe(1);
+    expect(wrapper.vm.serverItemsLength).toBe(1);
   });
 
-  it('mount with pagination', () => {
+  it('mount with options', () => {
     const wrapper = mount(JobTable, {
       localVue,
       propsData: {
         jobs: [...Array(10).keys()].map(() => () => job),
-        pagination: {
+        options: {
           page: 2,
-          rowsPerPage: 10,
+          itemsPerPage: 10,
         },
         morePages: true,
       },
@@ -72,7 +72,7 @@ describe('JobTable.vue', () => {
       first: 11,
       last: 20,
     });
-    expect(wrapper.vm.totalItems).toBe(21);
+    expect(wrapper.vm.serverItemsLength).toBe(21);
   });
 
   it('convert progress object to a value', () => {
@@ -80,7 +80,7 @@ describe('JobTable.vue', () => {
       localVue,
       propsData: {
         jobs: [],
-        pagination: {},
+        options: {},
       },
     });
     expect(wrapper.vm.progressAsNumber(null)).toBe(100);

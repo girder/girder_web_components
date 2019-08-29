@@ -132,7 +132,7 @@ v-form(@submit.prevent="upsert")
             transition="scale-transition") {{ error }}
       v-card-actions
         v-spacer
-        v-btn(flat, @click="$emit('dismiss')") Cancel
+        v-btn(text, @click="$emit('dismiss')") Cancel
         v-btn(
             depressed,
             color="primary",

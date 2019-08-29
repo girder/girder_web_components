@@ -13,8 +13,8 @@ v-card(flat, height="100%")
     v-progress-linear(v-if="uploading", :value="totalProgressPercent", height="20")
 
     v-card-actions(v-show="files.length && !errorMessage && !uploading")
-      v-btn(flat, @click="files = []") Clear all
-      v-btn(flat, color="primary", @click="start") Start upload
+      v-btn(text, @click="files = []") Clear all
+      v-btn(text, color="primary", @click="start") Start upload
 
     slot(name="dropzone")
       dropzone(v-if="!files.length",
@@ -25,7 +25,7 @@ v-card(flat, height="100%")
 
     div(v-if="errorMessage")
       v-alert(:value="true", dark, type="error") {{ errorMessage }}
-        v-btn(v-if="!uploading", dark, outline, @click="start") Resume upload
+        v-btn(v-if="!uploading", dark, outlined, @click="start") Resume upload
 
     slot(name="files")
       file-upload-list(v-model="files")

@@ -117,8 +117,8 @@ describe('DataBrowser', () => {
         },
       },
       data: () => ({
-        pagination: {
-          rowsPerPage: 10,
+        options: {
+          itemsPerPage: 10,
           page: 2,
         },
       }),
@@ -157,8 +157,8 @@ describe('DataBrowser', () => {
         },
       },
       data: () => ({
-        pagination: {
-          rowsPerPage: 10,
+        options: {
+          itemsPerPage: 10,
           page: 3,
         },
       }),
@@ -171,7 +171,7 @@ describe('DataBrowser', () => {
     });
   });
 
-  it('can handle requests without pagination', async () => {
+  it('can handle requests without options', async () => {
     mock.onGet(/folder\/fake_folder_id\/details/).reply(200, { nFolders: 12, nItems: 20 });
     mock.onGet(/item/, {
       params: {
@@ -198,8 +198,8 @@ describe('DataBrowser', () => {
         },
       },
       data: () => ({
-        pagination: {
-          rowsPerPage: -1,
+        options: {
+          itemsPerPage: -1,
           page: 1,
         },
       }),

@@ -169,13 +169,14 @@ export default {
             v-dialog(v-model="uploaderDialog",
                 v-if="shouldShowUpload",
                 full-width, max-width="800px")
-              v-btn.ma-0(
-                  slot="activator",
-                  flat,
-                  small,
-                  color="secondary darken-2")
-                v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.fileNew }}
-                span.hidden-xs-only New Item
+              template(#activator="{ on }")
+                v-btn.ma-0(
+                    v-on="on",
+                    text,
+                    small,
+                    color="secondary darken-2")
+                  v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.values.fileNew }}
+                  span.hidden-xs-only New Item
               girder-upload(
                   :dest="uploadDest",
                   :pre-upload="preUpload",
@@ -184,13 +185,14 @@ export default {
             v-dialog(v-model="newFolderDialog",
                 v-if="newFolderEnabled && !isRootLocation(internalLocation) && girderRest.user",
                 full-width, max-width="800px")
-              v-btn.ma-0(
-                  flat,
-                  small,
-                  color="secondary darken-2",
-                  slot="activator")
-                v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.folderNew }}
-                span.hidden-xs-only New Folder
+              template(#activator="{ on }")
+                v-btn.ma-0(
+                    v-on="on",
+                    text,
+                    small,
+                    color="secondary darken-2")
+                  v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.values.folderNew }}
+                  span.hidden-xs-only New Folder
               girder-upsert-folder(
                   :location="internalLocation",
                   :pre-upsert="preUpsert",

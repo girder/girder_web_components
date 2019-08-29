@@ -6,7 +6,7 @@ v-container.oauth-widget
       :dark="iconMap[provider.id].dark",
       :color="iconMap[provider.id].color",
       :href="provider.url")
-    v-icon(left) {{ $vuetify.icons[iconMap[provider.id].icon] }}
+    v-icon(left) {{ $vuetify.icons.values[iconMap[provider.id].icon] }}
     | {{ provider.name }}
 </template>
 

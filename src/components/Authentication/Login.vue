@@ -15,7 +15,7 @@
           label="Username or e-mail",
           autofocus,
           :rules="nonEmptyRules",
-          prepend-icon="$vuetify.icons.user",
+          prepend-icon="$vuetify.icons.values.user",
           type="text")
       v-text-field(
           v-if="!otpFormVisible || forceOtp",
@@ -23,25 +23,24 @@
           type="password",
           label="Password",
           :rules="nonEmptyRules",
-          prepend-icon="$vuetify.icons.lock")
+          prepend-icon="$vuetify.icons.values.lock")
       v-text-field(
           v-if="otpFormVisible || forceOtp",
           v-model="otp",
           type="text",
-          mask="######",
           label="Authentication code",
-          :rules="nonEmptyRules",
-          prepend-icon="$vuetify.icons.otp")
+          :rules="otpRules",
+          prepend-icon="$vuetify.icons.values.otp")
       v-layout.mt-2(row)
         v-btn.ml-0(type="submit",
             color="primary",
             :disabled="inProgress",
             :loading="inProgress")
-          v-icon(left) $vuetify.icons.login
+          v-icon(left) $vuetify.icons.values.login
           | {{ otpFormVisible ? 'Verify code' : 'Login' }}
         v-spacer
         v-btn(
-            flat, color="primary", :to="forgotPasswordRoute", :href="forgotPasswordUrl",
+            text, color="primary", :to="forgotPasswordRoute", :href="forgotPasswordUrl",
             @click="$emit('forgotpassword')") Forgot Password?
   template(v-if="oauthProviders && oauthProviders.length")
     v-divider
@@ -53,6 +52,21 @@ import GirderOauth from './OAuth.vue';
 
 // Magic substring that, if present, indicates a user must supply an OTP
 const OTP_MAGIC_SUBSTRING = 'authentication must include a one-time password';
+
+// Validation rules
+const nonEmptyRules =  [
+  v => !!v || 'Item is required',
+];
+const otpRules = [
+  (v) => {
+    const phrase = '6 digit number';
+    try {
+      return (parseInt(v, 10) && String(v).length === 6) || phrase;
+    } catch {
+      return phrase;
+    }
+  },
+];
 
 export default {
   inject: ['girderRest'],
@@ -86,9 +100,8 @@ export default {
       alerts: {
         errors: [],
       },
-      nonEmptyRules: [
-        v => !!v || 'Item is required',
-      ],
+      nonEmptyRules,
+      otpRules,
       otpFormVisible: false,
     };
   },

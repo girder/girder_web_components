@@ -18,8 +18,8 @@ export default {
         status: null,
         jobType: null,
       },
-      pagination: {
-        rowsPerPage: 10,
+      options: {
+        itemsPerPage: 10,
         page: 1,
         sortBy: 'updated',
         descending: true,
@@ -32,7 +32,7 @@ export default {
     // reset to the first page when the filter changes
     jobFilter: {
       handler() {
-        this.pagination.page = 1;
+        this.options.page = 1;
       },
       deep: true,
     },
@@ -44,10 +44,10 @@ export default {
         this.girderRest.user; // reload when the user changes
         // eslint-disable-next-line no-unused-expressions
         this.refresh; // reload when this value changes
-        const pg = this.pagination;
+        const pg = this.options;
         const params = {
-          limit: pg.rowsPerPage + 1, // get one more than the requested limit to detect next page
-          offset: pg.rowsPerPage * (pg.page - 1),
+          limit: pg.itemsPerPage + 1, // get one more than the requested limit to detect next page
+          offset: pg.itemsPerPage * (pg.page - 1),
         };
         if (pg.sortBy) {
           params.sort = pg.sortBy;
@@ -66,7 +66,7 @@ export default {
         } else {
           this.morePages = true;
         }
-        return resp.data.slice(0, pg.rowsPerPage);
+        return resp.data.slice(0, pg.itemsPerPage);
       },
       default() {
         return [];
@@ -123,7 +123,7 @@ export default {
     v-flex(xs12)
       job-table(
           :jobs="jobs",
-          :pagination.sync="pagination",
+          :options.sync="options",
           :more-pages="morePages",
           @job-click="(e, job)=>$emit('job-click', e, job)")
 </template>

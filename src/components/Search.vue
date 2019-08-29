@@ -73,12 +73,12 @@ export default {
 
 <template lang="pug">
 v-layout.girder-searchbar(row, align-center)
-  v-icon.mdi-24px(color="white") {{ $vuetify.icons.search }}
+  v-icon.mdi-24px(color="white") {{ $vuetify.icons.values.search }}
   v-menu.grow.mx-3(
       offset-y, content-class="girder-searchbar-menu", :open-on-click="false",
       :value="searchText", :nudge-bottom="6", transition="slide-y-transition")
-    v-text-field(
-        slot="activator", v-model="searchText", light, solo, hide-details, clearable)
+    template(#activator="{ on }")
+      v-text-field(v-on="on", v-model="searchText", light, solo, hide-details, clearable)
     v-list
       v-list-tile(
           v-show="!loading",
@@ -86,19 +86,19 @@ v-layout.girder-searchbar(row, align-center)
           @click="$emit('select', r)",
           :key="r._id")
         v-list-tile-action
-          v-icon {{ $vuetify.icons[r._modelType] }}
+          v-icon {{ $vuetify.icons.values[r._modelType] }}
         v-list-tile-content
           v-list-tile-title {{ r.name || formatUsername(r) }}
       v-list-tile(v-show="searchText && quickResults.length === 0 && !loading")
         v-list-tile-action
-          v-icon {{ $vuetify.icons.alert }}
+          v-icon {{ $vuetify.icons.values.alert }}
         v-list-tile-content
           v-list-tile-title No results found for query '{{ searchText }}'
           v-list-tile-sub-title Modify search parameters or refine your query.
       v-list-tile(v-show="!loading && showMore && searchResults.length > maxQuickResults",
           @click="$emit('moreresults', searchParams)")
         v-list-tile-action
-          v-icon {{ $vuetify.icons.more }}
+          v-icon {{ $vuetify.icons.values.more }}
         v-list-tile-content
           v-list-tile-title More
       //- Skeleton search results shown as "loading" animation
@@ -107,7 +107,7 @@ v-layout.girder-searchbar(row, align-center)
           v-for="i in (maxQuickResults + (showMore ? 1 : 0))",
           :key="`skeleton-${i}`")
         v-list-tile-action
-          v-icon.grey--text.text--lighten-1 {{ $vuetify.icons.circle }}
+          v-icon.grey--text.text--lighten-1 {{ $vuetify.icons.values.circle }}
         v-list-tile-content
           v-list-tile-title.skeleton.skeleton--text.mb-2(
               :style="{ width: (60 + (4 * (i % 3))) + '%', height: '10px' }")
@@ -119,8 +119,9 @@ v-layout.girder-searchbar(row, align-center)
       content-class="girder-search-arrow-menu",
       :close-on-content-click="false",
       v-model="searchOptionsMenu")
-    v-btn(icon, slot="activator")
-      v-icon.mdi-24px {{ $vuetify.icons.settings }}
+    template(#activator="{ on }")
+      v-btn(icon, v-on="on")
+        v-icon.mdi-24px {{ $vuetify.icons.values.settings }}
     v-card
       v-card-actions
         v-layout(column)

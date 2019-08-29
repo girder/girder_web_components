@@ -11,7 +11,7 @@ export default {
       type: Boolean,
       required: true,
     },
-    pagination: {
+    options: {
       type: Object,
       required: true,
     },
@@ -23,7 +23,7 @@ export default {
       type: Boolean,
       required: true,
     },
-    totalItems: {
+    serverItemsLength: {
       type: Number,
       required: true,
     },
@@ -69,21 +69,21 @@ export default {
 
 <template lang="pug">
 v-data-table.girder-data-table(
-    select-all,
+    show-select,
     :headers-length="4",
     :value="value",
     @input="$emit('input', $event)",
-    :pagination="pagination",
-    @update:pagination="$emit('update:pagination', $event)",
+    :options="options",
+    @update:options="$emit('update:options', $event)",
     :items="rows",
-    :total-items="totalItems",
+    :server-items-length="serverItemsLength",
     :loading="loading ? 'accent' : false",
     item-key="_id")
 
-  template(#headers="{ all, indeterminate, headers }")
+  template(#header="{ all, indeterminate, headers }")
     slot(name="header", v-bind="{ all, indeterminate, headers }")
 
-  template(#items="props")
+  template(#item="props")
     tr.itemRow(:draggable="draggable", :active="props.selected",
         :class="getRowClass(props.item)",
         @click="handleRowSelect($event, props)",
@@ -99,7 +99,7 @@ v-data-table.girder-data-table(
         span.text-container.secondary--text.text--darken-3.nobreak(
             :class="getItemClass(props.item)",
             @click.stop="$emit('rowclick', props.item)")
-          v-icon.pr-2(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons[props.item.icon] }}
+          v-icon.pr-2(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons.values[props.item.icon] }}
           | {{ props.item.name }}
       td.text-xs-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
 

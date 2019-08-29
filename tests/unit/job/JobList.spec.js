@@ -84,7 +84,7 @@ describe('JobList.vue', () => {
     });
   });
 
-  it('mount with pagination', async () => {
+  it('mount with options', async () => {
     mock.onGet(/job[^/]/).reply(200, [...Array(11).keys()].map(() => () => job));
     mock.onGet(/typeandstatus$/).reply(200, {
       statuses: [0, 1],
@@ -92,7 +92,7 @@ describe('JobList.vue', () => {
     });
 
     const wrapper = await mountAndWait(JobList);
-    wrapper.vm.pagination.rowsPerPage = 10;
+    wrapper.vm.options.itemsPerPage = 10;
     expect(wrapper.vm.jobs.length).toBe(10);
     expect(wrapper.vm.morePages).toBe(true);
   });
@@ -106,7 +106,7 @@ describe('JobList.vue', () => {
 
     const wrapper = await mountAndWait(JobList);
 
-    wrapper.vm.pagination.page = 2;
+    wrapper.vm.options.page = 2;
     await waitForResponses(wrapper);
 
     mock.resetHistory();
@@ -118,10 +118,10 @@ describe('JobList.vue', () => {
     expect(mock.history.get.length).toBe(1);
     expect(mock.history.get[0].url).toMatch(/statuses=%5B0%5D/);
     expect(mock.history.get[0].url).toMatch(/types=%5B%22type%201%22%5D/);
-    expect(wrapper.vm.pagination.page).toBe(1);
+    expect(wrapper.vm.options.page).toBe(1);
   });
 
-  it('responds to pagination changes', async () => {
+  it('responds to options changes', async () => {
     mock.onGet(/job[^/]/).reply(200, [...Array(11).keys()].map(() => () => job));
     mock.onGet(/typeandstatus$/).reply(200, {
       statuses: [0, 1],
@@ -131,8 +131,8 @@ describe('JobList.vue', () => {
     const wrapper = await mountAndWait(JobList);
 
     mock.resetHistory();
-    wrapper.vm.pagination = {
-      rowsPerPage: 10,
+    wrapper.vm.options = {
+      itemsPerPage: 10,
       page: 3,
       sortBy: 'title',
       descending: false,
@@ -156,8 +156,8 @@ describe('JobList.vue', () => {
     const wrapper = await mountAndWait(JobList);
 
     mock.resetHistory();
-    wrapper.vm.pagination = {
-      rowsPerPage: 10,
+    wrapper.vm.options = {
+      itemsPerPage: 10,
       page: 3,
     };
     await waitForResponses(wrapper);
