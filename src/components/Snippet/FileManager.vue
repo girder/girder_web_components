@@ -166,6 +166,7 @@ export default {
                 @crumbclick="props.changeLocation($event)",
                 :root-location-disabled="props.rootLocationDisabled")
           template(#headerwidget)
+            slot(name="headerwidget")
             v-dialog(v-model="uploaderDialog",
                 v-if="shouldShowUpload",
                 full-width, max-width="800px")
@@ -176,12 +177,13 @@ export default {
                     small,
                     color="secondary darken-2")
                   v-icon.mdi-24px.mr-1(left, color="accent") $vuetify.icons.fileNew
-                  span.hidden-xs-only New Item
+                  span.hidden-xs-only Upload
               girder-upload(
                   :dest="uploadDest",
                   :pre-upload="preUpload",
                   :post-upload="postUploadInternal",
-                  :multiple="uploadMultiple")
+                  :multiple="uploadMultiple",
+                  :accept="uploadAccept")
             v-dialog(v-model="newFolderDialog",
                 v-if="newFolderEnabled && !isRootLocation(internalLocation) && girderRest.user",
                 full-width, max-width="800px")
