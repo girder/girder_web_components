@@ -93,7 +93,7 @@ v-data-table.girder-data-table(
         @drop="$emit('drop', { items: [props], event: $event })",
         :key="props.index")
       td.pl-3.pr-0(v-if="selectable")
-        v-checkbox.secondary--text.text--darken-1.pr-2(
+        v-checkbox.secondary--text.text--darken-1(
             :input-value="props.selected", accent, hide-details)
       td.pl-3(colspan="2")
         span.text-container.secondary--text.text--darken-3.nobreak(
@@ -101,13 +101,13 @@ v-data-table.girder-data-table(
             @click.stop="$emit('rowclick', props.item)")
           v-icon.pr-2(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons.values[props.item.icon] }}
           | {{ props.item.name }}
-      td.text-xs-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
+      td.text-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
 
   template(#no-data)
-    td.text-xs-center(colspan="2", width="100%") No Data Available
+    .text-center(width="100%") No Data Available
 
   template(#no-results)
-    td.text-xs-center(colspan="2", width="100%") No Data Available
+    .text-center(width="100%") No Data Available
 </template>
 
 
@@ -124,7 +124,7 @@ v-data-table.girder-data-table(
     }
   }
 
-  .v-table {
+  &.v-data-table {
     tr {
       &.itemRow[active],
       &.itemRow:hover {
@@ -136,8 +136,9 @@ v-data-table.girder-data-table(
         border-color: inherit !important;
       }
 
-      .v-input--checkbox {
-        border-right: 1.5px solid;
+      .v-input--selection-controls.v-input--checkbox {
+        margin: 0 10px;
+        border-right: 1.5px solid gray;
       }
 
       .text-container i {
@@ -158,7 +159,7 @@ v-data-table.girder-data-table(
     color: inherit;
   }
 
-  .v-datatable__progress .v-progress-linear {
+  .v-data-table__progress .v-progress-linear {
     position: absolute;
   }
 }

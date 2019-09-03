@@ -102,7 +102,7 @@ export default {
 
 <template lang="pug">
 .girder-breadcrumb-component
-  v-icon.home-button.mr-3(
+  v-icon.crumb-button.mr-3(
       v-if="girderRest.user && !readonly",
       color="accent",
       @click="$emit('crumbclick', girderRest.user)",
@@ -111,8 +111,9 @@ export default {
     span.subheading.font-weight-bold(:disabled="readonly", slot="divider") /
     template(#item="{ item }")
       v-breadcrumbs-item(
+          tag="a",
           :disabled="(readonly || breadcrumb.indexOf(item) == breadcrumb.length-1)",
-          @click.native="$emit('crumbclick', item)")
+          @click="$emit('crumbclick', item)")
         template(v-if="['folder', 'user', 'collection'].indexOf(item.type) !== -1") {{ item.name }}
         template(v-else-if="item.type==='users'")
           v-icon.mdi-18px {{ $vuetify.icons.values.user }}
@@ -127,18 +128,9 @@ export default {
 .girder-breadcrumb-component {
   display: flex;
 
-  .home-button {
-    font-size: 22px;
-    cursor: pointer;
-  }
-
   .v-breadcrumbs {
     .v-breadcrumbs__divider {
       padding: 0 7px;
-    }
-
-    .v-icon {
-      color: inherit;
     }
   }
 }
