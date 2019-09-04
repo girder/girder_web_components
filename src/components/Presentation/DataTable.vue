@@ -40,7 +40,7 @@ export default {
     isRootLocation,
     handleRowSelect({ shiftKey }, props) {
       if (this.selectable) {
-        props.selected = !props.selected;
+        props.isSelected = !props.isSelected;
         if (shiftKey && this.lastCheckBoxIdx !== null) {
           const [start, end] = [this.lastCheckBoxIdx, props.index + 1].sort();
           const newlySelectedRows = this.rows
@@ -84,7 +84,7 @@ v-data-table.girder-data-table(
     slot(name="header", v-bind="{ all, indeterminate, headers }")
 
   template(#item="props")
-    tr.itemRow(:draggable="draggable", :active="props.selected",
+    tr.itemRow(:draggable="draggable", :active="props.isSelected",
         :class="getRowClass(props.item)",
         @click="handleRowSelect($event, props)",
         @drag="$emit('drag', { items: [props], event: $event })",
@@ -94,12 +94,12 @@ v-data-table.girder-data-table(
         :key="props.index")
       td.pl-3.pr-0(v-if="selectable")
         v-checkbox.secondary--text.text--darken-1(
-            :input-value="props.selected", accent, hide-details)
+            :input-value="props.isSelected", accent, hide-details, @change="props.select")
       td.pl-3(colspan="2")
         span.text-container.secondary--text.text--darken-3.nobreak(
             :class="getItemClass(props.item)",
             @click.stop="$emit('rowclick', props.item)")
-          v-icon.pr-2(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons.values[props.item.icon] }}
+          v-icon.pr-2(:color="props.isSelected ? 'accent' : ''") {{ $vuetify.icons.values[props.item.icon] }}
           | {{ props.item.name }}
       td.text-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
 
