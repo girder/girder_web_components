@@ -87,13 +87,18 @@
   "jest": {
     "moduleFileExtensions": [
       "js",
+      "jsx",
+      "json",
       "vue"
     ],
     "transform": {
-      ".+\\.vue$": "vue-jest",
+      "^.+\\.vue$": "vue-jest",
       ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
-      ".+\\.js$": "babel-jest"
+      "^.+\\.jsx?$": "babel-jest"
     },
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/(?!(vuetify)/)"
+    ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1",
       "\\.css$": "<rootDir>/tests/mocks/stub.js",

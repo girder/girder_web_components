@@ -103,10 +103,10 @@ v-data-table.girder-data-table(
           | {{ props.item.name }}
       td.text-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
 
-  template(#no-data)
+  template(#no-data="")
     .text-center(width="100%") No Data Available
 
-  template(#no-results)
+  template(#no-results="")
     .text-center(width="100%") No Data Available
 </template>
 

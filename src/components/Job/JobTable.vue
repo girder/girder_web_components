@@ -103,7 +103,7 @@ v-card
                   :class="{ rotate: props.item.spin }",
                   :size="20") {{ props.item.statusIcon }}
 
-    template(#pageText)
+    template(#pageText="")
       .v-datatable__actions__options {{ pageRange.first }}-{{ pageRange.last }}
 </template>
 
