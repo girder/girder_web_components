@@ -41,7 +41,7 @@ v-app.app
               :oauth="true",
               :key="girderRest.token",
               :forgot-password-url="forgotPasswordUrl")
-        v-layout.ma-2.grow(column)
+        v-layout.ma-2(column)
           girder-file-manager.mb-3(
               v-if="browserEnabled",
               :drag-enabled="dragEnabled",

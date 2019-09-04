@@ -3,8 +3,8 @@
     .file-tile(v-for="(file, i) in value", :key="file.file.name",
         :class="`status-${file.status}`")
       v-divider(v-if="i > 0")
-      v-list-tile(avatar)
-        v-list-tile-avatar
+      v-list-item(avatar)
+        v-list-item-avatar
           v-btn(v-if="file.status === 'pending'", icon, @click="$emit('input', splice(i))")
             v-icon $vuetify.icons.values.close
           v-progress-circular(v-if="file.status === 'uploading'", color="primary",
@@ -12,9 +12,9 @@
               :indeterminate="file.progress.indeterminate")
           v-icon(v-if="file.status === 'done'", color="success", large) $vuetify.icons.values.complete
           v-icon(v-if="file.status === 'error'", color="error", large) $vuetify.icons.values.error
-        v-list-tile-content
-          v-list-tile-title {{ file.file.name }}
-          v-list-tile-sub-title
+        v-list-item-content
+          v-list-item-title {{ file.file.name }}
+          v-list-item-subtitle
             span(v-if="file.progress.current") {{ formatSize(file.progress.current ) }} /
             = " "
             span {{ formatSize(file.file.size) }}
