@@ -1,8 +1,10 @@
 <template lang="pug">
 v-card.girder-authentication-component
-  v-tabs(v-model="activeTab", color="primary", slider-color="yellow", dark)
+  v-tabs(v-model="activeTab", background-color="primary", dark)
+    v-tabs-slider(color="yellow")
     v-tab(key="login") Log In
     v-tab(key="registration", v-if="register") Register
+  v-tabs-items(v-model="activeTab")
     v-tab-item(key="login-box")
       girder-login(:oauth-providers="oauthProviders",
           :force-otp="forceOtp",

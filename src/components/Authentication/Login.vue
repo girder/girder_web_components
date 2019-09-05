@@ -31,7 +31,7 @@
           label="Authentication code",
           :rules="otpRules",
           prepend-icon="$vuetify.icons.values.otp")
-      v-layout.mt-2(row)
+      v-card-actions
         v-btn.ml-0(type="submit",
             color="primary",
             :disabled="inProgress",

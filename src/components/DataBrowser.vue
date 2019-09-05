@@ -302,7 +302,7 @@ girder-data-table.girder-file-browser(
             :indeterminate="selected.length > 0 && !props.all",
             @click.native="toggleAll")
       th.pl-3(colspan="10", width="99%")
-        v-layout.ml-0(row)
+        v-row.ma-1
           slot(name="breadcrumb", v-bind="{ location, changeLocation, rootLocationDisabled }")
           v-spacer
           slot(name="headerwidget", v-bind="{ location, changeLocation, rootLocationDisabled }")

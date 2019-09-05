@@ -49,38 +49,27 @@ export default {
 </script>
 
 <template lang="pug">
-v-card.job-filter(dark, color="primary")
-  v-container.py-2(fluid, grid-list-lg)
-    v-layout(row)
-      v-flex(sm12, d-flex)
-        h3.subheading Girder Worker Jobs
-    v-layout(row, justify-center)
-      v-flex(sm3, d-flex)
-        v-select(
-            label="Job Type",
-            :items="jobTypeList",
-            :value="jobType",
-            clearable,
-            color="white",
-            :menu-props="{'content-class':'girder-job-filter-form-menu'}",
-            dark,
-            dense,
-            @input="$emit('update:jobType', $event ? $event : null)")
-      v-flex(sm3, d-flex)
-        v-select(
-            label="Status",
-            :items="statusItemList",
-            :value="status",
-            clearable,
-            color="white",
-            :menu-props="{'content-class':'girder-job-filter-form-menu'}",
-            dark,
-            dense,
-            @input="$emit('update:status', $event ? $event : null)")
+v-container.job-filter
+  h4 Girder Worker Jobs
+  v-row(justify="center")
+    v-col(sm=5, md=4)
+      v-select(
+          label="Job Type",
+          :items="jobTypeList",
+          :value="jobType",
+          clearable,
+          color="white",
+          :menu-props="{'content-class':'girder-job-filter-form-menu'}",
+          dense,
+          @input="$emit('update:jobType', $event ? $event : null)")
+    v-col(sm=5, md=4)
+      v-select(
+          label="Status",
+          :items="statusItemList",
+          :value="status",
+          clearable,
+          color="white",
+          :menu-props="{'content-class':'girder-job-filter-form-menu'}",
+          dense,
+          @input="$emit('update:status', $event ? $event : null)")
 </template>
-
-<style lang="scss">
-.girder-job-filter-form-menu .v-list__tile--active.theme--light {
-  color: black !important;
-}
-</style>

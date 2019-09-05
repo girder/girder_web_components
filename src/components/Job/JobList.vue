@@ -21,7 +21,7 @@ export default {
       options: {
         itemsPerPage: 10,
         page: 1,
-        sortBy: 'updated',
+        sortBy: ['updated'],
         descending: true,
       },
       morePages: true,
@@ -109,21 +109,18 @@ export default {
 </script>
 
 <template lang="pug">
-.girder-job-list
-  v-layout(row)
-    v-flex(xs12)
-      filter-form(
-          :from-date.sync="jobFilter.fromDate",
-          :to-date.sync="jobFilter.toDate",
-          :status.sync="jobFilter.status",
-          :job-type.sync="jobFilter.jobType",
-          :status-list="typeAndStatusList.statuses",
-          :job-type-list="typeAndStatusList.types")
-  v-layout(row)
-    v-flex(xs12)
-      job-table(
-          :jobs="jobs",
-          :options.sync="options",
-          :more-pages="morePages",
-          @job-click="(e, job)=>$emit('job-click', e, job)")
+v-card.girder-job-list(dark, color="primary")
+  v-card-title
+    filter-form(
+        :from-date.sync="jobFilter.fromDate",
+        :to-date.sync="jobFilter.toDate",
+        :status.sync="jobFilter.status",
+        :job-type.sync="jobFilter.jobType",
+        :status-list="typeAndStatusList.statuses",
+        :job-type-list="typeAndStatusList.types")
+  job-table(
+      :jobs="jobs",
+      :options.sync="options",
+      :more-pages="morePages",
+      @job-click="(e, job)=>$emit('job-click', e, job)")
 </template>

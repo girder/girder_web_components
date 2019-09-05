@@ -76,35 +76,33 @@ export default {
 </script>
 
 <template lang="pug">
-v-card
-  v-data-table(
-      item-key="_id",
-      :headers="headers",
-      :items="items",
-      :server-items-length="serverItemsLength",
-      :options="options",
-      @update:options="$emit('update:options', $event)")
-    template(#items="props")
-      tr(@click="$emit('job-click', $event, props.item)")
-        td {{ props.item.title }}
-        td.one-line {{ props.item.type }}
-        td.one-line {{ props.item.updateString }}
-        td.one-line.status-line(nowrap, :title="props.item.statusText", width="1%")
-          v-layout(row)
-            v-flex.mr-3
-              v-progress-linear.progress-bar(
-                  :color="props.item.statusColor",
-                  :value="props.item.progressNumber",
-                  :indeterminate="!!props.item.indeterminate",
-                  height="10")
-            v-flex
-              v-icon.status-icon(
-                  :color="props.item.statusColor",
-                  :class="{ rotate: props.item.spin }",
-                  :size="20") {{ props.item.statusIcon }}
+v-data-table(
+    light,
+    item-key="_id",
+    :headers="headers",
+    :items="items",
+    :server-items-length="serverItemsLength",
+    :options="options",
+    @update:options="$emit('update:options', $event)")
+  template(#item="props")
+    tr(@click="$emit('job-click', $event, props.item)")
+      td.one-line {{ props.item.title }}
+      td.one-line {{ props.item.type }}
+      td.one-line {{ props.item.updateString }}
+      td.one-line.status-line(nowrap, :title="props.item.statusText", width="1%")
+        v-row.flex-nowrap.ma-2(align="center")
+          v-progress-linear.progress-bar.mr-3(
+              :color="props.item.statusColor",
+              :value="props.item.progressNumber",
+              :indeterminate="!!props.item.indeterminate",
+              height="10")
+          v-icon.status-icon(
+              :color="props.item.statusColor",
+              :class="{ rotate: props.item.spin }",
+              :size="20") {{ props.item.statusIcon }}
 
-    template(#pageText="")
-      .v-datatable__actions__options {{ pageRange.first }}-{{ pageRange.last }}
+  template(#pageText="")
+    .v-datatable__actions__options {{ pageRange.first }}-{{ pageRange.last }}
 </template>
 
 <style lang="scss" scoped>
@@ -117,12 +115,6 @@ v-card
 .status-line {
   .progress-bar {
     width: 150px;
-  }
-
-  .status-icon {
-    height: 100%;
-    position: relative;
-    top: -1px;
   }
 }
 

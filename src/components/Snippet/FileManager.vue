@@ -145,8 +145,8 @@ export default {
 
 <template lang="pug">
 .girder-data-browser-snippet
-  v-layout(row, wrap)
-    v-flex(grow)
+  v-row
+    v-col
       v-card
         girder-data-browser(
             ref="girderBrowser",

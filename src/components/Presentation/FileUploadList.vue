@@ -3,8 +3,8 @@
     .file-tile(v-for="(file, i) in value", :key="file.file.name",
         :class="`status-${file.status}`")
       v-divider(v-if="i > 0")
-      v-list-item(avatar)
-        v-list-item-avatar
+      v-list-item(two-line)
+        v-list-item-icon
           v-btn(v-if="file.status === 'pending'", icon, @click="$emit('input', splice(i))")
             v-icon $vuetify.icons.values.close
           v-progress-circular(v-if="file.status === 'uploading'", color="primary",

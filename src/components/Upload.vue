@@ -4,7 +4,7 @@ v-card(flat, height="100%")
     slot(name="header")
       v-card-title(primary-title)
         div
-          .headline
+          .headline.text-left
             | Upload to
             = " "
             span.font-weight-bold {{ dest.name }}

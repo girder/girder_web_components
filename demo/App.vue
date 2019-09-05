@@ -15,7 +15,7 @@ v-app.app
               v-icon.mdi-24px {{ $vuetify.icons.values.more }}
           v-card
             v-card-actions
-              v-layout(column)
+              v-col
                 v-checkbox.mt-1(hide-details, label="Worker Jobs", v-model="jobsEnabled")
                 v-divider.mt-2.mb-1
                 v-checkbox.mt-1(hide-details, label="Data Browser", v-model="browserEnabled")
@@ -33,15 +33,15 @@ v-app.app
         v-icon $vuetify.icons.values.logout
 
     v-container
-      v-layout(row, wrap)
-        v-flex.ma-2(v-if="loggedOut")
+      v-row
+        v-col(v-if="loggedOut", lg=4, md=5, sm=12)
           girder-auth(
               :force-otp="false",
               :register="true",
               :oauth="true",
               :key="girderRest.token",
               :forgot-password-url="forgotPasswordUrl")
-        v-layout.ma-2(column)
+        v-col
           girder-file-manager.mb-3(
               v-if="browserEnabled",
               :drag-enabled="dragEnabled",
