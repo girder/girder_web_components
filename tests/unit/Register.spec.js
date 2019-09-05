@@ -1,11 +1,11 @@
 import MockAdapter from 'axios-mock-adapter';
 import { mount } from '@vue/test-utils';
+
 import RestClient from '@/rest';
 import Register from '@/components/Authentication/Register.vue';
-import { flushPromises, girderVue } from './utils';
+import { flushPromises, girderVue, vuetify } from './utils';
 
 const localVue = girderVue();
-localVue.config.silent = true;
 
 describe('Register', () => {
   const girderRest = new RestClient();
@@ -18,28 +18,32 @@ describe('Register', () => {
   it('Form validation', () => {
     const wrapper = mount(Register, {
       localVue,
+      vuetify,
       propsData: {},
       provide: { girderRest },
     });
-    wrapper.vm.login = 'test';
-    wrapper.vm.email = 'test@mail.com';
-    wrapper.vm.firstName = 'test';
-    wrapper.vm.lastName = 'test';
+    wrapper.setData({
+      login: 'test',
+      email: 'test@mail.com',
+      firstName: 'test',
+      lastName: 'test',
+    });
     const formWrapper = wrapper.find({ ref: 'form' });
     expect(formWrapper.vm.validate()).toBe(false);
     expect(formWrapper.vm.inputs.slice(-1)[0].valid).toBe(false);
     expect(formWrapper.vm.inputs.slice(-2)[0].valid).toBe(false);
-    wrapper.vm.password = 'password';
+    wrapper.setData({ password: 'password' });
     formWrapper.vm.validate();
     expect(formWrapper.vm.inputs.slice(-1)[0].valid).toBe(false);
     expect(formWrapper.vm.inputs.slice(-2)[0].valid).toBe(true);
-    wrapper.vm.retypePassword = 'password';
+    wrapper.setData({ retypePassword: 'password' });
     expect(formWrapper.vm.validate()).toBe(true);
   });
 
   it('Registration errors', async () => {
     const wrapper = mount(Register, {
       localVue,
+      vuetify,
       propsData: {},
       provide: { girderRest },
     });

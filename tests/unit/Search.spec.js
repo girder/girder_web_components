@@ -2,7 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
 import Search from '@/components/Search.vue';
-import { flushPromises, girderVue, wrapMock as w } from './utils';
+import { flushPromises, girderVue, vuetify, wrapMock as w } from './utils';
 
 const localVue = girderVue();
 
@@ -75,6 +75,7 @@ describe('Search', () => {
 
     const wrapper = shallowMount(Search, {
       localVue,
+      vuetify,
       provide: { girderRest },
     });
     await flushPromises();
@@ -92,6 +93,7 @@ describe('Search', () => {
 
     const wrapper = shallowMount(Search, {
       localVue,
+      vuetify,
       propsData: {
         maxQuickResults: 19,
       },
@@ -111,6 +113,7 @@ describe('Search', () => {
 
     const wrapper = shallowMount(Search, {
       localVue,
+      vuetify,
       provide: { girderRest },
     });
     await flushPromises();

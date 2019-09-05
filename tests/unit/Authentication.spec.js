@@ -5,7 +5,7 @@ import Authentication from '@/components/Authentication/Authentication.vue';
 import Login from '@/components/Authentication/Login.vue';
 import Register from '@/components/Authentication/Register.vue';
 import Oauth from '@/components/Authentication/OAuth.vue';
-import { flushPromises, girderVue } from './utils';
+import { flushPromises, girderVue, vuetify } from './utils';
 
 const localVue = girderVue();
 
@@ -20,6 +20,7 @@ describe('Authentication', () => {
   it('does not render children when toggled off', () => {
     const wrapper = shallowMount(Authentication, {
       localVue,
+      vuetify,
       propsData: {
         register: false,
         oauth: false,
@@ -34,6 +35,7 @@ describe('Authentication', () => {
   it('renders registration when toggled on', () => {
     const wrapper = shallowMount(Authentication, {
       localVue,
+      vuetify,
       propsData: {
         register: true,
         oauth: false,
@@ -52,6 +54,7 @@ describe('Authentication', () => {
     }]);
     const wrapper = shallowMount(Authentication, {
       localVue,
+      vuetify,
       propsData: {
         register: false,
         oauth: true,
@@ -75,6 +78,7 @@ describe('Authentication', () => {
     });
     const wrapper = mount(Login, {
       localVue,
+      vuetify,
       provide: { girderRest },
     });
     await flushPromises();

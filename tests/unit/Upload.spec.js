@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
 import Upload from '@/components/Upload.vue';
-import { girderVue } from './utils';
+import { girderVue, vuetify } from './utils';
 
 const localVue = girderVue();
 
@@ -9,6 +9,7 @@ describe('Upload.vue', () => {
   it('renders destination name', () => {
     const wrapper = shallowMount(Upload, {
       localVue,
+      vuetify,
       propsData: {
         dest: {
           _modelType: 'folder',

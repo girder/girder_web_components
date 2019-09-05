@@ -102,7 +102,7 @@ export default {
 
 <template lang="pug">
 .girder-breadcrumb-component
-  v-icon.crumb-button.mr-3(
+  v-icon.home-button.mr-3(
       v-if="girderRest.user && !readonly",
       color="accent",
       @click="$emit('crumbclick', girderRest.user)",

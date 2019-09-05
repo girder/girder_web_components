@@ -54,7 +54,7 @@ import GirderOauth from './OAuth.vue';
 const OTP_MAGIC_SUBSTRING = 'authentication must include a one-time password';
 
 // Validation rules
-const nonEmptyRules =  [
+const nonEmptyRules = [
   v => !!v || 'Item is required',
 ];
 const otpRules = [
@@ -62,7 +62,7 @@ const otpRules = [
     const phrase = '6 digit number';
     try {
       return (parseInt(v, 10) && String(v).length === 6) || phrase;
-    } catch {
+    } catch (err) {
       return phrase;
     }
   },

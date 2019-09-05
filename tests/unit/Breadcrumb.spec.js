@@ -2,7 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
 import Breadcrumb from '@/components/Breadcrumb.vue';
-import { flushPromises, girderVue, authenticateRestClient } from './utils';
+import { flushPromises, girderVue, vuetify, authenticateRestClient } from './utils';
 
 const localVue = girderVue();
 
@@ -92,6 +92,7 @@ describe('Breadcrumb', () => {
   it('will construct the breadcrumb for a folder', async () => {
     const wrapper = shallowMount(Breadcrumb, {
       localVue,
+      vuetify,
       propsData: {
         location: {
           _modelType: 'folder',
@@ -131,6 +132,7 @@ describe('Breadcrumb', () => {
   it('will construct the breadcrumb for a user', async () => {
     const wrapper = shallowMount(Breadcrumb, {
       localVue,
+      vuetify,
       propsData: {
         location: {
           _modelType: 'user',
@@ -148,6 +150,7 @@ describe('Breadcrumb', () => {
   it('Test with root enabled', async () => {
     const wrapper = shallowMount(Breadcrumb, {
       localVue,
+      vuetify,
       propsData: {
         location: {
           type: 'root',
@@ -182,6 +185,7 @@ describe('Breadcrumb', () => {
   it('Test user root w/o authentication', async () => {
     let wrapper = shallowMount(Breadcrumb, {
       localVue,
+      vuetify,
       propsData: {
         location: {
           _modelType: 'user',
@@ -197,6 +201,7 @@ describe('Breadcrumb', () => {
 
     wrapper = shallowMount(Breadcrumb, {
       localVue,
+      vuetify,
       propsData: {
         location: {
           _modelType: 'user',
