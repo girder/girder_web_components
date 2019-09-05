@@ -1,11 +1,16 @@
 import Vue from 'vue';
+import Vuetify from 'vuetify';
+import { createLocalVue } from '@vue/test-utils';
+
 import Girder from '@/index';
 
 const girderVue = () => {
   Vue.use(Girder);
   Vue.config.silent = true;
-  return Vue;
+  return createLocalVue();
 };
+
+const vuetify = new Vuetify();
 
 function wrapMock(callback, status = 200, reply = {}) {
   return (config) => {
@@ -59,6 +64,7 @@ async function authenticateRestClient(girderRest, mock) {
 export {
   flushPromises,
   girderVue,
+  vuetify,
   wrapMock,
   authenticateRestClient,
 };

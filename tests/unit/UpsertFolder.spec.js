@@ -3,7 +3,7 @@ import { parse } from 'qs';
 import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
 import UpsertFolder from '@/components/UpsertFolder.vue';
-import { flushPromises, girderVue } from './utils';
+import { flushPromises, girderVue, vuetify } from './utils';
 
 const localVue = girderVue();
 
@@ -53,6 +53,7 @@ describe('Upsert Folder', () => {
     const postHook = new Promise((resolve) => { postHookResolve = resolve; });
     const wrapper = shallowMount(UpsertFolder, {
       localVue,
+      vuetify,
       propsData: {
         location: {
           _modelType: parentType,
@@ -94,6 +95,7 @@ describe('Upsert Folder', () => {
     });
     const wrapper = shallowMount(UpsertFolder, {
       localVue,
+      vuetify,
       propsData: {
         location: {
           _modelType: parentType,
@@ -127,6 +129,7 @@ describe('Upsert Folder', () => {
     });
     const wrapper = shallowMount(UpsertFolder, {
       localVue,
+      vuetify,
       propsData: {
         location: {
           _modelType: parentType,

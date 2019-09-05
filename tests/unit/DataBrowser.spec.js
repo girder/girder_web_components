@@ -2,7 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
 import DataBrowser from '@/components/DataBrowser.vue';
-import { flushPromises, girderVue, authenticateRestClient } from './utils';
+import { flushPromises, girderVue, vuetify, authenticateRestClient } from './utils';
 
 const localVue = girderVue();
 
@@ -64,6 +64,7 @@ describe('DataBrowser', () => {
     mock.onGet(/item/).reply(200, getMockItemQueryResponse(1));
     const wrapper = shallowMount(DataBrowser, {
       localVue,
+      vuetify,
       propsData: {
         location: {
           _modelType: 'user',
@@ -110,6 +111,7 @@ describe('DataBrowser', () => {
 
     const wrapper = shallowMount(DataBrowser, {
       localVue,
+      vuetify,
       propsData: {
         location: {
           _modelType: 'folder',
@@ -150,6 +152,7 @@ describe('DataBrowser', () => {
 
     const wrapper = shallowMount(DataBrowser, {
       localVue,
+      vuetify,
       propsData: {
         location: {
           _modelType: 'folder',
@@ -191,6 +194,7 @@ describe('DataBrowser', () => {
 
     const wrapper = shallowMount(DataBrowser, {
       localVue,
+      vuetify,
       propsData: {
         location: {
           _modelType: 'folder',
@@ -212,6 +216,7 @@ describe('DataBrowser', () => {
   it('populates 2 rows for root location', async () => {
     let wrapper = shallowMount(DataBrowser, {
       localVue,
+      vuetify,
       provide: { girderRest },
       propsData: {
         location: {
@@ -229,6 +234,7 @@ describe('DataBrowser', () => {
     const mock_ = new MockAdapter(girderRest_);
     wrapper = shallowMount(DataBrowser, {
       localVue,
+      vuetify,
       provide: {
         girderRest: await authenticateRestClient(girderRest_, mock_),
       },
@@ -280,6 +286,7 @@ describe('DataBrowser', () => {
 
     const wrapper = shallowMount(DataBrowser, {
       localVue,
+      vuetify,
       provide: { girderRest: await authenticateRestClient(girderRest_, mock_) },
       propsData: {
         location: {

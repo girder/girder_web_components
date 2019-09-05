@@ -4,7 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 import RestClient from '@/rest';
 import JobList from '@/components/Job/JobList.vue';
 
-import { girderVue } from '../utils';
+import { girderVue, vuetify } from '../utils';
 
 const localVue = girderVue();
 
@@ -32,6 +32,7 @@ describe('JobList.vue', () => {
   async function mountAndWait(options = {}) {
     const wrapper = shallowMount(JobList, Object.assign({
       localVue,
+      vuetify,
       provide: { girderRest, notificationBus },
     }, options));
     await waitForResponses(wrapper);
