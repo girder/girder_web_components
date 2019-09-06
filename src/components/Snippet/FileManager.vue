@@ -175,7 +175,7 @@ export default {
                     text,
                     small,
                     color="secondary darken-2")
-                  v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.values.fileNew }}
+                  v-icon.mdi-24px.mr-1(left, color="accent") $vuetify.icons.fileNew
                   span.hidden-xs-only New Item
               girder-upload(
                   :dest="uploadDest",
@@ -191,7 +191,7 @@ export default {
                     text,
                     small,
                     color="secondary darken-2")
-                  v-icon.mdi-24px.mr-1(left, color="accent") {{  $vuetify.icons.values.folderNew }}
+                  v-icon.mdi-24px.mr-1(left, color="accent") $vuetify.icons.folderNew
                   span.hidden-xs-only New Folder
               girder-upsert-folder(
                   :location="internalLocation",

@@ -73,8 +73,8 @@ export default {
 
 <template lang="pug">
 v-layout.girder-searchbar(row, align-center)
-  v-icon.mdi-24px(color="white") {{ $vuetify.icons.search }}
-  v-menu.mx-3(
+  v-icon.mdi-24px(color="white") $vuetify.icons.search
+  v-menu.mx-2(
       offset-y,
       content-class="girder-searchbar-menu",
       transition="slide-y-transition"
@@ -89,20 +89,20 @@ v-layout.girder-searchbar(row, align-center)
           v-for="r in quickResults",
           @click="$emit('select', r)",
           :key="r._id")
-        v-list-item-action
-          v-icon {{ $vuetify.icons[r._modelType] }}
+        v-list-item-action.mr-2
+          v-icon {{ $vuetify.icons.values[r._modelType] }}
         v-list-item-content
           v-list-item-title {{ r.name || formatUsername(r) }}
       v-list-item(v-show="searchText && quickResults.length === 0 && !loading")
         v-list-item-action
-          v-icon {{ $vuetify.icons.alert }}
+          v-icon $vuetify.icons.alert
         v-list-item-content
           v-list-item-title No results found for query '{{ searchText }}'
           v-list-item-subtitle Modify search parameters or refine your query.
       v-list-item(v-show="!loading && showMore && searchResults.length > maxQuickResults",
           @click="$emit('moreresults', searchParams)")
         v-list-item-action
-          v-icon {{ $vuetify.icons.more }}
+          v-icon $vuetify.icons.more
         v-list-item-content
           v-list-item-title More
       //- Skeleton search results shown as "loading" animation
@@ -111,7 +111,7 @@ v-layout.girder-searchbar(row, align-center)
           v-for="i in (maxQuickResults + (showMore ? 1 : 0))",
           :key="`skeleton-${i}`")
         v-list-item-action
-          v-icon.grey--text.text--lighten-1 {{ $vuetify.icons.circle }}
+          v-icon.grey--text.text--lighten-1 $vuetify.icons.circle
         v-list-item-content
           v-list-item-title.skeleton.skeleton--text.mb-2(
               :style="{ width: (60 + (4 * (i % 3))) + '%', height: '10px' }")
@@ -125,7 +125,7 @@ v-layout.girder-searchbar(row, align-center)
       :close-on-content-click="false")
     template(#activator="{ on }")
       v-btn(icon, v-on="on")
-        v-icon.mdi-24px {{ $vuetify.icons.settings }}
+        v-icon.mdi-24px $vuetify.icons.settings
     v-card
       v-card-actions
         v-layout(column)

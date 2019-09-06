@@ -15,7 +15,7 @@
           label="Username or e-mail",
           autofocus,
           :rules="nonEmptyRules",
-          prepend-icon="$vuetify.icons.values.user",
+          prepend-icon="$vuetify.icons.user",
           type="text")
       v-text-field(
           v-if="!otpFormVisible || forceOtp",
@@ -23,20 +23,20 @@
           type="password",
           label="Password",
           :rules="nonEmptyRules",
-          prepend-icon="$vuetify.icons.values.lock")
+          prepend-icon="$vuetify.icons.lock")
       v-text-field(
           v-if="otpFormVisible || forceOtp",
           v-model="otp",
           type="text",
           label="Authentication code",
           :rules="otpRules",
-          prepend-icon="$vuetify.icons.values.otp")
+          prepend-icon="$vuetify.icons.otp")
       v-card-actions
         v-btn.ml-0(type="submit",
             color="primary",
             :disabled="inProgress",
             :loading="inProgress")
-          v-icon(left) $vuetify.icons.values.login
+          v-icon(left) $vuetify.icons.login
           | {{ otpFormVisible ? 'Verify code' : 'Login' }}
         v-spacer
         v-btn(

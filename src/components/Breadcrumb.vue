@@ -106,7 +106,7 @@ export default {
       v-if="girderRest.user && !readonly",
       color="accent",
       @click="$emit('crumbclick', girderRest.user)",
-      :disabled="location._id === girderRest.user._id") {{$vuetify.icons.values.userHome}}
+      :disabled="location._id === girderRest.user._id") $vuetify.icons.userHome
   v-breadcrumbs.font-weight-bold.pa-0(:items="breadcrumb")
     span.subheading.font-weight-bold(:disabled="readonly", slot="divider") /
     template(#item="{ item }")
@@ -116,11 +116,11 @@ export default {
           @click="$emit('crumbclick', item)")
         template(v-if="['folder', 'user', 'collection'].indexOf(item.type) !== -1") {{ item.name }}
         template(v-else-if="item.type==='users'")
-          v-icon.mdi-18px {{ $vuetify.icons.values.user }}
+          v-icon.mdi-18px $vuetify.icons.user
         template(v-else-if="item.type==='collections'")
-          v-icon.mdi-18px {{ $vuetify.icons.values.collection }}
+          v-icon.mdi-18px $vuetify.icons.collection
         template(v-else-if="item.type==='root'")
-          v-icon.mdi-18px {{ $vuetify.icons.values.globe }}
+          v-icon.mdi-18px $vuetify.icons.globe
         span.accent--text(v-else) {{ item }}
 </template>
 

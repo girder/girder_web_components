@@ -64,11 +64,11 @@ export default {
     v-toolbar-items
       v-btn(text, @click="activeTab = 0", :class="{ active: activeTab === 0 }")
         v-layout(align-center, justify-content, column)
-          v-icon.mdi-24px {{ $vuetify.icons.values.edit }}
+          v-icon.mdi-24px $vuetify.icons.edit
           span.caption.text-capitalize Write
       v-btn(text, @click="activeTab = 1", :class="{ active: activeTab === 1 }")
         v-layout(align-center, justify-content, column)
-          v-icon.mdi-24px {{ $vuetify.icons.values.preview }}
+          v-icon.mdi-24px $vuetify.icons.preview
           span.caption.text-capitalize Preview
 </template>
 
