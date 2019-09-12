@@ -3,7 +3,7 @@
 Try the [demo app](https://gwc.girder.org/).
 It works with [data.kitware.com](https://data.kitware.com/).
 
-## Usage Quckstart
+## Usage Quickstart
 
 ### Installation
 
@@ -16,9 +16,33 @@ yarn add @girder/components
 [VueCLI](https://cli.vuejs.org/) is required for building applications with Girder web components.
 However, a few additional packages must still be manually installed:
 ```bash
-npm install -D sass-loader node-sass pug-plain-loader pug stylus-loader stylus vue-cli-plugin-vuetify vuetify-loader
+npm install -D sass-loader@^7.3.1 node-sass pug-plain-loader pug stylus-loader stylus vue-cli-plugin-vuetify vuetify-loader
 # or
-yarn add -D sass-loader node-sass pug-plain-loader pug stylus-loader stylus vue-cli-plugin-vuetify vuetify-loader
+yarn add -D sass-loader@^7.3.1 node-sass pug-plain-loader pug stylus-loader stylus vue-cli-plugin-vuetify vuetify-loader
+```
+
+If you are building using webpack, add the following to your module rules in webpack.config.js:
+```javascript
+{
+  test: /\.pug$/,
+  loader: "pug-plain-loader",
+},
+{
+  test: /.styl$/,
+  use: [
+      "style-loader",
+      "css-loader",
+      "stylus-loader",
+  ],
+},
+{
+  test: /\.(sass|scss)$/,
+  use: [
+      "style-loader",
+      "css-loader",
+      "sass-loader",
+  ],
+},
 ```
 
 ### Initialization
