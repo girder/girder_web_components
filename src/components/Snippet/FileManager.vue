@@ -47,6 +47,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    uploadMaxShow: {
+      type: Number,
+      default: 0,
+    },
     uploadMultiple: {
       type: Boolean,
       default: false,
@@ -169,7 +173,7 @@ export default {
             slot(name="headerwidget")
             v-dialog(v-model="uploaderDialog",
                 v-if="shouldShowUpload",
-                full-width, max-width="800px")
+                max-width="800px")
               template(#activator="{ on }")
                 v-btn.ma-0(
                     v-on="on",
@@ -183,10 +187,11 @@ export default {
                   :pre-upload="preUpload",
                   :post-upload="postUploadInternal",
                   :multiple="uploadMultiple",
+                  :max-show="uploadMaxShow",
                   :accept="uploadAccept")
             v-dialog(v-model="newFolderDialog",
                 v-if="newFolderEnabled && !isRootLocation(internalLocation) && girderRest.user",
-                full-width, max-width="800px")
+                max-width="800px")
               template(#activator="{ on }")
                 v-btn.ma-0(
                     v-on="on",
