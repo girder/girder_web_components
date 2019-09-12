@@ -3,7 +3,7 @@
 Try the [demo app](https://gwc.girder.org/).
 It works with [data.kitware.com](https://data.kitware.com/).
 
-## Usage Quckstart
+## Usage Quickstart
 
 ### Installation
 
@@ -30,15 +30,9 @@ If you are building using webpack, add the following to your module rules in web
 {
   test: /.styl$/,
   use: [
-    {
-      loader: "style-loader",
-    },
-    {
-      loader: "css-loader",
-    },
-    {
-      loader: "stylus-loader",
-    },
+      "style-loader",
+      "css-loader",
+      "stylus-loader",
   ],
 },
 {
@@ -50,8 +44,6 @@ If you are building using webpack, add the following to your module rules in web
   ],
 },
 ```
-
-
 
 ### Initialization
 
