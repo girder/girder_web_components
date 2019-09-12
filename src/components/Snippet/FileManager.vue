@@ -47,6 +47,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    uploadMaxShow: {
+      type: Number,
+      default: 0,
+    },
     uploadMultiple: {
       type: Boolean,
       default: false,
@@ -183,6 +187,7 @@ export default {
                   :pre-upload="preUpload",
                   :post-upload="postUploadInternal",
                   :multiple="uploadMultiple",
+                  :max-show="uploadMaxShow",
                   :accept="uploadAccept")
             v-dialog(v-model="newFolderDialog",
                 v-if="newFolderEnabled && !isRootLocation(internalLocation) && girderRest.user",
