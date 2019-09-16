@@ -24,7 +24,9 @@ v-app.app
                   v-checkbox.mt-1(hide-details, label="Draggable", v-model="dragEnabled")
                   v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
                   v-checkbox.mt-1(hide-details, label="Upload", v-model="uploadEnabled")
-                  v-checkbox.mt-1(hide-details, label="Root Disabled", v-model="rootLocationDisabled")
+                  v-checkbox.mt-1(hide-details,
+                      label="Root Disabled",
+                      v-model="rootLocationDisabled")
                   v-divider.mt-2.mb-1
                   v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
 

@@ -101,7 +101,7 @@ v-data-table(
               :class="{ rotate: props.item.spin }",
               :size="20") {{ props.item.statusIcon }}
 
-  template(#pageText="")
+  template(#pagetext="")
     .v-datatable__actions__options {{ pageRange.first }}-{{ pageRange.last }}
 </template>
 

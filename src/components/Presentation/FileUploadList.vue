@@ -25,7 +25,6 @@
       v-list-item
         v-list-item-content
           .grey--text.subtitle-1 + {{ hiddenCount }} more...
-
 </template>
 
 <script>

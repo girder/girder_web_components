@@ -77,7 +77,7 @@ v-layout.girder-searchbar(row, align-center)
   v-menu.mx-2(
       offset-y,
       content-class="girder-searchbar-menu",
-      transition="slide-y-transition"
+      transition="slide-y-transition",
       :open-on-click="false",
       :value="searchText",
       :nudge-bottom="6")

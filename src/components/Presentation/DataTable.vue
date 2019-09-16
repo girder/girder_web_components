@@ -99,7 +99,8 @@ v-data-table.girder-data-table(
         span.text-container.secondary--text.text--darken-3.nobreak(
             :class="getItemClass(props.item)",
             @click.stop="$emit('rowclick', props.item)")
-          v-icon.pr-2(:color="props.isSelected ? 'accent' : ''") {{ $vuetify.icons.values[props.item.icon] }}
+          v-icon.pr-2(:color="props.isSelected ? 'accent' : ''")
+            | {{ $vuetify.icons.values[props.item.icon] }}
           | {{ props.item.name }}
       td.text-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
 
