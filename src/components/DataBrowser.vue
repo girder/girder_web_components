@@ -197,7 +197,7 @@ export default {
         parentType: location._modelType,
         parentId: location._id,
         limit: itemsPerPage >= 0 ? itemsPerPage : null,
-        offset: (page - 1) * itemsPerPage,
+        offset: (page - 1) * Math.abs(itemsPerPage),
       };
       const itemLimit = counts.nFolders > folderParams.offset
         // if there are any folders on the current page,

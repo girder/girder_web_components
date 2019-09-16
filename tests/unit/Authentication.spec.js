@@ -87,10 +87,10 @@ describe('Authentication', () => {
     expect(wrapper.vm.otpFormVisible).toBe(true);
     wrapper.setData({ otp: 'foobar' });
     await flushPromises();
-    expect(wrapper.vm.otp).toBe(''); // Test masking
+    expect(wrapper.vm.$refs.login.inputs[0].validate()).toBe(false);
     wrapper.setData({ otp: '123456' });
     await flushPromises();
-    expect(wrapper.vm.otp).toBe('123456'); // Test masking
+    expect(wrapper.vm.otp).toBe('123456');
     // Validate that the username and password persist through login
     expect(wrapper.vm.username).toBe('foo');
     expect(wrapper.vm.password).toBe('bar');

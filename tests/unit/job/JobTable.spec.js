@@ -34,6 +34,8 @@ describe('JobTable.vue', () => {
         jobs: [],
         options: {},
       },
+      // https://github.com/vuejs/vue-test-utils/issues/1130
+      sync: false,
     });
     expect(wrapper.find('tbody').text()).toBe('No data available');
   });
@@ -50,6 +52,8 @@ describe('JobTable.vue', () => {
         },
         morePages: false,
       },
+      // https://github.com/vuejs/vue-test-utils/issues/1130
+      sync: false,
     });
     expect(wrapper.vm.pageRange).toEqual({
       first: 1,
@@ -70,6 +74,8 @@ describe('JobTable.vue', () => {
         },
         morePages: true,
       },
+      // https://github.com/vuejs/vue-test-utils/issues/1130
+      sync: false,
     });
     expect(wrapper.vm.pageRange).toEqual({
       first: 11,
@@ -86,6 +92,8 @@ describe('JobTable.vue', () => {
         jobs: [],
         options: {},
       },
+      // https://github.com/vuejs/vue-test-utils/issues/1130
+      sync: false,
     });
     expect(wrapper.vm.progressAsNumber(null)).toBe(100);
     expect(wrapper.vm.progressAsNumber({
