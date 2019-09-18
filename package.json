@@ -43,8 +43,6 @@
     "sass-loader": "^7.1.0",
     "stylelint": "^9.6.0",
     "stylelint-config-standard": "^18.2.0",
-    "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.2",
     "vue-cli-plugin-pug": "^1.0.7",
     "vue-cli-plugin-vuetify": "^0.6.3",
     "vue-template-compiler": "^2.6.10",

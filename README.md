@@ -16,9 +16,9 @@ yarn add @girder/components
 [VueCLI](https://cli.vuejs.org/) is required for building applications with Girder web components.
 However, a few additional packages must still be manually installed:
 ```bash
-npm install -D sass-loader node-sass pug-plain-loader pug stylus-loader stylus vue-cli-plugin-vuetify vuetify-loader
+npm install -D sass sass-loader pug-plain-loader pug vue-cli-plugin-vuetify vuetify-loader
 # or
-yarn add -D sass-loader node-sass pug-plain-loader pug stylus-loader stylus vue-cli-plugin-vuetify vuetify-loader
+yarn add -D sass sass-loader pug-plain-loader pug vue-cli-plugin-vuetify vuetify-loader
 ```
 
 ### Initialization
