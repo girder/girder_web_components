@@ -3,7 +3,7 @@
       :class="dropzoneClass",
       @dragenter="dropzoneClass = 'animate'",
       @dragleave="dropzoneClass = null", @drop="dropzoneClass = null")
-    v-layout.dropzone-message(column, justify-center, align-center, fill-height)
+    v-row.flex-column.align-center.justify-center.fill-height.dropzone-message
       v-icon(size="50px") $vuetify.icons.fileUpload
       .title.mt-3 {{ message }}
     input.file-input(type="file", :multiple="multiple", :accept="accept",

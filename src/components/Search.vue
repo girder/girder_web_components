@@ -72,7 +72,7 @@ export default {
 </script>
 
 <template lang="pug">
-v-layout.girder-searchbar(row, align-center)
+v-row.align-center.girder-searchbar(no-gutters)
   v-icon.mdi-24px(color="white") $vuetify.icons.search
   v-menu.mx-2(
       offset-y,
@@ -128,7 +128,7 @@ v-layout.girder-searchbar(row, align-center)
         v-icon.mdi-24px $vuetify.icons.settings
     v-card
       v-card-actions
-        v-layout(column)
+        v-col.flex-column(no-gutters)
           v-radio-group.my-2(hide-details, v-model="searchMode")
             v-radio.mb-1(key="text", label="Text Search", value="text")
             v-radio(key="prefix", label="Prefix Search", value="prefix")

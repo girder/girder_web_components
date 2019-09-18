@@ -1,6 +1,6 @@
 <template lang="pug">
-v-card(flat, height="100%")
-  v-layout(column, fill-height)
+v-card.fill-height(flat)
+  v-row.flex-column.fill-height(no-gutters)
     slot(name="header")
       v-card-title(primary-title)
         div
@@ -16,12 +16,13 @@ v-card(flat, height="100%")
       v-btn(text, @click="files = []") Clear all
       v-btn(text, color="primary", @click="start") Start upload
 
-    slot(name="dropzone")
-      dropzone(v-if="!files.length",
-          @change="filesChanged",
-          :message="dropzoneMessage",
-          :multiple="multiple",
-          :accept="accept")
+    v-col
+      slot(name="dropzone")
+        dropzone(v-if="!files.length",
+            @change="filesChanged",
+            :message="dropzoneMessage",
+            :multiple="multiple",
+            :accept="accept")
 
     div(v-if="errorMessage")
       v-alert(:value="true", dark, type="error") {{ errorMessage }}
