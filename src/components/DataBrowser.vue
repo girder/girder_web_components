@@ -293,6 +293,7 @@ girder-data-table.girder-file-browser(
     :loading="loading",
     :selectable="internalSelectable",
     @rowclick="rowClick",
+    @row-right-click="$emit('row-right-click', arguments[0], arguments[1])",
     @drag="$emit('drag', $event)",
     @dragstart="$emit('dragstart', $event)",
     @dragend="$emit('dragend', $event)",

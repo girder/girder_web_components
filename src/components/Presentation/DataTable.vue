@@ -95,7 +95,7 @@ v-data-table.girder-data-table(
       td.pl-3.pr-0(v-if="selectable")
         v-checkbox(
             :input-value="props.isSelected", accent, hide-details, @change="props.select")
-      td.pl-3(colspan="2")
+      td.pl-3(colspan="2", @contextmenu="$emit('row-right-click', props.item, $event)")
         span.text-container.nobreak(
             :class="getItemClass(props.item)",
             @click.stop="$emit('rowclick', props.item)")
