@@ -9,7 +9,7 @@ const localVue = girderVue();
 function getMockFolderResponse(parentId, parentCollection = 'user') {
   return {
     _accessLevel: 2,
-    _id: 'fake_folderId',
+    _id: 'fake_folder_id',
     _modelType: 'folder',
     baseParentId: 'fake_baseParentId',
     baseParentType: 'user',
@@ -60,7 +60,8 @@ describe('DataBrowser', () => {
   it('can handle normal navigation', async () => {
     mock.onGet(/user\/foo_user_id\/details/).replyOnce(200, { nFolders: 1 });
     mock.onGet(/folder\/fake_folder_id\/details/).replyOnce(200, { nFolders: 1, nItems: 1 });
-    mock.onGet(/folder/).reply(200, getMockFolderQueryResponse(1));
+    mock.onGet('folder').reply(200, getMockFolderQueryResponse(1));
+    mock.onGet('folder/fake_folder_id').replyOnce(200, getMockFolderResponse());
     mock.onGet(/item/).reply(200, getMockItemQueryResponse(1));
     const wrapper = shallowMount(DataBrowser, {
       localVue,
@@ -100,7 +101,7 @@ describe('DataBrowser', () => {
         folderId: 'fake_folder_id',
       },
     }).replyOnce(200, getMockItemQueryResponse(8));
-    mock.onGet(/folder/, {
+    mock.onGet('folder', {
       params: {
         limit: 10,
         offset: 10,
@@ -108,6 +109,7 @@ describe('DataBrowser', () => {
         parentType: 'folder',
       },
     }).replyOnce(200, getMockFolderQueryResponse(2));
+    mock.onGet('folder/fake_folder_id').replyOnce(200, getMockFolderResponse());
 
     const wrapper = shallowMount(DataBrowser, {
       localVue,
@@ -141,7 +143,7 @@ describe('DataBrowser', () => {
         folderId: 'fake_folder_id',
       },
     }).replyOnce(200, getMockItemQueryResponse(10));
-    mock.onGet(/folder/, {
+    mock.onGet('folder', {
       params: {
         limit: 10,
         offset: 20,
@@ -149,6 +151,7 @@ describe('DataBrowser', () => {
         parentType: 'folder',
       },
     }).replyOnce(200, []);
+    mock.onGet('folder/fake_folder_id').replyOnce(200, getMockFolderResponse());
 
     const wrapper = shallowMount(DataBrowser, {
       localVue,
@@ -191,6 +194,7 @@ describe('DataBrowser', () => {
         parentType: 'folder',
       },
     }).replyOnce(200, getMockFolderQueryResponse(12));
+    mock.onGet('folder/fake_folder_id').replyOnce(200, getMockFolderResponse());
 
     const wrapper = shallowMount(DataBrowser, {
       localVue,
