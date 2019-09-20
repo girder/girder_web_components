@@ -139,6 +139,11 @@ export default {
         color: inherit !important;
       }
     }
+
+    // Good to always hold vertical space
+    &::after {
+      content: "\00a0";
+    }
   }
 }
 </style>
