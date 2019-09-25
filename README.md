@@ -159,14 +159,12 @@ const appVuetifyConfig = merge(girderVuetifyConfig, {
 
 > **Note:** You must use the mdi icon pack. Icon packs cannot be mixed.
 
-Any custom configuration must be passed to Vuetify **after** Girder web components is
-installed to Vue:
-
 ```javascript
 import Vuetify from 'vuetify/lib';
-// Order is important: your custom config should come after Girder
-Vue.use(Girder);
-Vue.use(Vuetify, appVuetifyConfig);
+new Vue({
+  provide: GirderProvider,
+  vuetify: new Vuetify(appVuetifyConfig),
+}).$mount('#app');
 ```
 
 > **Note:** Girder web components imports a-la-carte `vuetify/lib`, so you should
