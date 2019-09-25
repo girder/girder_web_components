@@ -27,6 +27,7 @@ describe('FilterForm.vue', () => {
       propsData: {
         jobTypeList: ['type 1', 'type 2'],
       },
+      sync: false,
     });
     expect(wrapper.find({ name: 'v-select' }).vm.items).toEqual(['type 1', 'type 2']);
   });
@@ -38,6 +39,7 @@ describe('FilterForm.vue', () => {
       propsData: {
         statusList: [0, 1, 2, 3],
       },
+      sync: false,
     });
     const statusSelect = wrapper.findAll({ name: 'v-select' }).at(1);
     expect(statusSelect.vm.items.map(s => s.value)).toEqual([0, 1, 2, 3]);
@@ -57,6 +59,7 @@ describe('FilterForm.vue', () => {
       propsData: {
         statusList: [0, 1, 2, 999],
       },
+      sync: false,
     });
     const statusSelect = wrapper.findAll({ name: 'v-select' }).at(1);
     expect(statusSelect.vm.items.map(s => s.value)).toEqual([999, 0, 1, 2]);
@@ -69,6 +72,7 @@ describe('FilterForm.vue', () => {
       propsData: {
         statusList: [0, 1, 2, 998],
       },
+      sync: false,
     });
     const statusSelect = wrapper.findAll({ name: 'v-select' }).at(1);
     expect(statusSelect.vm.items.map(s => s.value)).toEqual([0, 1, 2]);
