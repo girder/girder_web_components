@@ -7,6 +7,11 @@ const GirderTokenLength = 64;
 export const OauthTokenPrefix = '#girderToken=';
 export const OauthTokenSuffix = '__';
 
+// Girder's custom headers
+const GirderToken = 'Girder-Token';
+const GirderOtp = 'Girder-OTP';
+const GirderAuthorization = 'Girder-Authorization';
+
 function setCookieFromAuth(auth) {
   cookies.set('girderToken', auth.token, { expires: new Date(auth.expires) });
 }
@@ -37,6 +42,8 @@ export default class RestClient extends Vue {
    *     (typically ending with "/api/v1").
    * @param {String} [opts.token] An initial value for the authentication token.
    * @param {Object} [opts.axios]  An axios instance to use for all requests.
+   * @param {Boolean} [opts.useGirderAuthorizationHeader=false] Whether to use `Authorization` or
+   *     `Girder-Authorization` as the header containing the basic auth credentials.
    * @param {Boolean} [opts.setLocalCookie=true] Whether to set the authentication token to a local
    *     cookie (via Javascript) after login to a server.
    */
@@ -44,6 +51,7 @@ export default class RestClient extends Vue {
     apiRoot = '/api/v1',
     token = cookies.get('girderToken') || setCookieFromHash(window.location),
     axios = axios_.create(),
+    useGirderAuthorizationHeader = false,
     setLocalCookie = true,
   } = {}) {
     super({
@@ -56,13 +64,14 @@ export default class RestClient extends Vue {
     Object.assign(this, axios, {
       apiRoot,
       setLocalCookie,
+      useGirderAuthorizationHeader,
     });
 
     this.interceptors.request.use(config => ({
       ...config,
       baseURL: this.apiRoot,
       headers: {
-        'Girder-Token': this.token,
+        [GirderToken]: this.token,
         ...config.headers,
       },
     }));
@@ -75,19 +84,23 @@ export default class RestClient extends Vue {
       // noop
     }
 
+    let auth;
     const headers = {
-      'Girder-Token': null,
+      [GirderToken]: null,
     };
-    if (otp) {
-      headers['Girder-OTP'] = otp;
-    }
-    const resp = await this.get('user/authentication', {
-      headers,
-      auth: {
+    if (this.useGirderAuthorizationHeader) {
+      headers[GirderAuthorization] = `Basic ${window.btoa(`${username}:${password}`)}`;
+    } else {
+      auth = {
         username,
         password,
-      },
-    });
+      };
+    }
+    if (otp) {
+      headers[GirderOtp] = otp;
+    }
+
+    const resp = await this.get('user/authentication', { headers, auth });
     this.token = resp.data.authToken.token;
     this.user = resp.data.user;
 
