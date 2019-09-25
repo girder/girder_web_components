@@ -22,7 +22,7 @@ npm install -D sass sass-loader pug-plain-loader pug vue-cli-plugin-vuetify vuet
 yarn add -D sass sass-loader pug-plain-loader pug vue-cli-plugin-vuetify vuetify-loader
 ```
 
-> **Note:** If you are building with custom webpack (without vue-cli-server),
+> **Note:** If you are building with custom webpack (without vue-cli-service),
 > add the following to your module rules in webpack.config.js:
 >
 > ```javascript
