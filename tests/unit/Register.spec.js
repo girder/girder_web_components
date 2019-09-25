@@ -21,6 +21,7 @@ describe('Register', () => {
       vuetify,
       propsData: {},
       provide: { girderRest },
+      sync: false,
     });
     wrapper.setData({
       login: 'test',
@@ -35,9 +36,11 @@ describe('Register', () => {
     expect(formWrapper.vm.inputs.slice(-2)[0].valid).toBe(false);
     wrapper.setData({ password: 'password' });
     formWrapper.vm.validate();
+    await flushPromises();
     expect(formWrapper.vm.inputs.slice(-1)[0].valid).toBe(false);
     expect(formWrapper.vm.inputs.slice(-2)[0].valid).toBe(true);
     wrapper.setData({ retypePassword: 'password' });
+    await flushPromises();
     expect(formWrapper.vm.validate()).toBe(true);
   });
 
@@ -47,6 +50,7 @@ describe('Register', () => {
       vuetify,
       propsData: {},
       provide: { girderRest },
+      sync: false,
     });
     wrapper.setData({
       login: 'test',
@@ -56,6 +60,7 @@ describe('Register', () => {
       password: 'password',
       retypePassword: 'password',
     });
+    await flushPromises();
     mock.onPost('user').replyOnce(400, {
       field: 'email',
       message: 'Invalid email address.',

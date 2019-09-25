@@ -27,6 +27,7 @@ describe('Authentication', () => {
         forgetPasswordLink: 'https://example.com/',
       },
       provide: { girderRest: {} },
+      sync: false,
     });
     expect(wrapper.contains(Register)).toBe(false);
     expect(wrapper.contains(Oauth)).toBe(false);
@@ -42,6 +43,7 @@ describe('Authentication', () => {
         forgetPasswordLink: 'https://example.com/',
       },
       provide: { girderRest: {} },
+      sync: false,
     });
     expect(wrapper.contains(Register)).toBe(true);
   });
@@ -61,6 +63,7 @@ describe('Authentication', () => {
         forgetPasswordLink: 'https://example.com/',
       },
       provide: { girderRest },
+      sync: false,
     });
     await flushPromises();
     expect(wrapper.vm.oauthProviders.length).toBe(1);
@@ -80,9 +83,10 @@ describe('Authentication', () => {
       localVue,
       vuetify,
       provide: { girderRest },
+      sync: false,
     });
-    await flushPromises();
     wrapper.setData({ username: 'foo', password: 'bar' });
+    await flushPromises();
     await wrapper.vm.login();
     expect(wrapper.vm.otpFormVisible).toBe(true);
     wrapper.setData({ otp: 'foobar' });
