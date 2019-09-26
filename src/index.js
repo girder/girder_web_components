@@ -11,15 +11,19 @@ import * as utils from './utils';
  * @param {Object} Vue the Vue prototype to install the plugin into.
  */
 function install(Vue) {
-  Vue.use(Vuetify, utils.vuetifyConfig);
+  Vue.use(Vuetify);
   Vue.use(VueAsyncComputed);
 }
+
+/** The default configured Vuetify instance */
+const vuetify = new Vuetify({ ...utils.vuetifyConfig });
 
 export {
   components,
   constants,
   RestClient,
   utils,
+  vuetify,
 };
 
 export default {

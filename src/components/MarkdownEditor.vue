@@ -48,7 +48,7 @@ export default {
       v-textarea(
           hide-details,
           v-model="text_",
-          box,
+          filled,
           single-line,
           :label="label",
           :placeholder="placeholder")
@@ -62,19 +62,19 @@ export default {
       a(href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet")  Markdown
     v-spacer
     v-toolbar-items
-      v-btn(flat, @click="activeTab = 0", :class="{ active: activeTab === 0 }")
-        v-layout(align-center, justify-content, column)
-          v-icon.mdi-24px {{ $vuetify.icons.edit }}
+      v-btn(text, @click="activeTab = 0", :class="{ active: activeTab === 0 }")
+        v-row.flex-column.align-center.justify-content(no-gutters)
+          v-icon.mdi-24px $vuetify.icons.edit
           span.caption.text-capitalize Write
-      v-btn(flat, @click="activeTab = 1", :class="{ active: activeTab === 1 }")
-        v-layout(align-center, justify-content, column)
-          v-icon.mdi-24px {{ $vuetify.icons.preview }}
+      v-btn(text, @click="activeTab = 1", :class="{ active: activeTab === 1 }")
+        v-row.flex-column.align-center.justify-content(no-gutters)
+          v-icon.mdi-24px $vuetify.icons.preview
           span.caption.text-capitalize Preview
 </template>
 
 <style lang="scss">
 .girder-markdown-editor {
-  .v-tabs__bar {
+  .v-tabs-bar {
     display: none;
   }
 

@@ -108,19 +108,18 @@ export default {
 
 <template lang="pug">
 v-form(@submit.prevent="upsert")
-  v-card(flat, height="100%")
-    v-layout.pa-2(column, fill-height)
+  v-card(flat)
+    v-row.pa-2.flex-column(no-gutters)
       slot(name="header")
         v-card-title.pb-0(primary-title)
           h5.display-1.secondary--text.text--darken-1
           | {{ edit ? 'Edit Folder' : 'Create New Folder'}}
       v-card-text
-        v-flex(xs12)
-          v-text-field(
-              ref="folderName",
-              v-model="name",
-              autofocus,
-              label="Folder Name")
+        v-text-field(
+            ref="folderName",
+            v-model="name",
+            autofocus,
+            label="Folder Name")
         girder-breadcrumb.mb-3(v-bind="{ location, append }", readonly)
         girder-markdown-editor(
             v-model="description",
@@ -132,7 +131,7 @@ v-form(@submit.prevent="upsert")
             transition="scale-transition") {{ error }}
       v-card-actions
         v-spacer
-        v-btn(flat, @click="$emit('dismiss')") Cancel
+        v-btn(text, @click="$emit('dismiss')") Cancel
         v-btn(
             depressed,
             color="primary",

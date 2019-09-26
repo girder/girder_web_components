@@ -5,7 +5,7 @@ import Authentication from '@/components/Authentication/Authentication.vue';
 import Login from '@/components/Authentication/Login.vue';
 import Register from '@/components/Authentication/Register.vue';
 import Oauth from '@/components/Authentication/OAuth.vue';
-import { flushPromises, girderVue } from './utils';
+import { flushPromises, girderVue, vuetify } from './utils';
 
 const localVue = girderVue();
 
@@ -20,12 +20,14 @@ describe('Authentication', () => {
   it('does not render children when toggled off', () => {
     const wrapper = shallowMount(Authentication, {
       localVue,
+      vuetify,
       propsData: {
         register: false,
         oauth: false,
         forgetPasswordLink: 'https://example.com/',
       },
       provide: { girderRest: {} },
+      sync: false,
     });
     expect(wrapper.contains(Register)).toBe(false);
     expect(wrapper.contains(Oauth)).toBe(false);
@@ -34,12 +36,14 @@ describe('Authentication', () => {
   it('renders registration when toggled on', () => {
     const wrapper = shallowMount(Authentication, {
       localVue,
+      vuetify,
       propsData: {
         register: true,
         oauth: false,
         forgetPasswordLink: 'https://example.com/',
       },
       provide: { girderRest: {} },
+      sync: false,
     });
     expect(wrapper.contains(Register)).toBe(true);
   });
@@ -52,12 +56,14 @@ describe('Authentication', () => {
     }]);
     const wrapper = shallowMount(Authentication, {
       localVue,
+      vuetify,
       propsData: {
         register: false,
         oauth: true,
         forgetPasswordLink: 'https://example.com/',
       },
       provide: { girderRest },
+      sync: false,
     });
     await flushPromises();
     expect(wrapper.vm.oauthProviders.length).toBe(1);
@@ -75,18 +81,20 @@ describe('Authentication', () => {
     });
     const wrapper = mount(Login, {
       localVue,
+      vuetify,
       provide: { girderRest },
+      sync: false,
     });
-    await flushPromises();
     wrapper.setData({ username: 'foo', password: 'bar' });
+    await flushPromises();
     await wrapper.vm.login();
     expect(wrapper.vm.otpFormVisible).toBe(true);
     wrapper.setData({ otp: 'foobar' });
     await flushPromises();
-    expect(wrapper.vm.otp).toBe(''); // Test masking
+    expect(wrapper.vm.$refs.login.inputs[0].validate()).toBe(false);
     wrapper.setData({ otp: '123456' });
     await flushPromises();
-    expect(wrapper.vm.otp).toBe('123456'); // Test masking
+    expect(wrapper.vm.otp).toBe('123456');
     // Validate that the username and password persist through login
     expect(wrapper.vm.username).toBe('foo');
     expect(wrapper.vm.password).toBe('bar');

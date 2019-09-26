@@ -8,7 +8,7 @@ export default {
       type: Array,
       required: true,
     },
-    pagination: {
+    options: {
       type: Object,
       required: true,
     },
@@ -38,7 +38,7 @@ export default {
     items() {
       return this.jobs.map(this.mapJobToRow);
     },
-    totalItems() {
+    serverItemsLength() {
       let { last } = this.pageRange;
       if (this.morePages) {
         last += 1;
@@ -46,7 +46,7 @@ export default {
       return last;
     },
     pageRange() {
-      const first = (this.pagination.rowsPerPage * (this.pagination.page - 1)) + 1;
+      const first = (this.options.itemsPerPage * (this.options.page - 1)) + 1;
       const last = (first + this.jobs.length) - 1;
       return { first, last };
     },
@@ -76,35 +76,33 @@ export default {
 </script>
 
 <template lang="pug">
-v-card
-  v-data-table(
-      item-key="_id",
-      :headers="headers",
-      :items="items",
-      :total-items="totalItems",
-      :pagination="pagination",
-      @update:pagination="$emit('update:pagination', $event)")
-    template(slot="items", slot-scope="props")
-      tr(@click="$emit('job-click', $event, props.item)")
-        td {{ props.item.title }}
-        td.one-line {{ props.item.type }}
-        td.one-line {{ props.item.updateString }}
-        td.one-line.status-line(nowrap, :title="props.item.statusText", width="1%")
-          v-layout(row)
-            v-flex.mr-3
-              v-progress-linear.progress-bar(
-                  :color="props.item.statusColor",
-                  :value="props.item.progressNumber",
-                  :indeterminate="!!props.item.indeterminate",
-                  height="10")
-            v-flex
-              v-icon.status-icon(
-                  :color="props.item.statusColor",
-                  :class="{ rotate: props.item.spin }",
-                  :size="20") {{ props.item.statusIcon }}
+v-data-table(
+    light,
+    item-key="_id",
+    :headers="headers",
+    :items="items",
+    :server-items-length="serverItemsLength",
+    :options="options",
+    @update:options="$emit('update:options', $event)")
+  template(#item="props")
+    tr(@click="$emit('job-click', $event, props.item)")
+      td.one-line {{ props.item.title }}
+      td.one-line {{ props.item.type }}
+      td.one-line {{ props.item.updateString }}
+      td.one-line.status-line(nowrap, :title="props.item.statusText", width="1%")
+        v-row.flex-nowrap.ma-2(align="center")
+          v-progress-linear.progress-bar.mr-3(
+              :color="props.item.statusColor",
+              :value="props.item.progressNumber",
+              :indeterminate="!!props.item.indeterminate",
+              height="10")
+          v-icon.status-icon(
+              :color="props.item.statusColor",
+              :class="{ rotate: props.item.spin }",
+              :size="20") {{ props.item.statusIcon }}
 
-    template(slot="pageText", slot-scope="props")
-      .v-datatable__actions__pagination {{ pageRange.first }}-{{ pageRange.last }}
+  template(#pagetext="")
+    .v-datatable__actions__options {{ pageRange.first }}-{{ pageRange.last }}
 </template>
 
 <style lang="scss" scoped>
@@ -117,12 +115,6 @@ v-card
 .status-line {
   .progress-bar {
     width: 150px;
-  }
-
-  .status-icon {
-    height: 100%;
-    position: relative;
-    top: -1px;
   }
 }
 

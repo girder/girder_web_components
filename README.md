@@ -15,39 +15,34 @@ yarn add @girder/components
 
 [VueCLI](https://cli.vuejs.org/) is required for building applications with Girder web components.
 However, a few additional packages must still be manually installed:
+
 ```bash
-npm install -D sass-loader@^7.3.1 node-sass pug-plain-loader pug stylus-loader stylus vue-cli-plugin-vuetify vuetify-loader
+npm install -D sass sass-loader pug-plain-loader pug vue-cli-plugin-vuetify vuetify-loader
 # or
-yarn add -D sass-loader@^7.3.1 node-sass pug-plain-loader pug stylus-loader stylus vue-cli-plugin-vuetify vuetify-loader
+yarn add -D sass sass-loader pug-plain-loader pug vue-cli-plugin-vuetify vuetify-loader
 ```
 
-If you are building using webpack, add the following to your module rules in webpack.config.js:
-```javascript
-{
-  test: /\.pug$/,
-  loader: "pug-plain-loader",
-},
-{
-  test: /.styl$/,
-  use: [
-      "style-loader",
-      "css-loader",
-      "stylus-loader",
-  ],
-},
-{
-  test: /\.(sass|scss)$/,
-  use: [
-      "style-loader",
-      "css-loader",
-      "sass-loader",
-  ],
-},
-```
+> **Note:** If you are building with custom webpack (without vue-cli-service),
+> add the following to your module rules in webpack.config.js:
+>
+> ```javascript
+> {
+>   test: /\.pug$/,
+>   loader: "pug-plain-loader",
+> },
+> {
+>   test: /\.(sass|scss)$/,
+>   use: [
+>       "style-loader",
+>       "css-loader",
+>       "sass-loader",
+>   ],
+> },
+> ```
 
 ### Initialization
 
-Encapsulating the configuration in another file (typically `src/plugins/girder.js`) is a good practice:
+Encapsulating the configuration in another file (typically `src/plugins/girder.js`) is a good practice.
 
 ```javascript
 /* src/plugins/girder.js */
@@ -78,11 +73,15 @@ Reference the configuration from your application initialization (typically `src
 ```javascript
 /* src/main.js */
 import GirderProvider from '@/plugins/girder';
+import { vuetify } from '@girder/components/src';
 
 // ...
 
 new Vue({
   provide: GirderProvider,
+  // Import and use vuetify config from girder/components without modification
+  // See below for how to inject your own config
+  vuetify,
   // ...
 }).$mount('#app');
 ```
@@ -91,6 +90,7 @@ new Vue({
 
 Components should be imported by name from `@girder/components/src/components`, as this location will be stable across releases.
 For instance:
+
 ```javascript
 import { Upload as GirderUpload } from '@girder/components/src/components';  // Good
 import GirderUpload from '@girder/components/src/components/Upload.vue'; // Unsafe -- may move in future
@@ -137,33 +137,41 @@ See [the demo app](demo/App.vue) for a more comprehensive example.
 
 ## Advanced Usage
 
-### Customizing Styling
+### Customizing Vuetify Configuration
 
-If your downstream application is also using Vuetify, and needs to pass additional configuration
-options to Vuetify, it must be careful to coordinate with Girder web components.
+If your downstream application is also using Vuetify and needs to pass additional configuration
+options, it must be careful to coordinate with Girder web components.
 
-Additional Vuetify configuration should inherit from Girder web components own configuration:
+Additional Vuetify configuration should inherit from Girder web components' own configuration:
+
 ```javascript
 import { merge } from 'lodash';
 import { vuetifyConfig as girderVuetifyConfig } from '@girder/components/src/utils';
 
-// More complicated merging could use Lodash's _.merge
 const appVuetifyConfig = merge(girderVuetifyConfig, {
   icons: {
-    'myCustomIcon': 'mdi-custom-icon'
+    values: {
+      myCustomIcon: 'mdi-custom-icon'
+    }
   }
 });
 ```
 
-Any custom configuration must be passed to Vuetify before Girder web components is
-installed to Vue:
+> **Note:** You must use the mdi icon pack. Icon packs cannot be mixed.
+
 ```javascript
-// This order is important
-Vue.use(Vuetify, appVuetifyConfig);
-Vue.use(Girder);
+import Vuetify from 'vuetify/lib';
+new Vue({
+  provide: GirderProvider,
+  vuetify: new Vuetify(appVuetifyConfig),
+}).$mount('#app');
 ```
 
+> **Note:** Girder web components imports a-la-carte `vuetify/lib`, so you should
+> do the same to avoid building duplicate dependencies into your artifacts.
+
 ### Other installation methods
+
 It's not necessary to install Girder web components yourself, you can import the prebuilt bundle
 into your page by including the following tags:
 
@@ -178,6 +186,7 @@ This will expose all the library's components under the global variable `girder`
 
 > **Note:** If importing this library's UMD bundle via a ``<script>`` tag, the incantation for
 > installing the Vue plugin is slightly different:
+>
 > ```javascript
 > Vue.use(girder.default);
 > ```

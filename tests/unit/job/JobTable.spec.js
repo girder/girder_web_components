@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import JobTable from '@/components/Job/JobTable.vue';
 
-import { girderVue } from '../utils';
+import { girderVue, vuetify } from '../utils';
 
 const localVue = girderVue();
 
@@ -29,10 +29,13 @@ describe('JobTable.vue', () => {
   it('mount with no data', () => {
     const wrapper = mount(JobTable, {
       localVue,
+      vuetify,
       propsData: {
         jobs: [],
-        pagination: {},
+        options: {},
       },
+      // https://github.com/vuejs/vue-test-utils/issues/1130
+      sync: false,
     });
     expect(wrapper.find('tbody').text()).toBe('No data available');
   });
@@ -40,48 +43,57 @@ describe('JobTable.vue', () => {
   it('mount with one job', () => {
     const wrapper = mount(JobTable, {
       localVue,
+      vuetify,
       propsData: {
         jobs: [job],
-        pagination: {
+        options: {
           page: 1,
-          rowsPerPage: 10,
+          itemsPerPage: 10,
         },
         morePages: false,
       },
+      // https://github.com/vuejs/vue-test-utils/issues/1130
+      sync: false,
     });
     expect(wrapper.vm.pageRange).toEqual({
       first: 1,
       last: 1,
     });
-    expect(wrapper.vm.totalItems).toBe(1);
+    expect(wrapper.vm.serverItemsLength).toBe(1);
   });
 
-  it('mount with pagination', () => {
+  it('mount with options', () => {
     const wrapper = mount(JobTable, {
       localVue,
+      vuetify,
       propsData: {
         jobs: [...Array(10).keys()].map(() => () => job),
-        pagination: {
+        options: {
           page: 2,
-          rowsPerPage: 10,
+          itemsPerPage: 10,
         },
         morePages: true,
       },
+      // https://github.com/vuejs/vue-test-utils/issues/1130
+      sync: false,
     });
     expect(wrapper.vm.pageRange).toEqual({
       first: 11,
       last: 20,
     });
-    expect(wrapper.vm.totalItems).toBe(21);
+    expect(wrapper.vm.serverItemsLength).toBe(21);
   });
 
   it('convert progress object to a value', () => {
     const wrapper = mount(JobTable, {
       localVue,
+      vuetify,
       propsData: {
         jobs: [],
-        pagination: {},
+        options: {},
       },
+      // https://github.com/vuejs/vue-test-utils/issues/1130
+      sync: false,
     });
     expect(wrapper.vm.progressAsNumber(null)).toBe(100);
     expect(wrapper.vm.progressAsNumber({

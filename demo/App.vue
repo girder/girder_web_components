@@ -10,37 +10,41 @@ v-app.app
             :close-on-content-click="false",
             content-class="girder-search-arrow-menu",
             v-model="uiOptionsMenu")
-          v-btn(icon, slot="activator")
-            v-icon.mdi-24px {{ $vuetify.icons.more }}
+          template(#activator="{ on }")
+            v-btn(icon, v-on="on")
+              v-icon.mdi-24px $vuetify.icons.more
           v-card
             v-card-actions
-              v-layout(column)
-                v-checkbox.mt-1(hide-details, label="Worker Jobs", v-model="jobsEnabled")
-                v-divider.mt-2.mb-1
-                v-checkbox.mt-1(hide-details, label="Data Browser", v-model="browserEnabled")
-                v-checkbox.mt-1(hide-details, label="Select", v-model="selectable")
-                v-checkbox.mt-1(hide-details, label="Draggable", v-model="dragEnabled")
-                v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
-                v-checkbox.mt-1(hide-details, label="Upload", v-model="uploadEnabled")
-                v-checkbox.mt-1(hide-details, label="Root Disabled", v-model="rootLocationDisabled")
-                v-divider.mt-2.mb-1
-                v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
+              v-row
+                v-col.py-0
+                  v-checkbox.mt-1(hide-details, label="Worker Jobs", v-model="jobsEnabled")
+                  v-divider.mt-2.mb-1
+                  v-checkbox.mt-1(hide-details, label="Data Browser", v-model="browserEnabled")
+                  v-checkbox.mt-1(hide-details, label="Select", v-model="selectable")
+                  v-checkbox.mt-1(hide-details, label="Draggable", v-model="dragEnabled")
+                  v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
+                  v-checkbox.mt-1(hide-details, label="Upload", v-model="uploadEnabled")
+                  v-checkbox.mt-1(hide-details,
+                      label="Root Disabled",
+                      v-model="rootLocationDisabled")
+                  v-divider.mt-2.mb-1
+                  v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
 
       v-spacer
       girder-search(v-if="searchEnabled", @select="handleSearchSelect")
-      v-btn(v-if="!loggedOut", flat, icon, @click="girderRest.logout()")
+      v-btn(v-if="!loggedOut", text, icon, @click="girderRest.logout()")
         v-icon $vuetify.icons.logout
 
-    v-container.pa-3(fluid)
-      v-layout(row, wrap)
-        v-flex.ma-2(v-if="loggedOut")
+    v-container
+      v-row
+        v-col(v-if="loggedOut", lg=4, md=5, sm=12)
           girder-auth(
               :force-otp="false",
               :register="true",
               :oauth="true",
               :key="girderRest.token",
               :forgot-password-url="forgotPasswordUrl")
-        v-layout.ma-2.grow(column)
+        v-col
           girder-file-manager.mb-3(
               v-if="browserEnabled",
               :drag-enabled="dragEnabled",

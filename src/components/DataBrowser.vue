@@ -48,8 +48,8 @@ export default {
 
   data() {
     return {
-      pagination: {
-        rowsPerPage: 10,
+      options: {
+        itemsPerPage: 10,
         page: 1,
       },
       internalRefreshCounter: 0,
@@ -63,7 +63,7 @@ export default {
     loading() {
       return this.rowsLoading;
     },
-    totalItems() {
+    serverItemsLength() {
       return Object.values(this.counts).reduce(
         (total, value) => total + value,
         0,
@@ -124,8 +124,8 @@ export default {
   watch: {
     location(location) {
       if (createLocationValidator(!this.rootLocationDisabled)(location)) {
-        // force reset pagination when location changes.
-        this.pagination.page = 1;
+        // force reset options when location changes.
+        this.options.page = 1;
       }
     },
     selected(newval) {
@@ -134,8 +134,8 @@ export default {
     async counts() {
       this.rows = await this.fetchPaginatedRows();
     },
-    // Not triggered by location pagination reset because deep==false
-    async pagination() {
+    // Not triggered by location options reset because deep==false
+    async options() {
       this.rows = await this.fetchPaginatedRows();
     },
   },
@@ -191,30 +191,30 @@ export default {
     },
     async fetchPaginatedFolderRows() {
       this.rowsLoading = true;
-      const { counts, location, pagination } = this;
-      const { page, rowsPerPage } = pagination;
+      const { counts, location, options } = this;
+      const { page, itemsPerPage } = options;
       const folderParams = {
         parentType: location._modelType,
         parentId: location._id,
-        limit: rowsPerPage >= 0 ? rowsPerPage : null,
-        offset: (page - 1) * rowsPerPage,
+        limit: itemsPerPage >= 0 ? itemsPerPage : null,
+        offset: (page - 1) * Math.abs(itemsPerPage),
       };
       const itemLimit = counts.nFolders > folderParams.offset
         // if there are any folders on the current page,
         // the numer of items to fetch is based on the number of folders
-        ? rowsPerPage - (counts.nFolders - folderParams.offset)
+        ? itemsPerPage - (counts.nFolders - folderParams.offset)
         // else the page will be comprised of only items
-        : rowsPerPage;
+        : itemsPerPage;
       const itemOffset = folderParams.offset - counts.nFolders;
       const itemParams = {
         folderId: location._id,
-        limit: rowsPerPage >= 0 ? itemLimit : null,
+        limit: itemsPerPage >= 0 ? itemLimit : null,
         offset: itemOffset > 0 ? itemOffset : 0,
       };
       const promises = [];
       promises.push(this.girderRest.get(GIRDER_FOLDER_ENDPOINT, { params: folderParams }));
       // a limit of < 0 signifies the current page only includes folders
-      // a limit of null signifies no pagination: fetch all entities
+      // a limit of null signifies no options: fetch all entities
       if (
         (itemParams.limit > 0 || itemParams.limit === null) &&
         location._modelType === 'folder'
@@ -225,7 +225,7 @@ export default {
       const rows = [].concat.apply(...responses).map(item => ({
         ...item,
         size: item.size ? this.formatSize(item.size) : '',
-        icon: item._modelType in this.$vuetify.icons
+        icon: item._modelType in this.$vuetify.icons.values
           ? item._modelType
           : 'file',
       }));
@@ -234,11 +234,11 @@ export default {
     },
     async fetchPaginatedCollectionOrUserRows(type) {
       this.rowsLoading = true;
-      const { page, rowsPerPage } = this.pagination;
+      const { page, itemsPerPage } = this.options;
       const { data: items } = await this.girderRest.get(type, {
         params: {
-          limit: rowsPerPage >= 0 ? rowsPerPage : null,
-          offset: (page - 1) * rowsPerPage,
+          limit: itemsPerPage >= 0 ? itemsPerPage : null,
+          offset: (page - 1) * itemsPerPage,
         },
       });
       const rows = items.map(item => ({
@@ -282,8 +282,8 @@ girder-data-table.girder-file-browser(
     v-model="selected",
     :draggable="draggable",
     :rows="rows",
-    :pagination.sync="pagination",
-    :total-items="totalItems",
+    :options.sync="options",
+    :server-items-length="serverItemsLength",
     :loading="loading",
     :selectable="internalSelectable",
     @rowclick="rowClick",
@@ -292,7 +292,7 @@ girder-data-table.girder-file-browser(
     @dragend="$emit('dragend', $event)",
     @drop="$emit('drop', $event)")
 
-  template(slot="header", slot-scope="props")
+  template(#header="props")
     tr.secondary.lighten-5
       th.pl-3.pr-0(width="1%", v-if="internalSelectable")
         v-checkbox.secondary--text.text--darken-1.pr-2(
@@ -301,8 +301,8 @@ girder-data-table.girder-file-browser(
             :input-value="props.all",
             :indeterminate="selected.length > 0 && !props.all",
             @click.native="toggleAll")
-      th.pl-3(colspan="100", width="99%")
-        v-layout(row)
+      th.pl-3(colspan="10", width="99%")
+        v-row.ma-1
           slot(name="breadcrumb", v-bind="{ location, changeLocation, rootLocationDisabled }")
           v-spacer
           slot(name="headerwidget", v-bind="{ location, changeLocation, rootLocationDisabled }")

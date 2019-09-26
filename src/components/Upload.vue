@@ -1,6 +1,6 @@
 <template lang="pug">
-v-card(flat, height="100%")
-  v-layout(column, fill-height)
+v-card.fill-height(flat)
+  v-row.flex-column.fill-height(no-gutters)
     slot(name="header")
       v-card-title(primary-title)
         div
@@ -8,27 +8,28 @@ v-card(flat, height="100%")
             | Upload to
             = " "
             span.font-weight-bold {{ dest.name }}
-          .grey--text {{ statusMessage }}
+          .grey--text.title {{ statusMessage }}
 
     v-progress-linear(v-if="uploading", :value="totalProgressPercent", height="20")
 
     v-card-actions(v-show="files.length && !errorMessage && !uploading")
-      v-btn(flat, @click="files = []") Clear all
-      v-btn(flat, color="primary", @click="start") Start upload
+      v-btn(text, @click="files = []") Clear all
+      v-btn(text, color="primary", @click="start") Start upload
 
-    slot(name="dropzone")
-      dropzone(v-if="!files.length",
-          @change="filesChanged",
-          :message="dropzoneMessage",
-          :multiple="multiple",
-          :accept="accept")
+    v-col
+      slot(name="dropzone")
+        dropzone(v-if="!files.length",
+            @change="filesChanged",
+            :message="dropzoneMessage",
+            :multiple="multiple",
+            :accept="accept")
 
     div(v-if="errorMessage")
       v-alert(:value="true", dark, type="error") {{ errorMessage }}
-        v-btn(v-if="!uploading", dark, outline, @click="start") Resume upload
+        v-btn(v-if="!uploading", dark, outlined, @click="start") Resume upload
 
     slot(name="files")
-      file-upload-list(v-model="files")
+      file-upload-list(v-model="files", v-bind="{ currentIndex, maxShow }")
 </template>
 
 <script>
@@ -48,6 +49,10 @@ export default {
     dest: {
       required: true,
       type: Object,
+    },
+    maxShow: {
+      default: 0,
+      type: Number,
     },
     multiple: {
       default: true,
@@ -75,6 +80,7 @@ export default {
     errorMessage: null,
     files: [],
     uploading: false,
+    currentIndex: 0,
   }),
   computed: {
     dropzoneMessage() {
@@ -105,6 +111,7 @@ export default {
   },
   methods: {
     filesChanged(files) {
+      this.currentIndex = 0;
       this.files = files.map(file => ({
         file,
         status: 'pending',
@@ -123,8 +130,8 @@ export default {
       this.uploading = true;
       this.errorMessage = null;
       await this.preUpload();
-      for (let i = 0; i < this.files.length; i += 1) {
-        const file = this.files[i];
+      for (; this.currentIndex < this.files.length; this.currentIndex += 1) {
+        const file = this.files[this.currentIndex];
         if (file.status === 'done') {
           // We are resuming, skip already completed files
           results.push(file.result);

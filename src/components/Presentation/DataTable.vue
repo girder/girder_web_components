@@ -11,7 +11,7 @@ export default {
       type: Boolean,
       required: true,
     },
-    pagination: {
+    options: {
       type: Object,
       required: true,
     },
@@ -23,7 +23,7 @@ export default {
       type: Boolean,
       required: true,
     },
-    totalItems: {
+    serverItemsLength: {
       type: Number,
       required: true,
     },
@@ -40,7 +40,7 @@ export default {
     isRootLocation,
     handleRowSelect({ shiftKey }, props) {
       if (this.selectable) {
-        props.selected = !props.selected;
+        props.isSelected = !props.isSelected;
         if (shiftKey && this.lastCheckBoxIdx !== null) {
           const [start, end] = [this.lastCheckBoxIdx, props.index + 1].sort();
           const newlySelectedRows = this.rows
@@ -69,25 +69,22 @@ export default {
 
 <template lang="pug">
 v-data-table.girder-data-table(
-    select-all,
+    show-select,
     :headers-length="4",
     :value="value",
     @input="$emit('input', $event)",
-    :pagination="pagination",
-    @update:pagination="$emit('update:pagination', $event)",
+    :options="options",
+    @update:options="$emit('update:options', $event)",
     :items="rows",
-    :total-items="totalItems",
+    :server-items-length="serverItemsLength",
     :loading="loading ? 'accent' : false",
     item-key="_id")
 
-  template(slot="headers", slot-scope="props")
-    slot(name="header",
-        :all="props.all",
-        :indeterminate="props.indeterminate",
-        :headers="props.headers")
+  template(#header="{ all, indeterminate, headers }")
+    slot(name="header", v-bind="{ all, indeterminate, headers }")
 
-  template(slot="items", slot-scope="props")
-    tr.itemRow(:draggable="draggable", :active="props.selected",
+  template(#item="props")
+    tr.itemRow(:draggable="draggable", :active="props.isSelected",
         :class="getRowClass(props.item)",
         @click="handleRowSelect($event, props)",
         @drag="$emit('drag', { items: [props], event: $event })",
@@ -96,21 +93,22 @@ v-data-table.girder-data-table(
         @drop="$emit('drop', { items: [props], event: $event })",
         :key="props.index")
       td.pl-3.pr-0(v-if="selectable")
-        v-checkbox.secondary--text.text--darken-1.pr-2(
-            :input-value="props.selected", accent, hide-details)
+        v-checkbox.secondary--text.text--darken-1(
+            :input-value="props.isSelected", accent, hide-details, @change="props.select")
       td.pl-3(colspan="2")
         span.text-container.secondary--text.text--darken-3.nobreak(
             :class="getItemClass(props.item)",
             @click.stop="$emit('rowclick', props.item)")
-          v-icon.pr-2(:color="props.selected ? 'accent' : ''") {{ $vuetify.icons[props.item.icon] }}
+          v-icon.pr-2(:color="props.isSelected ? 'accent' : ''")
+            | {{ $vuetify.icons.values[props.item.icon] }}
           | {{ props.item.name }}
-      td.text-xs-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
+      td.text-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
 
-  template(slot="no-data")
-    td.text-xs-center(colspan="2", width="100%") No Data Available
+  template(#no-data="")
+    .text-center(width="100%") No Data Available
 
-  template(slot="no-results")
-    td.text-xs-center(colspan="2", width="100%") No Data Available
+  template(#no-results="")
+    .text-center(width="100%") No Data Available
 </template>
 
 
@@ -127,7 +125,7 @@ v-data-table.girder-data-table(
     }
   }
 
-  .v-table {
+  &.v-data-table {
     tr {
       &.itemRow[active],
       &.itemRow:hover {
@@ -139,8 +137,9 @@ v-data-table.girder-data-table(
         border-color: inherit !important;
       }
 
-      .v-input--checkbox {
-        border-right: 1.5px solid;
+      .v-input--selection-controls.v-input--checkbox {
+        margin: 0 10px;
+        border-right: 1.5px solid gray;
       }
 
       .text-container i {
@@ -161,7 +160,7 @@ v-data-table.girder-data-table(
     color: inherit;
   }
 
-  .v-datatable__progress .v-progress-linear {
+  .v-data-table__progress .v-progress-linear {
     position: absolute;
   }
 }

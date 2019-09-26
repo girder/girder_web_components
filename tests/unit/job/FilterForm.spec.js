@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import FilterForm from '@/components/Job/FilterForm.vue';
 import * as status from '@/components/Job/status';
 
-import { girderVue } from '../utils';
+import { girderVue, vuetify } from '../utils';
 
 const localVue = girderVue();
 
@@ -23,9 +23,11 @@ describe('FilterForm.vue', () => {
   it('mount with job type list', () => {
     const wrapper = mount(FilterForm, {
       localVue,
+      vuetify,
       propsData: {
         jobTypeList: ['type 1', 'type 2'],
       },
+      sync: false,
     });
     expect(wrapper.find({ name: 'v-select' }).vm.items).toEqual(['type 1', 'type 2']);
   });
@@ -33,9 +35,11 @@ describe('FilterForm.vue', () => {
   it('mount with status list', () => {
     const wrapper = mount(FilterForm, {
       localVue,
+      vuetify,
       propsData: {
         statusList: [0, 1, 2, 3],
       },
+      sync: false,
     });
     const statusSelect = wrapper.findAll({ name: 'v-select' }).at(1);
     expect(statusSelect.vm.items.map(s => s.value)).toEqual([0, 1, 2, 3]);
@@ -51,9 +55,11 @@ describe('FilterForm.vue', () => {
 
     const wrapper = mount(FilterForm, {
       localVue,
+      vuetify,
       propsData: {
         statusList: [0, 1, 2, 999],
       },
+      sync: false,
     });
     const statusSelect = wrapper.findAll({ name: 'v-select' }).at(1);
     expect(statusSelect.vm.items.map(s => s.value)).toEqual([999, 0, 1, 2]);
@@ -62,9 +68,11 @@ describe('FilterForm.vue', () => {
   it('mount with unknown status item', () => {
     const wrapper = mount(FilterForm, {
       localVue,
+      vuetify,
       propsData: {
         statusList: [0, 1, 2, 998],
       },
+      sync: false,
     });
     const statusSelect = wrapper.findAll({ name: 'v-select' }).at(1);
     expect(statusSelect.vm.items.map(s => s.value)).toEqual([0, 1, 2]);
