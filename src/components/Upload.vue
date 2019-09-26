@@ -19,7 +19,7 @@ v-card.fill-height(flat)
     v-col
       slot(name="dropzone")
         dropzone(v-if="!files.length",
-            @change="filesChanged",
+            @change="inputFilesChanged",
             :message="dropzoneMessage",
             :multiple="multiple",
             :accept="accept")
@@ -28,8 +28,8 @@ v-card.fill-height(flat)
       v-alert(:value="true", dark, type="error") {{ errorMessage }}
         v-btn(v-if="!uploading", dark, outlined, @click="start") Resume upload
 
-    slot(name="files")
-      file-upload-list(v-model="files", v-bind="{ currentIndex, maxShow }")
+    slot(name="files", v-bind="{ files, setFiles, currentIndex, maxShow }")
+      file-upload-list(@input="setFiles", v-bind="{ value: files, currentIndex, maxShow }")
 </template>
 
 <script>
@@ -110,7 +110,7 @@ export default {
     },
   },
   methods: {
-    filesChanged(files) {
+    inputFilesChanged(files) {
       this.currentIndex = 0;
       this.files = files.map(file => ({
         file,
@@ -123,6 +123,13 @@ export default {
         upload: null,
         result: null,
       }));
+    },
+
+    setFiles(files) {
+      if (this.currentIndex >= files.length) {
+        this.currentIndex = files.length - 1;
+      }
+      this.files = files;
     },
 
     async start() {

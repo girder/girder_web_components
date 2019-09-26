@@ -20,6 +20,7 @@
             span(v-if="file.progress.current") {{ formatSize(file.progress.current ) }} /
             = " "
             span {{ formatSize(file.file.size) }}
+        slot(name="item", v-bind="{ file }")
     template(v-if="hiddenCount")
       v-divider
       v-list-item
