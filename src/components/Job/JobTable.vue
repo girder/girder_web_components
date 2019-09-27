@@ -109,7 +109,7 @@ v-data-table(
               :size="20") {{ props.item.statusIcon }}
       td.one-line.pa-0
         slot(name="jobwidget", v-bind="props")
-  template(#pageText="")
+  template(#footer.page-text="")
     .v-datatable__actions__options {{ pageRange.first }}-{{ pageRange.last }}
 </template>
 
