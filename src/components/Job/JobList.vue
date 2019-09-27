@@ -123,4 +123,6 @@ v-card.girder-job-list(dark, color="primary")
       :options.sync="options",
       :more-pages="morePages",
       @job-click="(e, job)=>$emit('job-click', e, job)")
+    template(#jobwidget="props", v-if="$scopedSlots.jobwidget")
+      slot(name="jobwidget", v-bind="props")
 </template>
