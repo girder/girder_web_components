@@ -14,7 +14,7 @@ v-card.fill-height(flat)
 
     v-card-actions(v-show="files.length && !errorMessage && !uploading")
       v-btn(text, @click="files = []") Clear all
-      v-btn(text, color="primary", @click="start") Start upload
+      v-btn(text, color="primary", @click="start") {{ uploadPhrase }}
 
     v-col
       slot(name="dropzone")
@@ -72,6 +72,10 @@ export default {
     },
     accept: {
       default: null,
+      type: String,
+    },
+    uploadPhrase: {
+      default: 'Start Upload',
       type: String,
     },
   },
