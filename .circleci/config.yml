@@ -40,6 +40,20 @@ jobs:
             - "eb:dc:cd:0a:f4:99:56:3f:79:f7:22:a2:6c:21:56:c7"
       - deploy:
           command: .circleci/pages-deploy.sh
+  
+  publish:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run: yarn build
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > ~/.npmrc
+      # - run:
+      #     name: Publish package
+      #     command: yarn publish --non-interactive
 
 workflows:
   version: 2
@@ -51,4 +65,10 @@ workflows:
             - test
           filters:
             branches:
-                only: master
+              only: master
+      - publish:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /^v.*/
