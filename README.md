@@ -17,9 +17,9 @@ yarn add @girder/components
 However, a few additional packages must still be manually installed:
 
 ```bash
-npm install -D sass sass-loader pug-plain-loader pug vue-cli-plugin-vuetify vuetify-loader
+npm install -D sass sass-loader@7.3.1 pug-plain-loader pug vue-cli-plugin-vuetify vuetify-loader
 # or
-yarn add -D sass sass-loader pug-plain-loader pug vue-cli-plugin-vuetify vuetify-loader
+yarn add -D sass sass-loader@7.3.1 pug-plain-loader pug vue-cli-plugin-vuetify vuetify-loader
 ```
 
 > **Note:** If you are building with custom webpack (without vue-cli-service),
