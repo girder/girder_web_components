@@ -38,10 +38,11 @@
             :loading="inProgress")
           v-icon(left) $vuetify.icons.login
           | {{ otpFormVisible ? 'Verify code' : 'Login' }}
-        v-spacer
-        v-btn(
-            text, color="primary", :to="forgotPasswordRoute", :href="forgotPasswordUrl",
-            @click="$emit('forgotpassword')") Forgot Password?
+        template(v-if="showForgotPassword")
+          v-spacer
+          v-btn(
+              text, color="primary", :to="forgotPasswordRoute", :href="forgotPasswordUrl",
+              @click="$emit('forgotpassword')") Forgot Password?
   template(v-if="oauthProviders && oauthProviders.length")
     v-divider
     girder-oauth(:providers="oauthProviders")
@@ -89,6 +90,10 @@ export default {
     oauthProviders: {
       type: Array,
       default: () => [],
+    },
+    showForgotPassword: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
