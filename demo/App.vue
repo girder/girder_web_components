@@ -31,6 +31,12 @@ v-app.app
 
     v-spacer
     girder-search(v-if="searchEnabled", @select="handleSearchSelect")
+      template(#searchresult="r")
+        v-list-item-action.mr-2
+          v-icon {{ $vuetify.icons.values[r._modelType] }}
+        v-list-item-content
+          v-list-item-title {{ r.name || formatUsername(r) }}
+          v-list-item-subtitle {{ r._id }}
     v-btn(v-if="!loggedOut", text, icon, @click="girderRest.logout()")
       v-icon $vuetify.icons.logout
   v-content

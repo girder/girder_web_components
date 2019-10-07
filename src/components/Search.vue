@@ -168,10 +168,11 @@ v-row.align-center.girder-searchbar(no-gutters)
           v-for="r in quickResults",
           @click="$emit('select', r)",
           :key="r._id")
-        v-list-item-action.mr-2
-          v-icon {{ $vuetify.icons.values[r._modelType] }}
-        v-list-item-content
-          v-list-item-title {{ r.name || formatUsername(r) }}
+        slot(name="searchresult", v-bind="r")
+          v-list-item-action.mr-2
+            v-icon {{ $vuetify.icons.values[r._modelType] }}
+          v-list-item-content
+            v-list-item-title {{ r.name || formatUsername(r) }}
       v-list-item(v-show="searchText && quickResults.length === 0 && !loading")
         v-list-item-action
           v-icon $vuetify.icons.alert
