@@ -38,7 +38,7 @@
             :loading="inProgress")
           v-icon(left) $vuetify.icons.login
           | {{ otpFormVisible ? 'Verify code' : 'Login' }}
-        template(v-if="showForgotPassword")
+        template(v-if="!hideForgotPassword")
           v-spacer
           v-btn(
               text, color="primary", :to="forgotPasswordRoute", :href="forgotPasswordUrl",
@@ -87,13 +87,13 @@ export default {
       type: Object,
       default: null,
     },
+    hideForgotPassword: {
+      type: Boolean,
+      default: false,
+    },
     oauthProviders: {
       type: Array,
       default: () => [],
-    },
-    showForgotPassword: {
-      type: Boolean,
-      default: true,
     },
   },
   data() {
