@@ -1,40 +1,39 @@
 <template lang="pug">
 v-app.app
+  v-app-bar(color="primary", dark, app)
+    v-toolbar-title Girder Web Components
+    v-toolbar-items
+      v-menu(
+          offset-y,
+          left,
+          :close-on-content-click="false",
+          content-class="girder-search-arrow-menu",
+          v-model="uiOptionsMenu")
+        template(#activator="{ on }")
+          v-btn(icon, v-on="on")
+            v-icon.mdi-24px $vuetify.icons.more
+        v-card
+          v-card-actions
+            v-row
+              v-col.py-0
+                v-checkbox.mt-1(hide-details, label="Worker Jobs", v-model="jobsEnabled")
+                v-divider.mt-2.mb-1
+                v-checkbox.mt-1(hide-details, label="Data Browser", v-model="browserEnabled")
+                v-checkbox.mt-1(hide-details, label="Select", v-model="selectable")
+                v-checkbox.mt-1(hide-details, label="Draggable", v-model="dragEnabled")
+                v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
+                v-checkbox.mt-1(hide-details, label="Upload", v-model="uploadEnabled")
+                v-checkbox.mt-1(hide-details,
+                    label="Root Disabled",
+                    v-model="rootLocationDisabled")
+                v-divider.mt-2.mb-1
+                v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
+
+    v-spacer
+    girder-search(v-if="searchEnabled", @select="handleSearchSelect")
+    v-btn(v-if="!loggedOut", text, icon, @click="girderRest.logout()")
+      v-icon $vuetify.icons.logout
   v-content
-    v-toolbar.toolbar-main(color="primary", dark)
-      v-toolbar-title Girder Web Components
-      v-toolbar-items
-        v-menu(
-            offset-y,
-            left,
-            :close-on-content-click="false",
-            content-class="girder-search-arrow-menu",
-            v-model="uiOptionsMenu")
-          template(#activator="{ on }")
-            v-btn(icon, v-on="on")
-              v-icon.mdi-24px $vuetify.icons.more
-          v-card
-            v-card-actions
-              v-row
-                v-col.py-0
-                  v-checkbox.mt-1(hide-details, label="Worker Jobs", v-model="jobsEnabled")
-                  v-divider.mt-2.mb-1
-                  v-checkbox.mt-1(hide-details, label="Data Browser", v-model="browserEnabled")
-                  v-checkbox.mt-1(hide-details, label="Select", v-model="selectable")
-                  v-checkbox.mt-1(hide-details, label="Draggable", v-model="dragEnabled")
-                  v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
-                  v-checkbox.mt-1(hide-details, label="Upload", v-model="uploadEnabled")
-                  v-checkbox.mt-1(hide-details,
-                      label="Root Disabled",
-                      v-model="rootLocationDisabled")
-                  v-divider.mt-2.mb-1
-                  v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
-
-      v-spacer
-      girder-search(v-if="searchEnabled", @select="handleSearchSelect")
-      v-btn(v-if="!loggedOut", text, icon, @click="girderRest.logout()")
-        v-icon $vuetify.icons.logout
-
     v-container
       v-row
         v-col(v-if="loggedOut", lg=4, md=5, sm=12)
