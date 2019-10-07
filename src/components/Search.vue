@@ -8,6 +8,10 @@ export default {
       type: Number,
       default: 6,
     },
+    placeholder: {
+      type: String,
+      default: null,
+    },
     showMore: {
       type: Boolean,
       default: false,
@@ -82,7 +86,8 @@ v-row.align-center.girder-searchbar(no-gutters)
       :value="searchText",
       :nudge-bottom="6")
     template(#activator="{ on }")
-      v-text-field(v-on="on", v-model="searchText", light, solo, hide-details, clearable)
+      v-text-field(v-on="on", v-model="searchText", light, solo, hide-details, clearable,
+          :placeholder="placeholder")
     v-list(dense)
       v-list-item(
           v-show="!loading",
