@@ -28,8 +28,10 @@ export default {
       chevron: 'mdi-chevron-right',
       circle: 'mdi-checkbox-blank-circle',
       collection: 'mdi-file-tree',
+      download: 'mdi-download',
       edit: 'mdi-pencil',
       file: 'mdi-file',
+      fileMultiple: 'mdi-file-multiple',
       fileNew: 'mdi-file-plus',
       fileUpload: 'mdi-file-upload',
       folder: 'mdi-folder',
@@ -51,6 +53,7 @@ export default {
       settings: 'mdi-tune',
       user: 'mdi-account',
       userHome: 'mdi-home-account',
+      view: 'mdi-eye',
     },
   },
 };

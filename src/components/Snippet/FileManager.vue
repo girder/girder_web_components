@@ -125,6 +125,9 @@ export default {
 
   methods: {
     isRootLocation,
+    refresh() {
+      this.$refs.girderBrowser.refresh();
+    },
     postUploadInternal() {
       // postUpload is an example of using hooks for greater control of component behavior.
       // here, we can complete the dialog disappear animation before the upload UI resets.
@@ -148,62 +151,59 @@ export default {
 </script>
 
 <template lang="pug">
-.girder-data-browser-snippet
-  v-row
-    v-col
-      v-card
-        girder-data-browser(
-            ref="girderBrowser",
-            :location.sync="internalLocation",
-            :selectable="selectable",
-            :draggable="dragEnabled",
-            :root-location-disabled="rootLocationDisabled",
-            @selection-changed="$emit('selection-changed', $event)",
-            @rowclick="$emit('rowclick', $event)",
-            @drag="$emit('drag', $event)",
-            @dragstart="$emit('dragstart', $event)",
-            @dragend="$emit('dragend', $event)",
-            @drop="$emit('drop', $event)")
-          template(#breadcrumb="props")
-            girder-breadcrumb(
-                :location="props.location",
-                @crumbclick="props.changeLocation($event)",
-                :root-location-disabled="props.rootLocationDisabled")
-          template(#headerwidget)
-            slot(name="headerwidget")
-            v-dialog(v-model="uploaderDialog",
-                v-if="shouldShowUpload",
-                max-width="800px")
-              template(#activator="{ on }")
-                v-btn.ma-0(
-                    v-on="on",
-                    text,
-                    small,
-                    color="secondary darken-2")
-                  v-icon.mdi-24px.mr-1(left, color="accent") $vuetify.icons.fileNew
-                  span.hidden-xs-only Upload
-              girder-upload(
-                  :dest="uploadDest",
-                  :pre-upload="preUpload",
-                  :post-upload="postUploadInternal",
-                  :multiple="uploadMultiple",
-                  :max-show="uploadMaxShow",
-                  :accept="uploadAccept")
-            v-dialog(v-model="newFolderDialog",
-                v-if="newFolderEnabled && !isRootLocation(internalLocation) && girderRest.user",
-                max-width="800px")
-              template(#activator="{ on }")
-                v-btn.ma-0(
-                    v-on="on",
-                    text,
-                    small,
-                    color="secondary darken-2")
-                  v-icon.mdi-24px.mr-1(left, color="accent") $vuetify.icons.folderNew
-                  span.hidden-xs-only New Folder
-              girder-upsert-folder(
-                  :location="internalLocation",
-                  :pre-upsert="preUpsert",
-                  :post-upsert="postUpsertInternal",
-                  :key="internalLocation._id",
-                  @dismiss="newFolderDialog = false")
+v-card.girder-data-browser-snippet
+  girder-data-browser(
+      ref="girderBrowser",
+      :location.sync="internalLocation",
+      :selectable="selectable",
+      :draggable="dragEnabled",
+      :root-location-disabled="rootLocationDisabled",
+      @selection-changed="$emit('selection-changed', $event)",
+      @rowclick="$emit('rowclick', $event)",
+      @drag="$emit('drag', $event)",
+      @dragstart="$emit('dragstart', $event)",
+      @dragend="$emit('dragend', $event)",
+      @drop="$emit('drop', $event)")
+    template(#breadcrumb="props")
+      girder-breadcrumb(
+          :location="props.location",
+          @crumbclick="props.changeLocation($event)",
+          :root-location-disabled="props.rootLocationDisabled")
+    template(#headerwidget)
+      slot(name="headerwidget")
+      v-dialog(v-model="uploaderDialog",
+          v-if="shouldShowUpload",
+          max-width="800px")
+        template(#activator="{ on }")
+          v-btn.ma-0(
+              v-on="on",
+              text,
+              small,
+              color="secondary darken-2")
+            v-icon.mdi-24px.mr-1(left, color="accent") $vuetify.icons.fileNew
+            span.hidden-xs-only Upload
+        girder-upload(
+            :dest="uploadDest",
+            :pre-upload="preUpload",
+            :post-upload="postUploadInternal",
+            :multiple="uploadMultiple",
+            :max-show="uploadMaxShow",
+            :accept="uploadAccept")
+      v-dialog(v-model="newFolderDialog",
+          v-if="newFolderEnabled && !isRootLocation(internalLocation) && girderRest.user",
+          max-width="800px")
+        template(#activator="{ on }")
+          v-btn.ma-0(
+              v-on="on",
+              text,
+              small,
+              color="secondary darken-2")
+            v-icon.mdi-24px.mr-1(left, color="accent") $vuetify.icons.folderNew
+            span.hidden-xs-only New Folder
+        girder-upsert-folder(
+            :location="internalLocation",
+            :pre-upsert="preUpsert",
+            :post-upsert="postUpsertInternal",
+            :key="internalLocation._id",
+            @dismiss="newFolderDialog = false")
 </template>

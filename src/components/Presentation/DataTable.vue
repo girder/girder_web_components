@@ -102,7 +102,7 @@ v-data-table.girder-data-table(
           v-icon.pr-2(:color="props.isSelected ? 'accent' : ''")
             | {{ $vuetify.icons.values[props.item.icon] }}
           | {{ props.item.name }}
-      td.text-right.secondary--text.text--darken-3.nobreak {{ props.item.size }}
+      td.text-right.secondary--text.text--darken-3.nobreak {{ props.item.humanSize }}
 
   template(#no-data="")
     .text-center(width="100%") No Data Available
