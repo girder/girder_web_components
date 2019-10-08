@@ -50,7 +50,7 @@ export default {
     },
     searchMode: {
       type: String,
-      default: '',
+      default: null,
     },
     searchTypeOptions: {
       type: Array,
