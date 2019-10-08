@@ -1,14 +1,14 @@
 #!/bin/bash
 set -e
 set -o pipefail
-export PACKAGE_VERSION=$(cat package.json \
+PACKAGE_VERSION=$(cat package.json \
   | grep version \
   | head -1 \
   | awk -F: '{ print $2 }' \
   | sed 's/[",]//g' \
   | tr -d ' ')
 
-export PUBLISHED_VERSION=$(npm show @girder/components version \
+PUBLISHED_VERSION=$(npm show @girder/components version \
   | tr -d ' ')
 
 if [ "$PACKAGE_VERSION" != "$PUBLISHED_VERSION" ]; then
