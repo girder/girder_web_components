@@ -47,14 +47,14 @@ v-app.app
           girder-file-manager.mb-3(
               v-if="browserEnabled",
               ref="girderFileManager",
+              v-model="selected",
               :drag-enabled="dragEnabled",
               :new-folder-enabled="newFolderEnabled",
               :selectable="selectable",
               :location.sync="location",
               :root-location-disabled="rootLocationDisabled",
               :upload-multiple="uploadMultiple",
-              :upload-enabled="uploadEnabled",
-              @selection-changed="selected = $event")
+              :upload-enabled="uploadEnabled")
           girder-job-list(v-if="jobsEnabled")
         v-col(style="max-width: 340px;")
           girder-data-details(:value="detailsList", @action="handleAction")

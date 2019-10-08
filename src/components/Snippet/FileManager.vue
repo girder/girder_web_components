@@ -22,6 +22,10 @@ export default {
   },
 
   props: {
+    value: {
+      type: Array,
+      default: () => [],
+    },
     location: {
       type: Object,
       validator: createLocationValidator(true),
@@ -158,6 +162,8 @@ v-card.girder-data-browser-snippet
       :selectable="selectable",
       :draggable="dragEnabled",
       :root-location-disabled="rootLocationDisabled",
+      :value="value",
+      @input="$emit('input', $event)",
       @selection-changed="$emit('selection-changed', $event)",
       @rowclick="$emit('rowclick', $event)",
       @drag="$emit('drag', $event)",

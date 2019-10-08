@@ -44,6 +44,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    value: {
+      type: Array,
+      default: () => [],
+    },
   },
 
   data() {
@@ -55,7 +59,7 @@ export default {
       internalRefreshCounter: 0,
       rows: [],
       rowsLoading: false,
-      selected: [],
+      lazyValue: this.value || [], // selected items
     };
   },
 
@@ -72,6 +76,15 @@ export default {
     internalSelectable() {
       return this.selectable && this.location && !isRootLocation(this.location);
     },
+    internalValue: {
+      get() {
+        return this.lazyValue;
+      },
+      set(val) {
+        this.lazyValue = val;
+        this.$emit('input', val);
+      },
+    },
   },
 
   asyncComputed: {
@@ -83,8 +96,6 @@ export default {
         nCollections: 0,
       },
       async get() {
-        // Prevents databrowser from bouncing between directories.
-        // this.rows = [];
         const counts = {
           nFolders: 0,
           nItems: 0,
@@ -126,10 +137,11 @@ export default {
       if (createLocationValidator(!this.rootLocationDisabled)(location)) {
         // force reset options when location changes.
         this.options.page = 1;
+        this.internalValue = [];
       }
     },
-    selected(newval) {
-      this.$emit('selection-changed', newval);
+    value(val) {
+      this.lazyValue = val;
     },
     async counts() {
       this.rows = await this.fetchPaginatedRows();
@@ -147,13 +159,6 @@ export default {
   },
 
   methods: {
-    toggleAll() {
-      if (this.selected.length === this.rows.length) {
-        this.selected = [];
-      } else {
-        this.selected = this.rows.slice();
-      }
-    },
     rowClick(row) {
       // Emit a row click regardless of type
       this.$emit('rowclick', row);
@@ -280,7 +285,7 @@ export default {
 
 <template lang="pug">
 girder-data-table.girder-file-browser(
-    v-model="selected",
+    v-model="internalValue",
     :draggable="draggable",
     :rows="rows",
     :options.sync="options",
@@ -293,15 +298,15 @@ girder-data-table.girder-file-browser(
     @dragend="$emit('dragend', $event)",
     @drop="$emit('drop', $event)")
 
-  template(#header="props")
+  template(#header="{ props, on }")
     tr.secondary.lighten-5
       th.pl-3.pr-0(width="1%", v-if="internalSelectable")
         v-checkbox.secondary--text.text--darken-1.pr-2(
             color="accent",
             hide-details,
-            :input-value="props.all",
-            :indeterminate="selected.length > 0 && !props.all",
-            @click.native="toggleAll")
+            :input-value="props.everyItem",
+            :indeterminate="internalValue.length > 0 && !props.everyItem",
+            @click.native="on['toggle-select-all'](!props.everyItem)")
       th.pl-3(colspan="10", width="99%")
         v-row.ma-1
           slot(name="breadcrumb", v-bind="{ location, changeLocation, rootLocationDisabled }")

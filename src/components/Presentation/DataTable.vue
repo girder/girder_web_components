@@ -80,8 +80,8 @@ v-data-table.girder-data-table(
     :loading="loading ? 'accent' : false",
     item-key="_id")
 
-  template(#header="{ all, indeterminate, headers }")
-    slot(name="header", v-bind="{ all, indeterminate, headers }")
+  template(#header="vDataTableHeaderProps")
+    slot(name="header", v-bind="vDataTableHeaderProps")
 
   template(#item="props")
     tr.itemRow(:draggable="draggable", :active="props.isSelected",
