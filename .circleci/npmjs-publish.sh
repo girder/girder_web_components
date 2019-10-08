@@ -1,5 +1,6 @@
 #!/bin/bash
-
+set -e
+set -o pipefail
 export PACKAGE_VERSION=$(cat package.json \
   | grep version \
   | head -1 \
