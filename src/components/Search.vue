@@ -2,14 +2,62 @@
 <script>
 import { DebounceCounter } from '../utils';
 
+export const SearchModeOptions = [
+  {
+    name: 'Prefix Search',
+    value: 'prefix',
+  },
+  {
+    name: 'Text Search',
+    value: 'text',
+  },
+];
+const DefaultSearchModeOption = SearchModeOptions[0].value;
+
+export const SearchTypeOptions = [
+  {
+    name: 'User',
+    value: 'user',
+  },
+  {
+    name: 'Folder',
+    value: 'folder',
+  },
+  {
+    name: 'Item',
+    value: 'item',
+  },
+];
+const DefaultSearchTypes = SearchTypeOptions.map(t => t.value);
+
 export default {
   props: {
+    hideOptionsMenu: {
+      type: Boolean,
+      default: false,
+    },
     maxQuickResults: {
       type: Number,
       default: 6,
     },
     placeholder: {
       type: String,
+      default: null,
+    },
+    searchModeOptions: {
+      type: Array,
+      default: () => SearchModeOptions,
+    },
+    searchMode: {
+      type: String,
+      default: null,
+    },
+    searchTypeOptions: {
+      type: Array,
+      default: () => SearchTypeOptions,
+    },
+    searchTypes: {
+      validator: val => Array.isArray(val) || val === null,
       default: null,
     },
     showMore: {
@@ -21,8 +69,8 @@ export default {
   data() {
     return {
       searchText: '',
-      searchMode: 'prefix',
-      searchTypes: ['user', 'folder', 'item'],
+      lazySearchMode: this.searchMode || DefaultSearchModeOption,
+      lazySearchTypes: this.searchTypes || DefaultSearchTypes,
       searchOptionsMenu: false,
     };
   },
@@ -36,11 +84,37 @@ export default {
     searchParams() {
       return {
         q: this.searchText,
-        mode: this.searchMode,
-        types: JSON.stringify(this.searchTypes),
+        mode: this.internalSearchMode,
+        types: JSON.stringify(this.internalSearchTypes),
         // + 1 to determine if total results > maxQuickResults
         limit: this.maxQuickResults + 1,
       };
+    },
+    internalSearchMode: {
+      get() {
+        return this.lazySearchMode;
+      },
+      set(val) {
+        this.lazySearchMode = val;
+        this.$emit('update:searchMode', val);
+      },
+    },
+    internalSearchTypes: {
+      get() {
+        return this.lazySearchTypes;
+      },
+      set(val) {
+        this.lazySearchTypes = val;
+        this.$emit('update:searchTypes', val);
+      },
+    },
+  },
+  watch: {
+    searchMode(val) {
+      this.lazySearchMode = val || DefaultSearchModeOption;
+    },
+    searchTypes(val) {
+      this.lazySearchTypes = val || DefaultSearchTypes;
     },
   },
   asyncComputed: {
@@ -54,7 +128,7 @@ export default {
             const { data } = await this.girderRest.get('resource/search', {
               params: this.searchParams,
             });
-            results = [].concat(...this.searchTypes.map(t => data[t]));
+            results = [].concat(...this.internalSearchTypes.map(t => data[t]));
           }
         } catch (err) {
           this.$emit('error', err.message || 'Unknown error during search');
@@ -123,6 +197,7 @@ v-row.align-center.girder-searchbar(no-gutters)
           v-list-item-subtitle.skeleton.skeleton--text(
               :style="{ width: (45 - (4 * (i % 2))) + '%', height: '6px' }")
   v-menu(
+      v-if="!hideOptionsMenu",
       v-model="searchOptionsMenu",
       offset-y,
       left,
@@ -133,14 +208,19 @@ v-row.align-center.girder-searchbar(no-gutters)
         v-icon.mdi-24px $vuetify.icons.settings
     v-card
       v-card-actions
-        v-col.flex-column(no-gutters)
-          v-radio-group.my-2(hide-details, v-model="searchMode")
-            v-radio.mb-1(key="text", label="Text Search", value="text")
-            v-radio(key="prefix", label="Prefix Search", value="prefix")
+        v-col.pa-0.flex-column(no-gutters)
+          v-radio-group.my-2(hide-details, v-model="internalSearchMode")
+            v-radio.mb-1(v-for="mode in searchModeOptions",
+                :key="mode.value",
+                :label="mode.name",
+                :value="mode.value")
           v-divider
-          v-checkbox.mt-2(hide-details, v-model="searchTypes", label="User", value="user")
-          v-checkbox.mt-1(hide-details, v-model="searchTypes", label="Folder", value="folder")
-          v-checkbox.mt-1.mb-1(hide-details, v-model="searchTypes", label="Item", value="item")
+          v-checkbox.mt-1(v-for="searchType in searchTypeOptions",
+              hide-details,
+              :key="searchType.value",
+              v-model="internalSearchTypes",
+              :label="searchType.name",
+              :value="searchType.value")
 </template>
 
 <style lang="scss">
@@ -189,7 +269,7 @@ v-row.align-center.girder-searchbar(no-gutters)
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
     border-bottom: 8px solid white;
-    right: 10px;
+    right: 16px;
     top: -8px;
     position: absolute;
   }

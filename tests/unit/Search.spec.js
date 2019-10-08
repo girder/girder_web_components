@@ -114,17 +114,46 @@ describe('Search', () => {
     const wrapper = shallowMount(Search, {
       localVue,
       vuetify,
+      propsData: {
+        searchMode: 'text',
+        searchTypes: ['user', 'folder'],
+      },
       provide: { girderRest },
     });
     await flushPromises();
     wrapper.setData({
-      searchMode: 'text',
-      searchTypes: ['user', 'folder'],
       searchText: 'a third thing',
     });
     await flushPromises();
     // Expect 3 because Search.vue filters out results not in searchTypes.
     expect(wrapper.vm.searchResults.length).toBe(3);
     expect(wrapper.vm.quickResults.length).toBe(3);
+  });
+
+  it('supports new search modes', async () => {
+    mock.onGet(/resource\/search/).replyOnce(w((config) => {
+      expect(config.params.mode).toBe('foo');
+    }, 200, getMockSearchResult()));
+
+    const wrapper = shallowMount(Search, {
+      localVue,
+      vuetify,
+      propsData: {
+        searchMode: 'foo',
+      },
+      provide: { girderRest },
+    });
+    await flushPromises();
+    wrapper.setData({
+      searchText: 'bar',
+    });
+    await flushPromises();
+    expect(wrapper.vm.searchResults.length).toBe(3);
+    expect(wrapper.vm.quickResults.length).toBe(3);
+    expect(wrapper.vm.internalSearchMode).toBe('foo');
+    expect(new Set(wrapper.vm.internalSearchTypes)).toEqual(new Set(['user', 'folder', 'item']));
+    wrapper.setProps({ searchTypes: ['user'] });
+    await flushPromises();
+    expect(wrapper.vm.internalSearchTypes).toEqual(['user']);
   });
 });
