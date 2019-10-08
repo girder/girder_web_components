@@ -226,6 +226,8 @@ the Girder API server running).
 When running against your own instance of the Girder API server,
 make sure to set [CORS](https://girder.readthedocs.io/en/stable/security.html#cors-cross-origin-resource-sharing) accordingly.
 
-### Deployment
+### Deploy and Publish
 
-Any contributor can request an update to the published npmjs version by simply changing the version string in `package.json` and opening a pull request.  Our CI runner will detect the change and publish when the PR is merged.
+The demo app is automatically deployed to https://gwc.girder.org
+
+Any contributor can request an update to the published npmjs version by changing the version string in `package.json` and opening a pull request.  Our CI runner will detect the change and publish on merge.  Version update PRs should generally happen independently of feature PRs.
