@@ -225,3 +225,7 @@ normal development (which assumes the developer has a local instance of
 the Girder API server running).
 When running against your own instance of the Girder API server,
 make sure to set [CORS](https://girder.readthedocs.io/en/stable/security.html#cors-cross-origin-resource-sharing) accordingly.
+
+### Deployment
+
+Any contributor can request an update to the published npmjs version by simply changing the version string in `package.json` and opening a pull request.  Our CI runner will detect the change and publish when the PR is merged.
