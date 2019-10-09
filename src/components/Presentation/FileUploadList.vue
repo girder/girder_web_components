@@ -10,7 +10,7 @@
           v-progress-circular(v-if="file.status === 'uploading'",
               color="primary",
               :rotate="-90",
-              :value="progressPercent({...file.progress, total: file.progress.size })",
+              :value="progressPercent(Object.assign({total: file.progress.size}, file.progress))",
               :indeterminate="file.progress.indeterminate")
           v-icon(v-if="file.status === 'done'", color="success", large) $vuetify.icons.complete
           v-icon(v-if="file.status === 'error'", color="error", large) $vuetify.icons.error
