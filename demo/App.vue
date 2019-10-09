@@ -56,7 +56,7 @@ v-app.app
               :upload-enabled="uploadEnabled",
               @selection-changed="selected = $event")
           girder-job-list(v-if="jobsEnabled")
-        v-col(style="max-width: 320px;")
+        v-col(style="max-width: 340px;")
           girder-data-details(:value="detailsList", @action="handleAction")
 </template>
 

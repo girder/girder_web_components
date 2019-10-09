@@ -19,8 +19,8 @@ v-card.data-details
   girder-detail-list(v-if="meta.length", title="Meta", :rows="meta")
     template(#row="props")
       v-row(justify="space-between")
-        v-col.shrink.py-1 {{ props.datum.key }}
-        v-col.shrink.py-1 {{ props.datum.value }}
+        v-col.shrink.py-1.body-2.font-weight-bold {{ props.datum.key }}
+        v-col.shrink.py-1.body-2 {{ props.datum.value }}
   girder-detail-list(
       v-if="files.length",
       :title="`Files (${files.length})`",
@@ -28,16 +28,14 @@ v-card.data-details
   girder-detail-list(
       v-if="actions.length",
       title="Actions",
+      :clickable="true",
       :rows="actions",
-      :color="$vuetify.theme.themes.light.secondary.lighten5")
+      :color="$vuetify.theme.themes.light.secondary.lighten5",
+      @click="handleAction")
     template(#row="props")
-      v-row
-        v-col.px-2.py-0
-          v-btn.pl-1(text, small, block,
-              :color="props.datum.color",
-              @click="handleAction(props.datum)")
-            v-icon.pr-2 {{ $vuetify.icons.values[props.datum.icon] }}
-            | {{ props.datum.name }}
+      v-list-item-icon.mr-1
+        v-icon.pr-2(:color="props.datum.color") {{ $vuetify.icons.values[props.datum.icon] }}
+      v-list-item-content(:class="`${props.datum.color}--text`") {{ props.datum.name }}
 </template>
 
 <script>
@@ -254,9 +252,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-.data-details .v-toolbar__content {
-  padding: 0 16px !important;
-}
-</style>
