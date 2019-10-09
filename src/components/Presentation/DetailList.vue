@@ -1,6 +1,6 @@
 <template lang="pug">
 v-list(v-if="rows.length", dense, :style="{ backgroundColor: color }")
-  v-subheader.body-2.font-weight-bold {{ title }}
+  v-subheader.subtitle-1.font-weight-bold.pl-4 {{ title }}
   template(v-for="val, i in rows")
     v-list-item(:key="i", v-on="clickable ? {click: () => $emit('click', val)} : {}")
       slot(name="row", :datum="val")
