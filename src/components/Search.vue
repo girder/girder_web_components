@@ -1,6 +1,7 @@
 
 <script>
 import { DebounceCounter } from '../utils';
+import { usernameFormatter } from '../utils/mixins';
 
 export const SearchModeOptions = [
   {
@@ -31,6 +32,7 @@ export const SearchTypeOptions = [
 const DefaultSearchTypes = SearchTypeOptions.map(t => t.value);
 
 export default {
+  mixins: [usernameFormatter],
   props: {
     hideOptionsMenu: {
       type: Boolean,
@@ -142,8 +144,9 @@ export default {
     this.counter = new DebounceCounter();
   },
   methods: {
-    formatUsername(user) {
-      return `${user.firstName} ${user.lastName} (${user.login})`;
+    selectResult(result) {
+      this.searchText = '';
+      this.$emit('select', result);
     },
   },
 };
@@ -165,13 +168,14 @@ v-row.align-center.girder-searchbar(no-gutters)
     v-list(dense)
       v-list-item(
           v-show="!loading",
-          v-for="r in quickResults",
-          @click="$emit('select', r)",
-          :key="r._id")
-        v-list-item-action.mr-2
-          v-icon {{ $vuetify.icons.values[r._modelType] }}
-        v-list-item-content
-          v-list-item-title {{ r.name || formatUsername(r) }}
+          v-for="result in quickResults",
+          @click="selectResult(result)",
+          :key="result._id")
+        slot(name="searchresult", v-bind="result")
+          v-list-item-action.mr-2
+            v-icon {{ $vuetify.icons.values[result._modelType] }}
+          v-list-item-content
+            v-list-item-title {{ result.name || formatUsername(result) }}
       v-list-item(v-show="searchText && quickResults.length === 0 && !loading")
         v-list-item-action
           v-icon $vuetify.icons.alert
