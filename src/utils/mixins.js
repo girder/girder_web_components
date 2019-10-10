@@ -1,6 +1,18 @@
 import { AccessType } from '../constants';
 
 /**
+ * for components that need to show a locale-formatted date
+ */
+const dateFormatter = {
+  methods: {
+    formatDate(datestring) {
+      const d = new Date(datestring);
+      return d.toLocaleString();
+    },
+  },
+};
+
+/**
  * Any view component that needs to display human-readable data sizes should use this.
  */
 const sizeFormatter = {
@@ -46,8 +58,21 @@ const progressReporter = {
   },
 };
 
+/**
+ * For components that need to show a full formatted username
+ */
+const usernameFormatter = {
+  methods: {
+    formatUsername(user) {
+      return `${user.firstName} ${user.lastName} (${user.login})`;
+    },
+  },
+};
+
 export {
   accessLevelChecker,
+  dateFormatter,
   progressReporter,
   sizeFormatter,
+  usernameFormatter,
 };

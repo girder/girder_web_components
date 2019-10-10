@@ -46,6 +46,7 @@ v-app.app
         v-col
           girder-file-manager.mb-3(
               v-if="browserEnabled",
+              ref="girderFileManager",
               :drag-enabled="dragEnabled",
               :new-folder-enabled="newFolderEnabled",
               :selectable="selectable",
@@ -55,11 +56,14 @@ v-app.app
               :upload-enabled="uploadEnabled",
               @selection-changed="selected = $event")
           girder-job-list(v-if="jobsEnabled")
+        v-col(style="max-width: 340px;")
+          girder-data-details(:value="detailsList", @action="handleAction")
 </template>
 
 <script>
 import {
   Authentication as GirderAuth,
+  DataDetails as GirderDataDetails,
   Search as GirderSearch,
 } from '@/components';
 import { FileManager as GirderFileManager } from '@/components/Snippet';
@@ -71,6 +75,7 @@ export default {
 
   components: {
     GirderAuth,
+    GirderDataDetails,
     GirderFileManager,
     GirderSearch,
     GirderJobList,
@@ -108,6 +113,14 @@ export default {
         this.internalLocation = value;
       },
     },
+    detailsList() {
+      if (this.selected.length) {
+        return this.selected;
+      } else if (this.location) {
+        return [this.location];
+      }
+      return [];
+    },
   },
 
   methods: {
@@ -116,6 +129,12 @@ export default {
         this.location = item;
       } else {
         this.location = { _modelType: 'folder', _id: item.folderId };
+      }
+    },
+    handleAction(action) {
+      if (action.name === 'Delete') {
+        this.$refs.girderFileManager.refresh();
+        this.selected = [];
       }
     },
   },

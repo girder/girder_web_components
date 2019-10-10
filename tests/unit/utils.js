@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
+import vuetifyConfig from '@/utils/vuetifyConfig';
 import { createLocalVue } from '@vue/test-utils';
 
 import Girder from '@/index';
@@ -10,7 +11,7 @@ const girderVue = () => {
   return createLocalVue();
 };
 
-const vuetify = new Vuetify();
+const vuetify = new Vuetify(vuetifyConfig);
 
 function wrapMock(callback, status = 200, reply = {}) {
   return (config) => {
