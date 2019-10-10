@@ -34,7 +34,8 @@ v-card.data-details
       @click="handleAction")
     template(#row="props")
       v-list-item-icon.mr-1
-        v-icon.pr-2(:color="props.datum.color") {{ $vuetify.icons.values[props.datum.icon] }}
+        v-icon.pr-2(:color="props.datum.color")
+          | {{ props.datum.icon || $vuetify.icons.values[props.datum.iconKey] }}
       v-list-item-content(:class="`${props.datum.color}--text`") {{ props.datum.name }}
 </template>
 
@@ -95,7 +96,7 @@ export const DefaultActionKeys = [
   {
     for: ['item'],
     name: 'View Item',
-    icon: 'view',
+    iconKey: 'view',
     color: 'primary',
     handler() {
       const { value: items } = this;
@@ -105,7 +106,7 @@ export const DefaultActionKeys = [
   {
     for: ['item'],
     name: 'Download',
-    icon: 'download',
+    iconKey: 'download',
     color: 'secondary',
     handler() {
       const { value: items } = this;
@@ -115,7 +116,7 @@ export const DefaultActionKeys = [
   {
     for: ['folder', 'multi'],
     name: 'Download (zip)',
-    icon: 'download',
+    iconKey: 'download',
     color: 'secondary',
     handler() {
       const { value: items } = this;
@@ -127,7 +128,7 @@ export const DefaultActionKeys = [
   {
     for: ['item', 'folder', 'multi'],
     name: 'Delete',
-    icon: 'delete',
+    iconKey: 'delete',
     color: 'error',
     async handler() {
       const { value: items } = this;
