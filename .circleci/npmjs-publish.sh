@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 set -o pipefail
+
+./.circleci/git-config.sh
+
 PACKAGE_VERSION=$(cat package.json \
   | grep version \
   | head -1 \
@@ -10,6 +13,11 @@ PACKAGE_VERSION=$(cat package.json \
 
 PUBLISHED_VERSION=$(npm show @girder/components version \
   | tr -d ' ')
+
+# Remove strict host checking for github.com
+mkdir -p ~/.ssh/
+echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" >> ~/.ssh/config
+chmod 600 ~/.ssh/config
 
 if [ "$PACKAGE_VERSION" != "$PUBLISHED_VERSION" ]; then
   yarn publish --non-interactive
