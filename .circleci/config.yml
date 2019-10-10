@@ -51,9 +51,10 @@ jobs:
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > ~/.npmrc
-      - run:
+      - deploy:
+          shell: bash
           name: Publish package
-          command: yarn publish --non-interactive
+          command: .circleci/npmjs-publish.sh
 
 workflows:
   version: 2
@@ -70,7 +71,5 @@ workflows:
           requires:
             - test
           filters:
-            tags:
-              only: /^v.*/
             branches:
               only: master
