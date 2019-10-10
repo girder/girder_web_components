@@ -2,7 +2,7 @@
 v-list(v-if="rows.length", dense, :style="{ backgroundColor: color }")
   v-subheader.subtitle-1.font-weight-bold.pl-4 {{ title }}
   template(v-for="val, i in rows")
-    v-list-item(:key="i", v-on="clickable ? {click: () => $emit('click', val)} : {}")
+    v-list-item.allow-select(:key="i", v-on="clickable ? {click: () => $emit('click', val)} : {}")
       slot(name="row", :datum="val")
         v-list-item-content
           .body-2.secondary--text.text--darken-3.no-overflow {{ val }}
@@ -31,3 +31,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.allow-select {
+  user-select: auto;
+}
+</style>
