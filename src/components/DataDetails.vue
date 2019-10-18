@@ -20,7 +20,8 @@ v-card.data-details
     template(#row="props")
       v-row(justify="space-between")
         v-col.shrink.py-1.body-2.font-weight-bold {{ props.datum.key }}
-        v-col.shrink.py-1.body-2 {{ props.datum.value }}
+        v-col.py-1
+          v-row.mx-0.body-2(justify="end") {{ props.datum.value }}
   girder-detail-list(
       v-if="files.length",
       :title="`Files (${files.length})`",
