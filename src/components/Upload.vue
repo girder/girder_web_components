@@ -113,6 +113,11 @@ export default {
       });
     },
   },
+  watch: {
+    files(val) {
+      this.$emit('filesChanged', val);
+    },
+  },
   methods: {
     inputFilesChanged(files) {
       this.currentIndex = 0;
