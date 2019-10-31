@@ -184,8 +184,7 @@ v-card.girder-data-browser-snippet
           v-btn.ma-0(
               v-on="on",
               text,
-              small,
-              color="secondary darken-2")
+              small)
             v-icon.mdi-24px.mr-1(left, color="accent") $vuetify.icons.fileNew
             span.hidden-xs-only Upload
         girder-upload(
@@ -202,8 +201,7 @@ v-card.girder-data-browser-snippet
           v-btn.ma-0(
               v-on="on",
               text,
-              small,
-              color="secondary darken-2")
+              small)
             v-icon.mdi-24px.mr-1(left, color="accent") $vuetify.icons.folderNew
             span.hidden-xs-only New Folder
         girder-upsert-folder(

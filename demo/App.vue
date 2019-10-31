@@ -28,6 +28,8 @@ v-app.app
                     v-model="rootLocationDisabled")
                 v-divider.mt-2.mb-1
                 v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
+                v-checkbox.mt-1.mb-1(hide-details, label="Dark theme",
+                    @change="$vuetify.theme.dark=$event")
 
     v-spacer
     girder-search(v-if="searchEnabled", @select="handleSearchSelect")

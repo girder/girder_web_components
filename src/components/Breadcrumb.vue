@@ -114,14 +114,15 @@ export default {
           tag="a",
           :disabled="(readonly || breadcrumb.indexOf(item) == breadcrumb.length-1)",
           @click="$emit('crumbclick', item)")
-        template(v-if="['folder', 'user', 'collection'].indexOf(item.type) !== -1") {{ item.name }}
+        template(v-if="['folder', 'user', 'collection'].indexOf(item.type) !== -1")
+          span.accent--text {{ item.name }}
         template(v-else-if="item.type==='users'")
-          v-icon.mdi-18px $vuetify.icons.user
+          v-icon.mdi-18px.accent--text $vuetify.icons.user
         template(v-else-if="item.type==='collections'")
-          v-icon.mdi-18px $vuetify.icons.collection
+          v-icon.mdi-18px.accent--text $vuetify.icons.collection
         template(v-else-if="item.type==='root'")
-          v-icon.mdi-18px $vuetify.icons.globe
-        span.accent--text(v-else) {{ item }}
+          v-icon.mdi-18px.accent--text $vuetify.icons.globe
+        span(v-else) {{ item }}
 </template>
 
 <style lang="scss">
@@ -131,6 +132,12 @@ export default {
   .v-breadcrumbs {
     .v-breadcrumbs__divider {
       padding: 0 7px;
+    }
+
+    .v-breadcrumbs__item--disabled {
+      > * {
+        color: inherit !important;
+      }
     }
   }
 }

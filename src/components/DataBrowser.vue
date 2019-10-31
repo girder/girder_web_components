@@ -299,9 +299,9 @@ girder-data-table.girder-file-browser(
     @drop="$emit('drop', $event)")
 
   template(#header="{ props, on }")
-    tr.secondary.lighten-5
+    tr.secondary(:class="$vuetify.theme.dark?'darken-2':'lighten-5'")
       th.pl-3.pr-0(width="1%", v-if="internalSelectable")
-        v-checkbox.secondary--text.text--darken-1.pr-2(
+        v-checkbox.pr-2(
             color="accent",
             hide-details,
             :input-value="props.everyItem",

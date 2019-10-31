@@ -112,7 +112,7 @@ v-form(@submit.prevent="upsert")
     v-row.pa-2.flex-column(no-gutters)
       slot(name="header")
         v-card-title.pb-0(primary-title)
-          h5.display-1.secondary--text.text--darken-1
+          h5.display-1
           | {{ edit ? 'Edit Folder' : 'Create New Folder'}}
       v-card-text
         v-text-field(

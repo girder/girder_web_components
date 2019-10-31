@@ -49,27 +49,29 @@ export default {
 </script>
 
 <template lang="pug">
-v-container.job-filter
-  h4 Girder Worker Jobs
-  v-row(justify="center")
-    v-col(sm=5, md=4)
-      v-select(
-          label="Job Type",
-          :items="jobTypeList",
-          :value="jobType",
-          clearable,
-          color="white",
-          :menu-props="{'content-class':'girder-job-filter-form-menu'}",
-          dense,
-          @input="$emit('update:jobType', $event ? $event : null)")
-    v-col(sm=5, md=4)
-      v-select(
-          label="Status",
-          :items="statusItemList",
-          :value="status",
-          clearable,
-          color="white",
-          :menu-props="{'content-class':'girder-job-filter-form-menu'}",
-          dense,
-          @input="$emit('update:status', $event ? $event : null)")
+v-card.job-filter(dark, color="primary")
+  v-card-title
+    v-container
+      h4 Girder Worker Jobs
+      v-row(justify="center")
+        v-col(sm=5, md=4)
+          v-select(
+              label="Job Type",
+              :items="jobTypeList",
+              :value="jobType",
+              clearable,
+              color="white",
+              :menu-props="{'content-class':'girder-job-filter-form-menu'}",
+              dense,
+              @input="$emit('update:jobType', $event ? $event : null)")
+        v-col(sm=5, md=4)
+          v-select(
+              label="Status",
+              :items="statusItemList",
+              :value="status",
+              clearable,
+              color="white",
+              :menu-props="{'content-class':'girder-job-filter-form-menu'}",
+              dense,
+              @input="$emit('update:status', $event ? $event : null)")
 </template>
