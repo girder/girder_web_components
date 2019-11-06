@@ -1,4 +1,3 @@
-
 <script>
 import { DebounceCounter } from '../utils';
 import { usernameFormatter } from '../utils/mixins';
@@ -276,6 +275,18 @@ v-row.align-center.girder-searchbar(no-gutters)
     right: 16px;
     top: -8px;
     position: absolute;
+  }
+
+  &.theme--light {
+    &::before {
+      border-bottom-color: white;
+    }
+  }
+
+  &.theme--dark {
+    &::before {
+      border-bottom-color: #424242;
+    }
   }
 }
 </style>

@@ -17,6 +17,11 @@ export default {
         error: colors.red,
         info: colors.lightBlue.lighten1,
       },
+      dark: {
+        primary: colors.lightBlue.darken3,
+        secondary: colors.grey,
+        accent: colors.lightBlue.lighten1,
+      },
     },
   },
   icons: {

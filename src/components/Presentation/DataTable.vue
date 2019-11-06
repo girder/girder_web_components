@@ -93,16 +93,16 @@ v-data-table.girder-data-table(
         @drop="$emit('drop', { items: [props], event: $event })",
         :key="props.index")
       td.pl-3.pr-0(v-if="selectable")
-        v-checkbox.secondary--text.text--darken-1(
+        v-checkbox(
             :input-value="props.isSelected", accent, hide-details, @change="props.select")
       td.pl-3(colspan="2")
-        span.text-container.secondary--text.text--darken-3.nobreak(
+        span.text-container.nobreak(
             :class="getItemClass(props.item)",
             @click.stop="$emit('rowclick', props.item)")
           v-icon.pr-2(:color="props.isSelected ? 'accent' : ''")
             | {{ $vuetify.icons.values[props.item.icon] }}
           | {{ props.item.name }}
-      td.text-right.secondary--text.text--darken-3.nobreak {{ props.item.humanSize }}
+      td.text-right.nobreak {{ props.item.humanSize }}
 
   template(#no-data="")
     .text-center(width="100%") No Data Available
@@ -115,6 +115,7 @@ v-data-table.girder-data-table(
 <style lang="scss">
 .girder-data-table {
   cursor: default;
+  overflow: hidden; // for top round corners
 
   .select-cursor {
     opacity: 0.8;
@@ -127,16 +128,6 @@ v-data-table.girder-data-table(
 
   &.v-data-table {
     tr {
-      &.itemRow[active],
-      &.itemRow:hover {
-        // $light-blue.lighten-5
-        background: #e1f5fe !important;
-      }
-
-      &.secondary {
-        border-color: inherit !important;
-      }
-
       .v-input--selection-controls.v-input--checkbox {
         margin: 0 10px;
         border-right: 1.5px solid gray;
@@ -154,10 +145,16 @@ v-data-table.girder-data-table(
     td:first-child {
       padding: 0;
     }
-  }
 
-  .v-icon {
-    color: inherit;
+    &.theme--light {
+      tr {
+        &.itemRow[active],
+        &.itemRow:hover {
+          // $light-blue.lighten-5
+          background: #e1f5fe !important;
+        }
+      }
+    }
   }
 
   .v-data-table__progress .v-progress-linear {

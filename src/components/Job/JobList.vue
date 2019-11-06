@@ -109,15 +109,14 @@ export default {
 </script>
 
 <template lang="pug">
-v-card.girder-job-list(dark, color="primary")
-  v-card-title
-    filter-form(
-        :from-date.sync="jobFilter.fromDate",
-        :to-date.sync="jobFilter.toDate",
-        :status.sync="jobFilter.status",
-        :job-type.sync="jobFilter.jobType",
-        :status-list="typeAndStatusList.statuses",
-        :job-type-list="typeAndStatusList.types")
+v-card.girder-job-list(color="primary")
+  filter-form(
+      :from-date.sync="jobFilter.fromDate",
+      :to-date.sync="jobFilter.toDate",
+      :status.sync="jobFilter.status",
+      :job-type.sync="jobFilter.jobType",
+      :status-list="typeAndStatusList.statuses",
+      :job-type-list="typeAndStatusList.types")
   job-table(
       :jobs="jobs",
       :options.sync="options",

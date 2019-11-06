@@ -30,7 +30,6 @@ v-card.data-details
       title="Actions",
       :clickable="true",
       :rows="actions",
-      :color="$vuetify.theme.themes.light.secondary.lighten5",
       @click="handleAction")
     template(#row="props")
       v-list-item-icon.mr-1

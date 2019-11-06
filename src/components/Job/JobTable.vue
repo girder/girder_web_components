@@ -84,7 +84,6 @@ export default {
 
 <template lang="pug">
 v-data-table(
-    light,
     item-key="_id",
     :headers="headers_",
     :items="items",

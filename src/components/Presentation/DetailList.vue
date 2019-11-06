@@ -1,11 +1,11 @@
 <template lang="pug">
-v-list(v-if="rows.length", dense, :style="{ backgroundColor: color }")
+v-list(v-if="rows.length", dense)
   v-subheader.subtitle-1.font-weight-bold.pl-4 {{ title }}
   template(v-for="val, i in rows")
     v-list-item.allow-select(:key="i", v-on="clickable ? {click: () => $emit('click', val)} : {}")
       slot(name="row", :datum="val")
         v-list-item-content
-          .body-2.secondary--text.text--darken-3.no-overflow {{ val }}
+          .body-2.no-overflow {{ val }}
     v-divider.mx-3(v-if="i < rows.length - 1")
 </template>
 
@@ -19,10 +19,6 @@ export default {
     rows: {
       type: Array,
       required: true,
-    },
-    color: {
-      type: String,
-      default: 'inherit',
     },
     clickable: {
       type: Boolean,
