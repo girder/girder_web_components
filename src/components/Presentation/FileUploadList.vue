@@ -79,7 +79,6 @@ export default {
     height 0.8s ease-in-out 1s,
     background-color 0.5s ease-in-out;
   width: 100%;
-  height: 100%;
 
   &.status-uploading {
     background-color: #fef4c9;
