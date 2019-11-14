@@ -14,7 +14,7 @@ v-card.fill-height(flat)
 
     v-card-actions(v-show="files.length && !errorMessage && !uploading")
       v-btn(text, @click="files = []") Clear all
-      v-btn(text, color="primary", @click="start") {{ startButtonText }}
+      v-btn(text, color="primary", @click="startUpload") {{ startButtonText }}
 
     v-col
       slot(name="dropzone")
@@ -26,7 +26,7 @@ v-card.fill-height(flat)
 
     div(v-if="errorMessage")
       v-alert(:value="true", dark, type="error") {{ errorMessage }}
-        v-btn(v-if="!uploading", dark, outlined, @click="start") Resume upload
+        v-btn(v-if="!uploading", dark, outlined, @click="startUpload") Resume upload
 
     slot(name="files", v-bind="{ files, setFiles, currentIndex, maxShow }")
       file-upload-list(@input="setFiles", v-bind="{ value: files, currentIndex, maxShow }")
@@ -96,6 +96,12 @@ export default {
           `(${this.totalProgressPercent}%)`;
       }
       return `${this.files.length} selected (${this.formatSize(this.totalSize)} total)`;
+    },
+  },
+  methods: {
+    startUpload() {
+      const { uploadCls, preUpload, postUpload } = this;
+      this.start({ uploadCls, preUpload, postUpload });
     },
   },
 };
