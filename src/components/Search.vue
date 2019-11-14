@@ -196,9 +196,9 @@ v-row.align-center.girder-searchbar(no-gutters)
           v-icon.grey--text.text--lighten-1 $vuetify.icons.circle
         v-list-item-content
           v-list-item-title.skeleton.skeleton--text.mb-2(
-              :style="{ width: (60 + (4 * (i % 3))) + '%', height: '10px' }")
+              :style="{ maxWidth: (70 + (4 * (i % 3))) + '%', height: '12px' }")
           v-list-item-subtitle.skeleton.skeleton--text(
-              :style="{ width: (45 - (4 * (i % 2))) + '%', height: '6px' }")
+              :style="{ maxWidth: (50 - (4 * (i % 2))) + '%', height: '6px' }")
   v-menu(
       v-if="!hideOptionsMenu",
       v-model="searchOptionsMenu",
