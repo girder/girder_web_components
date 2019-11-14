@@ -14,7 +14,7 @@ v-card.fill-height(flat)
 
     v-card-actions(v-show="files.length && !errorMessage && !uploading")
       v-btn(text, @click="files = []") Clear all
-      v-btn(text, color="primary", @click="start") {{ startButtonText }}
+      v-btn(text, color="primary", @click="startUpload") {{ startButtonText }}
 
     v-col
       slot(name="dropzone")
@@ -26,14 +26,14 @@ v-card.fill-height(flat)
 
     div(v-if="errorMessage")
       v-alert(:value="true", dark, type="error") {{ errorMessage }}
-        v-btn(v-if="!uploading", dark, outlined, @click="start") Resume upload
+        v-btn(v-if="!uploading", dark, outlined, @click="startUpload") Resume upload
 
     slot(name="files", v-bind="{ files, setFiles, currentIndex, maxShow }")
       file-upload-list(@input="setFiles", v-bind="{ value: files, currentIndex, maxShow }")
 </template>
 
 <script>
-import { progressReporter, sizeFormatter } from '../utils/mixins';
+import { progressReporter, sizeFormatter, fileUploader } from '../utils/mixins';
 import Dropzone from './Presentation/Dropzone.vue';
 import FileUploadList from './Presentation/FileUploadList.vue';
 import Upload from '../utils/upload';
@@ -43,7 +43,7 @@ export default {
     Dropzone,
     FileUploadList,
   },
-  mixins: [progressReporter, sizeFormatter],
+  mixins: [fileUploader, progressReporter, sizeFormatter],
   inject: ['girderRest'],
   props: {
     dest: {
@@ -81,10 +81,6 @@ export default {
   },
   data: () => ({
     dragover: false,
-    errorMessage: null,
-    files: [],
-    uploading: false,
-    currentIndex: 0,
   }),
   computed: {
     dropzoneMessage() {
@@ -100,105 +96,11 @@ export default {
       }
       return `${this.files.length} selected (${this.formatSize(this.totalSize)} total)`;
     },
-    totalProgress() {
-      return this.files.reduce((v, f) => v + (f.progress.current), 0);
-    },
-    totalSize() {
-      return this.files.reduce((v, f) => v + f.file.size, 0);
-    },
-    totalProgressPercent() {
-      return this.progressPercent({
-        current: this.totalProgress,
-        total: this.totalSize,
-      });
-    },
-  },
-  watch: {
-    files(val) {
-      this.$emit('filesChanged', val);
-    },
   },
   methods: {
-    inputFilesChanged(files) {
-      this.currentIndex = 0;
-      this.files = files.map(file => ({
-        file,
-        status: 'pending',
-        progress: {
-          indeterminate: false,
-          current: 0,
-          size: file.size,
-        },
-        upload: null,
-        result: null,
-      }));
-    },
-
-    setFiles(files) {
-      if (this.currentIndex >= files.length) {
-        this.currentIndex = files.length - 1;
-      }
-      this.files = files;
-    },
-
-    async start() {
-      const results = [];
-      this.uploading = true;
-      this.errorMessage = null;
-      await this.preUpload();
-      for (; this.currentIndex < this.files.length; this.currentIndex += 1) {
-        const file = this.files[this.currentIndex];
-        if (file.status === 'done') {
-          // We are resuming, skip already completed files
-          results.push(file.result);
-        } else {
-          const progress = (event) => {
-            Object.assign(file.progress, event);
-          };
-          file.status = 'uploading';
-          file.progress.indeterminate = true;
-          try {
-            if (file.upload) {
-              // eslint-disable-next-line no-await-in-loop
-              file.result = await file.upload.resume();
-            } else {
-              // eslint-disable-next-line new-cap
-              file.upload = new this.uploadCls(file.file, {
-                $rest: this.girderRest,
-                parent: this.dest,
-                progress,
-              });
-              // eslint-disable-next-line no-await-in-loop
-              await file.upload.beforeUpload();
-              // eslint-disable-next-line no-await-in-loop
-              file.result = await file.upload.start();
-            }
-            // eslint-disable-next-line no-await-in-loop
-            await file.upload.afterUpload();
-            delete file.upload;
-            results.push(file.result);
-            file.status = 'done';
-            file.progress.current = file.file.size;
-          } catch (error) {
-            // eslint-disable-next-line no-await-in-loop
-            await file.upload.onError(error);
-
-            if (error.response) {
-              this.errorMessage = error.response.data.message || 'An error occurred during upload.';
-            } else {
-              this.errorMessage = 'Connection failed.';
-            }
-            file.status = 'error';
-            this.uploading = false;
-            this.$emit('error', { error, file });
-            return;
-          }
-        }
-      }
-      await this.postUpload();
-      this.uploading = false;
-      this.files = [];
-      this.$emit('done', results);
+    startUpload() {
+      const { uploadCls, preUpload, postUpload } = this;
+      this.start({ uploadCls, preUpload, postUpload });
     },
   },
 };
