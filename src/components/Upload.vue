@@ -38,7 +38,6 @@ import Dropzone from './Presentation/Dropzone.vue';
 import FileUploadList from './Presentation/FileUploadList.vue';
 import Upload from '../utils/upload';
 
-
 export default {
   components: {
     Dropzone,
