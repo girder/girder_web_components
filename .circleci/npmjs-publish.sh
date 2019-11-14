@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 set -o pipefail
+
+./.circleci/git-config.sh
+
 PACKAGE_VERSION=$(cat package.json \
   | grep version \
   | head -1 \
