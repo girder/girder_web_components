@@ -19,10 +19,6 @@ export default {
       validator: model =>
         createLocationValidator(false)(model) && model._modelType !== 'user',
     },
-    noActionButtons: {
-      type: Boolean,
-      default: false,
-    },
   },
   data() {
     return {
@@ -139,9 +135,6 @@ export default {
             :location="model",
             readonly,
             no-root)
-      v-spacer
-      v-btn(v-if="!noActionButtons", icon, @click="$emit('close')")
-        v-icon mdi-close
     v-card-text.pt-0
       v-switch.mb-4(
           v-model="public",
@@ -184,10 +177,11 @@ export default {
             'Also set this permissions on all subfolders':\
             'Apply permissions only to this folder'",
           persistent-hint)
-    v-card-actions(v-if="!noActionButtons")
-      v-spacer
-      v-btn(text, @click="$emit('close')") Cancel
-      v-btn(color="primary", depressed, @click="save") Save
+    slot(name="card-actions", v-bind="{ save, loading }")
+      v-card-actions
+        v-spacer
+        v-btn(text, @click="$emit('close')") Cancel
+        v-btn(color="primary", depressed, @click="save") Save
 </template>
 
 <style lang="scss" scoped>
