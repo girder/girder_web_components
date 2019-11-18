@@ -153,18 +153,19 @@ export default {
         v-list.group-user(v-if="groupsAndUsers.length", two-line)
           transition-group(name="height2")
             v-list-item(v-for="model of groupsAndUsers", :key="model.id")
-              v-list-item-action
+              v-list-item-action.mr-5
                 v-icon {{$vuetify.icons.values[model.login?'user':'group']}}
               v-list-item-content
                 v-list-item-title {{model.name}}
                 v-list-item-subtitle {{model.login||model.description}}
-              v-list-item-action
+              v-list-item-action.mr-5
                 v-select.level(:items="permissions",
                     light,
                     solo,
                     hide-details,
+                    dense,
                     v-model="model.level")
-              v-list-item-action
+              v-list-item-action.mr-5
                 v-btn(icon, @click="remove(model)")
                   v-icon mdi-minus-circle
         .mt-1.mb-2(v-if="!groupsAndUsers.length && !loading") Empty
@@ -230,36 +231,8 @@ export default {
   min-height: 0 !important;
   max-height: 0 !important;
 }
-</style>
 
-
-<style lang="scss">
-.access-control {
-  .v-messages__message {
-    // input hint has an unnecessary built-in transition
-    transition: none !important;
-  }
-
-  .v-input.level {
-    max-width: 150px;
-
-    .v-input__control,
-    .v-input__slot {
-      min-height: 40px;
-
-      .v-input__append-inner {
-        margin-top: 9px;
-      }
-    }
-  }
-
-  .v-list-item .v-list-item__action {
-    margin-right: 18px;
-  }
-}
-
-// Fix for https://github.com/vuetifyjs/vuetify/issues/6951
-.v-dialog__container {
-  display: block !important;
+.level {
+  max-width: 150px;
 }
 </style>
