@@ -40,6 +40,7 @@ export default {
       fileNew: 'mdi-file-plus',
       fileUpload: 'mdi-file-upload',
       folder: 'mdi-folder',
+      folderNonPublic: 'mdi-folder-key',
       folderNew: 'mdi-folder-plus',
       github: 'mdi-github-circle',
       globe: 'mdi-earth',

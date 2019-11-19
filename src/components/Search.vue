@@ -33,6 +33,10 @@ const DefaultSearchTypes = SearchTypeOptions.map(t => t.value);
 export default {
   mixins: [usernameFormatter],
   props: {
+    hideSearchIcon: {
+      type: Boolean,
+      default: false,
+    },
     hideOptionsMenu: {
       type: Boolean,
       default: false,
@@ -153,8 +157,8 @@ export default {
 
 <template lang="pug">
 v-row.align-center.girder-searchbar(no-gutters)
-  v-icon.mdi-24px(color="white") $vuetify.icons.search
-  v-menu.mx-2(
+  v-icon.mr-3.mdi-24px(v-if="!hideSearchIcon", color="white") $vuetify.icons.search
+  v-menu(
       offset-y,
       content-class="girder-searchbar-menu",
       transition="slide-y-transition",
@@ -190,7 +194,7 @@ v-row.align-center.girder-searchbar(no-gutters)
       //- Skeleton search results shown as "loading" animation
       v-list-item(
           v-show="loading",
-          v-for="i in (maxQuickResults + (showMore ? 1 : 0))",
+          v-for="i in Math.round(maxQuickResults / 2)",
           :key="`skeleton-${i}`")
         v-list-item-action
           v-icon.grey--text.text--lighten-1 $vuetify.icons.circle

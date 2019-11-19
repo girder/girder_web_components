@@ -1,11 +1,10 @@
 <script>
-import { setTimeout } from 'timers';
-
 import {
   Upload as GirderUpload,
   UpsertFolder as GirderUpsertFolder,
   DataBrowser as GirderDataBrowser,
   Breadcrumb as GirderBreadcrumb,
+  AccessControl as GirderAccessControl,
 } from '../';
 import {
   getLocationType,
@@ -15,6 +14,7 @@ import {
 
 export default {
   components: {
+    GirderAccessControl,
     GirderBreadcrumb,
     GirderUpload,
     GirderUpsertFolder,
@@ -32,6 +32,10 @@ export default {
       default: null,
     },
     rootLocationDisabled: {
+      type: Boolean,
+      default: false,
+    },
+    noAccessControl: {
       type: Boolean,
       default: false,
     },
@@ -88,6 +92,13 @@ export default {
       uploaderDialog: false,
       newFolderDialog: false,
       lazyLocation: null,
+      collectionAndFolderMenu: {
+        show: false,
+        x: 0,
+        y: 0,
+      },
+      actOnItem: null,
+      showAccessControlDialog: false,
     };
   },
 
@@ -150,6 +161,22 @@ export default {
         this.postUpsert(),
       ]);
     },
+    rowRightClick(row, e) {
+      // currently there is only one item on the menu. so when no access control, there is no menu.
+      if (this.noAccessControl) {
+        return;
+      }
+      if (['collection', 'folder'].indexOf(row._modelType) !== -1) {
+        e.preventDefault();
+        this.collectionAndFolderMenu.show = false;
+        this.collectionAndFolderMenu.x = e.clientX;
+        this.collectionAndFolderMenu.y = e.clientY;
+        this.actOnItem = row;
+        this.$nextTick(() => {
+          this.collectionAndFolderMenu.show = true;
+        });
+      }
+    },
   },
 };
 </script>
@@ -166,6 +193,7 @@ v-card.girder-data-browser-snippet
       @input="$emit('input', $event)",
       @selection-changed="$emit('selection-changed', $event)",
       @rowclick="$emit('rowclick', $event)",
+      @row-right-click="rowRightClick",
       @drag="$emit('drag', $event)",
       @dragstart="$emit('dragstart', $event)",
       @dragend="$emit('dragend', $event)",
@@ -210,4 +238,23 @@ v-card.girder-data-browser-snippet
             :post-upsert="postUpsertInternal",
             :key="internalLocation._id",
             @dismiss="newFolderDialog = false")
+  v-menu(
+      v-model="collectionAndFolderMenu.show",
+      :position-x="collectionAndFolderMenu.x",
+      :position-y="collectionAndFolderMenu.y",
+      absolute,
+      offset-y,
+      dark)
+    v-list(dense)
+      v-list-item(@click="showAccessControlDialog=true")
+        v-list-item-title Access control
+  v-dialog(
+      v-model="showAccessControlDialog",
+      max-width="700px",
+      persistent,
+      scrollable)
+    girder-access-control(
+        :model="actOnItem",
+        @close="showAccessControlDialog=false",
+        @model-access-changed="$refs.girderBrowser.refresh()")
 </template>
