@@ -19,6 +19,7 @@ export default {
       validator: model =>
         createLocationValidator(false)(model) && model._modelType !== 'user',
     },
+    hasPermission: { type: Boolean, required: false, default: false },
   },
   data() {
     return {
@@ -56,6 +57,9 @@ export default {
     model() {
       this.getAccessControlData();
     },
+    access(value) {
+      this.$emit('update:hasPermission', !!value);
+    },
   },
   created() {
     if (this.model) {
@@ -64,10 +68,15 @@ export default {
   },
   methods: {
     async getAccessControlData() {
+      this.access = null;
       this.loading = true;
       this.public = this.model.public;
-      const { data: access } = await this.girderRest.get(`${this.model._modelType}/${this.model._id}/access`);
-      this.access = access;
+      try {
+        const { data: access } = await this.girderRest.get(`${this.model._modelType}/${this.model._id}/access`);
+        this.access = access;
+      } catch (ex) {
+        this.access = null;
+      }
       this.loading = false;
     },
     remove(model) {

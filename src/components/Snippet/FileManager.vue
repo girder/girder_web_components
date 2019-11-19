@@ -99,6 +99,7 @@ export default {
       },
       actOnItem: null,
       showAccessControlDialog: false,
+      hasAccessPermission: false,
     };
   },
 
@@ -246,15 +247,18 @@ v-card.girder-data-browser-snippet
       offset-y,
       dark)
     v-list(dense)
-      v-list-item(@click="showAccessControlDialog=true")
+      v-list-item(@click="showAccessControlDialog=true", :disabled="!hasAccessPermission")
         v-list-item-title Access control
   v-dialog(
       v-model="showAccessControlDialog",
       max-width="700px",
       persistent,
+      eager,
       scrollable)
     girder-access-control(
+        v-if="actOnItem",
         :model="actOnItem",
+        :has-permission.sync="hasAccessPermission",
         @close="showAccessControlDialog=false",
         @model-access-changed="$refs.girderBrowser.refresh()")
 </template>
