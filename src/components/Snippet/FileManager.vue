@@ -83,6 +83,14 @@ export default {
       type: Function,
       default: async () => {},
     },
+    initialItemsPerPage: {
+      type: Number,
+      default: 10,
+    },
+    itemsPerPageOptions: {
+      type: Array,
+      default: () => ([5, 10, 15, -1]),
+    },
   },
 
   inject: ['girderRest'],
@@ -198,7 +206,9 @@ v-card.girder-data-browser-snippet
       @drag="$emit('drag', $event)",
       @dragstart="$emit('dragstart', $event)",
       @dragend="$emit('dragend', $event)",
-      @drop="$emit('drop', $event)")
+      @drop="$emit('drop', $event)",
+      :initial-items-per-page="initialItemsPerPage",
+      :items-per-page-options="itemsPerPageOptions")
     template(#breadcrumb="props")
       girder-breadcrumb(
           :location="props.location",

@@ -48,12 +48,20 @@ export default {
       type: Array,
       default: () => [],
     },
+    initialItemsPerPage: {
+      type: Number,
+      default: 10,
+    },
+    itemsPerPageOptions: {
+      type: Array,
+      default: () => ([5, 10, 15, -1]),
+    },
   },
 
   data() {
     return {
       options: {
-        itemsPerPage: 10,
+        itemsPerPage: this.initialItemsPerPage,
         page: 1,
       },
       internalRefreshCounter: 0,
@@ -308,6 +316,7 @@ girder-data-table.girder-file-browser(
     :draggable="draggable",
     :rows="rows",
     :options.sync="options",
+    :items-per-page-options="itemsPerPageOptions",
     :server-items-length="serverItemsLength",
     :loading="loading",
     :selectable="internalSelectable",

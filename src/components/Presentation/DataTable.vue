@@ -31,6 +31,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    itemsPerPageOptions: {
+      type: Array,
+      default: () => ([5, 10, 15, -1]),
+    },
   },
   data() {
     return { lastCheckBoxIdx: null };
@@ -74,6 +78,7 @@ v-data-table.girder-data-table(
     :value="value",
     @input="$emit('input', $event)",
     :options="options",
+    :footer-props="{'items-per-page-options': itemsPerPageOptions}",
     @update:options="$emit('update:options', $event)",
     :items="rows",
     :server-items-length="serverItemsLength",
