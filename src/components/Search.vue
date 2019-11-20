@@ -177,7 +177,7 @@ v-row.align-center.girder-searchbar(no-gutters)
           v-list-item-content
             v-list-item-title {{ result.name || formatUsername(result) }}
       v-list-item(v-show="searchText && quickResults.length === 0 && !loading")
-        slot(name="noresults")
+        slot(name="noresult", v-bind="{ searchText }")
           v-list-item-action
             v-icon $vuetify.icons.alert
           v-list-item-content
