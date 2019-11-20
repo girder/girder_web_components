@@ -180,11 +180,12 @@ v-row.align-center.girder-searchbar(no-gutters)
           v-list-item-content
             v-list-item-title {{ result.name || formatUsername(result) }}
       v-list-item(v-show="searchText && quickResults.length === 0 && !loading")
-        v-list-item-action
-          v-icon $vuetify.icons.alert
-        v-list-item-content
-          v-list-item-title No results found for query '{{ searchText }}'
-          v-list-item-subtitle Modify search parameters or refine your query.
+        slot(name="noresult", v-bind="{ searchText }")
+          v-list-item-action
+            v-icon $vuetify.icons.alert
+          v-list-item-content
+            v-list-item-title No results found for query '{{ searchText }}'
+            v-list-item-subtitle Modify search parameters or refine your query.
       v-list-item(v-show="!loading && showMore && searchResults.length > maxQuickResults",
           @click="$emit('moreresults', searchParams)")
         v-list-item-action
