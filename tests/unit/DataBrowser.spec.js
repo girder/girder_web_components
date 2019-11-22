@@ -306,4 +306,42 @@ describe('DataBrowser', () => {
     expect(wrapper.vm.rows.length).toBe(1);
     expect(wrapper.vm.rows[0]._modelType).toBe('user');
   });
+
+  it('page size props', async () => {
+    mock.onGet(/folder\/fake_folder_id\/details/).reply(200, { nFolders: 12, nItems: 20 });
+    mock.onGet(/folder/, {
+      params: {
+        limit: 20,
+        offset: 0,
+        parentId: 'fake_folder_id',
+        parentType: 'folder',
+      },
+    }).replyOnce(200, getMockFolderQueryResponse(12));
+    mock.onGet('folder/fake_folder_id').replyOnce(200, getMockFolderResponse());
+
+    mock.onGet(/item/, {
+      params: {
+        limit: 8,
+        offset: 0,
+        folderId: 'fake_folder_id',
+      },
+    }).replyOnce(200, getMockItemQueryResponse(8));
+
+    const wrapper = shallowMount(DataBrowser, {
+      localVue,
+      vuetify,
+      propsData: {
+        location: {
+          _modelType: 'folder',
+          _id: 'fake_folder_id',
+        },
+        initialItemsPerPage: 20,
+        itemsPerPageOptions: [20, 30, 40, -1],
+      },
+      provide: { girderRest },
+    });
+    await flushPromises();
+    expect(wrapper.vm.rows.length).toBe(20);
+    expect(wrapper.find('girder-data-table-stub').props('itemsPerPageOptions')).toEqual([20, 30, 40, -1]);
+  });
 });
