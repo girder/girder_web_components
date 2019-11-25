@@ -145,6 +145,7 @@ const fileUploader = {
      * Begin uploading the current list of files.
      */
     async start({
+      dest,
       preUpload = async () => {},
       postUpload = async () => {},
       uploadCls = Upload,
@@ -172,7 +173,7 @@ const fileUploader = {
               // eslint-disable-next-line new-cap
               file.upload = new uploadCls(file.file, {
                 $rest: this.girderRest,
-                parent: this.dest,
+                parent: dest,
                 progress,
               });
               // eslint-disable-next-line no-await-in-loop

@@ -99,8 +99,12 @@ export default {
   },
   methods: {
     startUpload() {
-      const { uploadCls, preUpload, postUpload } = this;
-      this.start({ uploadCls, preUpload, postUpload });
+      const {
+        dest, uploadCls, preUpload, postUpload,
+      } = this;
+      this.start({
+        dest, uploadCls, preUpload, postUpload,
+      });
     },
   },
 };
