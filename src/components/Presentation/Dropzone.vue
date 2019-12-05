@@ -35,14 +35,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$stripeColor: #f0f0f3;
 $img: linear-gradient(
   -45deg,
-  $stripeColor 25%,
+  rgba(160, 160, 160, 0.12) 25%,
   transparent 25%,
   transparent 50%,
-  $stripeColor 50%,
-  $stripeColor 75%,
+  rgba(160, 160, 160, 0.12) 50%,
+  rgba(160, 160, 160, 0.12) 75%,
   transparent 75%,
   transparent
 );
@@ -52,7 +51,7 @@ $img: linear-gradient(
   cursor: pointer;
   min-height: 260px;
   height: 100%;
-  background-color: #f6f6f9;
+  background-color: var(--v-dropzone-base);
   background-repeat: repeat;
   background-size: 30px 30px;
 

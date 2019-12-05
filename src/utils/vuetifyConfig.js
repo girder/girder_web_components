@@ -9,6 +9,9 @@ import colors from 'vuetify/lib/util/colors';
 export default {
   theme: {
     dark: false,
+    options: {
+      customProperties: true,
+    },
     themes: {
       light: {
         primary: colors.lightBlue.darken1,
@@ -16,11 +19,13 @@ export default {
         accent: colors.lightBlue.darken1,
         error: colors.red,
         info: colors.lightBlue.lighten1,
+        dropzone: colors.grey.lighten3,
       },
       dark: {
         primary: colors.lightBlue.darken3,
         secondary: colors.grey,
         accent: colors.lightBlue.lighten1,
+        dropzone: colors.grey.darken2,
       },
     },
   },
