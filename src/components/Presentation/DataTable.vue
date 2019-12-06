@@ -145,6 +145,10 @@ v-data-table.girder-data-table(
       .nobreak {
         white-space: nowrap;
       }
+
+      &.itemRow.not-public {
+        background: rgba(255, 240, 156, 0.3);
+      }
     }
 
     td:first-child {
