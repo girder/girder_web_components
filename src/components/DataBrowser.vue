@@ -54,7 +54,7 @@ export default {
     },
     itemsPerPageOptions: {
       type: Array,
-      default: () => ([5, 10, 15, -1]),
+      default: () => ([10, 25, 50]),
     },
   },
 
@@ -205,39 +205,37 @@ export default {
     },
     async fetchPaginatedFolderRows() {
       this.rowsLoading = true;
-      const { counts, location, options } = this;
+      const { counts: { nFolders, nItems }, location, options: { page, itemsPerPage } } = this;
       // if needed, get folder public info
       let folderNotPublic = false;
       if (!location.created && location._modelType === 'folder') {
         folderNotPublic = !(await this.girderRest.get(`folder/${location._id}`)).data.public;
       }
-      const { page, itemsPerPage } = options;
-      const folderParams = {
-        parentType: location._modelType,
-        parentId: location._id,
-        limit: itemsPerPage >= 0 ? itemsPerPage : null,
-        offset: (page - 1) * Math.abs(itemsPerPage),
-      };
-      const itemLimit = counts.nFolders > folderParams.offset
-        // if there are any folders on the current page,
-        // the numer of items to fetch is based on the number of folders
-        ? itemsPerPage - (counts.nFolders - folderParams.offset)
-        // else the page will be comprised of only items
-        : itemsPerPage;
-      const itemOffset = folderParams.offset - counts.nFolders;
-      const itemParams = {
-        folderId: location._id,
-        limit: itemsPerPage >= 0 ? itemLimit : null,
-        offset: itemOffset > 0 ? itemOffset : 0,
-      };
       const promises = [];
-      promises.push(this.girderRest.get(GIRDER_FOLDER_ENDPOINT, { params: folderParams }));
-      // a limit of < 0 signifies the current page only includes folders
-      // a limit of null signifies no options: fetch all entities
+      const folderOffset = itemsPerPage === -1 ? 0 : ((page - 1) * itemsPerPage);
+      const numberOfFoldersCouldBeFetched = Math.max(nFolders - folderOffset, 0);
+      if (numberOfFoldersCouldBeFetched !== 0) {
+        const folderParams = {
+          parentType: location._modelType,
+          parentId: location._id,
+          limit: itemsPerPage === -1 ? 0 : itemsPerPage,
+          offset: folderOffset,
+        };
+        promises.push(this.girderRest.get(GIRDER_FOLDER_ENDPOINT, { params: folderParams }));
+      }
+      const itemOffset = Math.max(folderOffset - nFolders, 0);
+      const numbersOfItemsCouldBeFetched = Math.max(nItems - itemOffset, 0);
       if (
-        (itemParams.limit > 0 || itemParams.limit === null) &&
-        location._modelType === 'folder'
+        // there are items remaining
+        numbersOfItemsCouldBeFetched > 0
+        // and still have place for items
+        && (itemsPerPage === -1 || itemsPerPage - numberOfFoldersCouldBeFetched > 0)
       ) {
+        const itemParams = {
+          folderId: location._id,
+          limit: itemsPerPage === -1 ? 0 : itemsPerPage - numberOfFoldersCouldBeFetched,
+          offset: itemOffset,
+        };
         promises.push(this.girderRest.get(GIRDER_ITEM_ENDPOINT, { params: itemParams }));
       }
       const responses = (await Promise.all(promises)).map(response => response.data);

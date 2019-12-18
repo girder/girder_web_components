@@ -89,7 +89,7 @@ export default {
     },
     itemsPerPageOptions: {
       type: Array,
-      default: () => ([5, 10, 15, -1]),
+      default: () => ([10, 25, 50]),
     },
   },
 

@@ -181,14 +181,14 @@ describe('DataBrowser', () => {
     mock.onGet(/folder\/fake_folder_id\/details/).reply(200, { nFolders: 12, nItems: 20 });
     mock.onGet(/item/, {
       params: {
-        limit: null,
+        limit: 0,
         offset: 0,
         folderId: 'fake_folder_id',
       },
     }).replyOnce(200, getMockItemQueryResponse(20));
     mock.onGet(/folder/, {
       params: {
-        limit: null,
+        limit: 0,
         offset: 0,
         parentId: 'fake_folder_id',
         parentType: 'folder',
@@ -336,12 +336,12 @@ describe('DataBrowser', () => {
           _id: 'fake_folder_id',
         },
         initialItemsPerPage: 20,
-        itemsPerPageOptions: [20, 30, 40, -1],
+        itemsPerPageOptions: [20, 30, 40],
       },
       provide: { girderRest },
     });
     await flushPromises();
     expect(wrapper.vm.rows.length).toBe(20);
-    expect(wrapper.find('girder-data-table-stub').props('itemsPerPageOptions')).toEqual([20, 30, 40, -1]);
+    expect(wrapper.find('girder-data-table-stub').props('itemsPerPageOptions')).toEqual([20, 30, 40]);
   });
 });
