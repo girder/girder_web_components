@@ -339,4 +339,6 @@ girder-data-table.girder-file-browser(
           slot(name="breadcrumb", v-bind="{ location, changeLocation, rootLocationDisabled }")
           v-spacer
           slot(name="headerwidget", v-bind="{ location, changeLocation, rootLocationDisabled }")
+  template(#row-widget="props")
+    slot(name="row-widget", v-bind="props")
 </template>

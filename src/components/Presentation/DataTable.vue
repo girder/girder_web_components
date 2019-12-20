@@ -107,6 +107,7 @@ v-data-table.girder-data-table(
           v-icon.pr-2(:color="props.isSelected ? 'accent' : ''")
             | {{ $vuetify.icons.values[props.item.icon] }}
           | {{ props.item.name }}
+          slot(name="row-widget", v-bind="props")
       td.text-right.nobreak {{ props.item.humanSize }}
 
   template(#no-data="")

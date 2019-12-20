@@ -249,6 +249,8 @@ v-card.girder-data-browser-snippet
             :post-upsert="postUpsertInternal",
             :key="internalLocation._id",
             @dismiss="newFolderDialog = false")
+    template(#row-widget="props")
+      slot(name="row-widget", v-bind="props")
   v-menu(
       v-model="collectionAndFolderMenu.show",
       :position-x="collectionAndFolderMenu.x",
