@@ -10,10 +10,15 @@ const girderRest = new RestClient({
   apiRoot: process.env.VUE_APP_API_ROOT,
 });
 
-const notificationBus = new NotificationBus(girderRest);
-notificationBus.connect();
+const notificationBus = new NotificationBus(girderRest, {
+  useEventSource: true,
+});
 
-girderRest.fetchUser().then(() => {
+girderRest.fetchUser().then((user) => {
+  if (user) {
+    notificationBus.connect();
+  }
+
   new Vue({
     vuetify,
     render: h => h(App),
