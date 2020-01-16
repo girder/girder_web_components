@@ -171,8 +171,8 @@ export default {
     async details() {
       if (this.datum && this.datum.created) {
         return this.datum;
-      } else if (this.datum) {
-        const { data } = await this.girderRest.get(`${this.value[0]._modelType}/${this.value[0]._id}`);
+      } else if (this.datum && this.datum._id && this.datum._modelType) {
+        const { data } = await this.girderRest.get(`${this.datum._modelType}/${this.datum._id}`);
         return data;
       }
       return null;
