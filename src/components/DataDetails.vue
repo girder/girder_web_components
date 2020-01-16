@@ -134,7 +134,7 @@ export const DefaultActionKeys = [
       const lists = { item: [], folder: [] };
       items.forEach(item => lists[item._modelType].push(item._id));
       await this.girderRest.delete('resource', {
-        params: { resources: JSON.stringify(lists) },
+        params: { resources: JSON.stringify(lists), progress: true },
       });
     },
   },
