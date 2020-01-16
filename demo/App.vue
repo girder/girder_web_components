@@ -118,7 +118,7 @@ export default {
     detailsList() {
       if (this.selected.length) {
         return this.selected;
-      } else if (this.location) {
+      } else if (this.location && this.location._id) {
         return [this.location];
       }
       return [];

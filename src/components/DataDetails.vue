@@ -240,6 +240,9 @@ export default {
       return [];
     },
     actions() {
+      if (this.value.length === 0) {
+        return [];
+      }
       const actionType = this.datum ? this.datum._modelType : 'multi';
       return this.actionKeys.filter(k => k.for.includes(actionType));
     },
