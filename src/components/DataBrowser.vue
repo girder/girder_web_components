@@ -324,21 +324,21 @@ girder-data-table.girder-file-browser(
     @dragstart="$emit('dragstart', $event)",
     @dragend="$emit('dragend', $event)",
     @drop="$emit('drop', $event)")
-
   template(#header="{ props, on }")
-    tr.secondary(:class="$vuetify.theme.dark?'darken-2':'lighten-5'")
-      th.pl-3.pr-0(width="1%", v-if="internalSelectable")
-        v-checkbox.pr-2(
-            color="accent",
-            hide-details,
-            :input-value="props.everyItem",
-            :indeterminate="internalValue.length > 0 && !props.everyItem",
-            @click.native="on['toggle-select-all'](!props.everyItem)")
-      th.pl-3(colspan="10", width="99%")
-        v-row.ma-1
-          slot(name="breadcrumb", v-bind="{ location, changeLocation, rootLocationDisabled }")
-          v-spacer
-          slot(name="headerwidget", v-bind="{ location, changeLocation, rootLocationDisabled }")
+    thead
+      tr.secondary(:class="$vuetify.theme.dark?'darken-2':'lighten-5'")
+        th.pl-3.pr-0(width="1%", v-if="internalSelectable")
+          v-checkbox.pr-2(
+              color="accent",
+              hide-details,
+              :input-value="props.everyItem",
+              :indeterminate="internalValue.length > 0 && !props.everyItem",
+              @click.native="on['toggle-select-all'](!props.everyItem)")
+        th.pl-3(colspan="10", width="99%")
+          v-row.ma-1
+            slot(name="breadcrumb", v-bind="{ location, changeLocation, rootLocationDisabled }")
+            v-spacer
+            slot(name="headerwidget", v-bind="{ location, changeLocation, rootLocationDisabled }")
   template(#row-widget="props")
     slot(name="row-widget", v-bind="props")
 </template>

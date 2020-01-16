@@ -15,15 +15,15 @@ export default {
     themes: {
       light: {
         primary: colors.lightBlue.darken1,
-        secondary: colors.blueGrey,
+        secondary: colors.blueGrey.base,
         accent: colors.lightBlue.darken1,
-        error: colors.red,
+        error: colors.red.base,
         info: colors.lightBlue.lighten1,
         dropzone: colors.grey.lighten3,
       },
       dark: {
         primary: colors.lightBlue.darken3,
-        secondary: colors.grey,
+        secondary: colors.grey.base,
         accent: colors.lightBlue.lighten1,
         dropzone: colors.grey.darken2,
       },

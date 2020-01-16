@@ -74,6 +74,7 @@ export default {
 <template lang="pug">
 v-data-table.girder-data-table(
     show-select,
+    hide-default-header,
     :headers-length="4",
     :value="value",
     @input="$emit('input', $event)",

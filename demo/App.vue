@@ -50,6 +50,7 @@ v-app.app
               v-if="browserEnabled",
               ref="girderFileManager",
               v-model="selected",
+              :items-per-page-options="[10, 20, -1]",
               :drag-enabled="dragEnabled",
               :new-folder-enabled="newFolderEnabled",
               :selectable="selectable",
