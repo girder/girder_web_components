@@ -51,6 +51,9 @@ jobs:
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > ~/.npmrc
+      - add_ssh_keys:
+          fingerprints:
+            - "eb:dc:cd:0a:f4:99:56:3f:79:f7:22:a2:6c:21:56:c7"
       - deploy:
           shell: bash
           name: Publish package
