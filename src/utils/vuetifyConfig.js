@@ -40,6 +40,7 @@ export default {
       collection: 'mdi-file-tree',
       download: 'mdi-download',
       edit: 'mdi-pencil',
+      externalLink: 'mdi-open-in-new',
       file: 'mdi-file',
       fileMultiple: 'mdi-file-multiple',
       fileNew: 'mdi-file-plus',

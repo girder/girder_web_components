@@ -1,104 +1,176 @@
 <template lang="pug">
 v-app.app
-  v-app-bar(color="primary", dark, app)
-    v-toolbar-title Girder Web Components
-    v-toolbar-items
-      v-menu(
-          offset-y,
-          left,
-          :close-on-content-click="false",
-          content-class="girder-search-arrow-menu",
-          v-model="uiOptionsMenu")
-        template(#activator="{ on }")
-          v-btn(icon, v-on="on")
-            v-icon.mdi-24px $vuetify.icons.more
-        v-card
-          v-card-actions
-            v-row
-              v-col.py-0
-                v-checkbox.mt-1(hide-details, label="Worker Jobs", v-model="jobsEnabled")
-                v-divider.mt-2.mb-1
-                v-checkbox.mt-1(hide-details, label="Data Browser", v-model="browserEnabled")
-                v-checkbox.mt-1(hide-details, label="Select", v-model="selectable")
-                v-checkbox.mt-1(hide-details, label="Draggable", v-model="dragEnabled")
-                v-checkbox.mt-1(hide-details, label="New Folder", v-model="newFolderEnabled")
-                v-checkbox.mt-1(hide-details, label="Upload", v-model="uploadEnabled")
-                v-checkbox.mt-1(hide-details,
-                    label="Root Disabled",
-                    v-model="rootLocationDisabled")
-                v-divider.mt-2.mb-1
-                v-checkbox.mt-1.mb-1(hide-details, label="Search Box", v-model="searchEnabled")
-                v-checkbox.mt-1.mb-1(hide-details, label="Dark theme",
-                    v-model="$vuetify.theme.dark")
-
-    v-spacer
-    girder-search(v-if="searchEnabled", @select="handleSearchSelect")
-    v-btn(v-if="!loggedOut", text, icon, @click="girderRest.logout()")
-      v-icon $vuetify.icons.logout
   v-content
     v-container
-      v-row
-        v-col(v-if="loggedOut", lg=4, md=5, sm=12)
+      v-col(xl=8, offset-xl=2, lg=10, offset-lg=1, md=12, offset-md=0)
+        .display-3 Girder Web Components
+        .title.mb-1 A Vue + Vuetify library for interacting with Kitware's
+          | data management platform, Girder
+
+        img.pr-3(v-for="badge in badges", :key="badge", :src="badge")
+
+        v-switch.mt-1.mb-1(
+            hide-details,
+            label="Dark theme",
+            v-model="$vuetify.theme.dark")
+
+        headline(
+            title="girder-auth",
+            link="src/components/Authentication/Authentication.vue",
+            description="allows users to authenticate with girder")
+        v-row.mb-2
+          v-switch.ma-2(hide-details, v-model="authRegister", label="register")
+          v-switch.ma-2(hide-details, v-model="authOauth", label="oauth")
+        template(v-if="loggedOut")
           girder-auth(
               :force-otp="false",
-              :register="true",
-              :oauth="true",
+              :register="authRegister",
+              :oauth="authOauth",
               :key="girderRest.token",
               :forgot-password-url="forgotPasswordUrl")
-        v-col
-          girder-file-manager.mb-3(
-              v-if="browserEnabled",
-              ref="girderFileManager",
-              v-model="selected",
-              :items-per-page-options="[10, 20, -1]",
-              :drag-enabled="dragEnabled",
-              :new-folder-enabled="newFolderEnabled",
-              :selectable="selectable",
-              :location.sync="location",
-              :root-location-disabled="rootLocationDisabled",
-              :upload-multiple="uploadMultiple",
-              :upload-enabled="uploadEnabled")
-          girder-job-list(v-if="jobsEnabled")
-        v-col(style="max-width: 340px;")
-          girder-data-details(:value="detailsList", @action="handleAction")
+        template(v-else)
+          v-btn(
+              v-if="!loggedOut",
+              color="primary",
+              @click="girderRest.logout()") Log Out
+            v-icon.pl-2 $vuetify.icons.logout
+
+        headline(
+            title="girder-upload",
+            link="src/components/Upload.vue",
+            description="upload files to a specified location in girder")
+        v-card
+          girder-upload(
+              :dest="uploadDest",
+              :post-upload="postUpload")
+
+        headline(
+            title="girder-search",
+            link="src/components/Search.vue",
+            description="provides global search functionality")
+        v-toolbar(color="primary")
+          girder-search(@select="handleSearchSelect")
+
+        v-row
+          v-col(lg=8, md=6, sm=12)
+            headline(
+                title="girder-file-manager",
+                link="src/components/Snippet/FileManager.vue",
+                description="provides a wrapper around girder-data-browser.\
+                  It packages the browser with defaults including folder creation, item upload,\
+                  and a breadcrumb bar")
+          v-col
+            headline(
+                title="girder-data-details",
+                link="src/components/DataDetails.vue",
+                description="provides in-depth information about a single folder or item.")
+        v-row
+          v-switch.ma-2(hide-details, label="Select", v-model="selectable")
+          v-switch.ma-2(hide-details, label="Draggable", v-model="dragEnabled")
+          v-switch.ma-2(hide-details, label="New Folder", v-model="newFolderEnabled")
+          v-switch.ma-2(hide-details, label="Upload", v-model="uploadEnabled")
+          v-switch.mt-2(
+              hide-details,
+              label="Root Disabled",
+              v-model="rootLocationDisabled")
+        v-row
+          v-col(lg=8, md=6, sm=12)
+            girder-file-manager(
+                ref="girderFileManager",
+                v-model="selected",
+                :items-per-page-options="[10, 20, -1]",
+                :drag-enabled="dragEnabled",
+                :new-folder-enabled="newFolderEnabled",
+                :selectable="selectable",
+                :location.sync="location",
+                :root-location-disabled="rootLocationDisabled",
+                :upload-multiple="uploadMultiple",
+                :upload-enabled="uploadEnabled")
+          v-col
+            girder-data-details(:value="detailsList", @action="handleAction")
+
+        headline(
+            title="girder-job-list",
+            link="src/components/Job/JobList.vue",
+            description="display and filter girder jobs")
+        girder-job-list
+
+        headline(
+            title="girder-access-control",
+            link="src/components/AccessControl.vue",
+            description="access controls for folders and items")
+        girder-access-control(:model="uploadDest")
+
+        headline(
+            title="girder-upsert-folder",
+            link="src/components/UpsertFolder.vue",
+            description="create and edit folders")
+        v-switch(v-model="upsertEdit", label="Edit Mode")
+        v-card
+          girder-upsert-folder(:location="uploadDest", :edit="upsertEdit")
+
+        headline(
+            title="girder-breadcrumb",
+            link="src/components/Breadcrumb.vue",
+            description="filesystem path breadcrumb")
+        v-card.pa-4
+          girder-breadcrumb(:location="uploadDest")
 </template>
 
 <script>
 import {
+  AccessControl as GirderAccessControl,
   Authentication as GirderAuth,
+  Breadcrumb as GirderBreadcrumb,
   DataDetails as GirderDataDetails,
   Search as GirderSearch,
+  Upload as GirderUpload,
+  UpsertFolder as GirderUpsertFolder,
 } from '@/components';
 import { FileManager as GirderFileManager } from '@/components/Snippet';
 import { JobList as GirderJobList } from '@/components/Job';
+
+import Headline from './Headline.vue';
 
 export default {
   name: 'App',
   inject: ['girderRest'],
 
   components: {
+    Headline,
+    GirderAccessControl,
     GirderAuth,
+    GirderBreadcrumb,
     GirderDataDetails,
     GirderFileManager,
-    GirderSearch,
     GirderJobList,
+    GirderSearch,
+    GirderUpload,
+    GirderUpsertFolder,
   },
 
   data() {
     return {
-      browserEnabled: true,
+      authOauth: true,
+      authRegister: true,
       dragEnabled: false,
       forgotPasswordUrl: '/#?dialog=resetpassword',
-      jobsEnabled: false,
       internalLocation: null,
       rootLocationDisabled: false,
-      searchEnabled: true,
       selected: [],
       selectable: true,
-      uiOptionsMenu: false,
       uploadEnabled: true,
       uploadMultiple: true,
+      upsertEdit: false,
       newFolderEnabled: true,
+      // badges
+      badges: [
+        'https://img.shields.io/circleci/build/github/girder/girder_web_components/master?style=for-the-badge',
+        'https://img.shields.io/npm/v/@girder/components?style=for-the-badge',
+        'https://img.shields.io/npm/dm/@girder/components?style=for-the-badge',
+        'https://img.shields.io/bundlephobia/min/@girder/components?style=for-the-badge',
+        'https://img.shields.io/github/stars/girder/girder_web_components?style=for-the-badge',
+      ],
     };
   },
 
@@ -115,6 +187,16 @@ export default {
       set(value) {
         this.internalLocation = value;
       },
+    },
+    uploadDest() {
+      if (this.location._modelType === 'folder') {
+        return this.location;
+      }
+      return {
+        name: 'temp',
+        _id: '5e2a25fdaf2e2eed35309112',
+        _modelType: 'folder',
+      };
     },
     detailsList() {
       if (this.selected.length) {
@@ -140,11 +222,14 @@ export default {
         this.selected = [];
       }
     },
+    postUpload() {
+      this.$refs.girderFileManager.refresh();
+    },
   },
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
