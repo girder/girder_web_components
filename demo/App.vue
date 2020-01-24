@@ -4,20 +4,23 @@ v-app.app
     v-container
       v-col(xl=8, offset-xl=2, lg=10, offset-lg=1, md=12, offset-md=0)
         .display-3 Girder Web Components
-        .title.mb-1 A Vue + Vuetify library
-          |  for interacting with
-          |
-          a(href="https://www.kitware.com/") Kitware's
-          |  data management platform,
-          |
-          a(href="https://girder.readthedocs.io/en/stable/") Girder
+        .title.mb-1.
+          A Vue + Vuetify library for interacting with
+          #[a(href="https://www.kitware.com/") Kitware's]
+          data management platform,
+          #[a(href="https://girder.readthedocs.io/en/stable/") Girder]
 
         img.pr-3(v-for="badge in badges", :key="badge", :src="badge")
 
-        v-switch.mt-1.mb-1(
-            hide-details,
-            label="Dark theme",
-            v-model="$vuetify.theme.dark")
+        v-row.ma-0
+          .title.mb-1.
+            This demo integrates with
+            #[a(href="https://data.kitware.com") data.kitware.com]
+
+          v-switch.mx-4.my-0(
+              hide-details,
+              label="Dark theme",
+              v-model="$vuetify.theme.dark")
 
         headline(
             title="girder-auth",
@@ -57,18 +60,19 @@ v-app.app
           girder-search(@select="handleSearchSelect")
 
         v-row
-          v-col(lg=8, md=6, sm=12)
+          v-col.pr-4(xl=8, lg=8, md=6, sm=12)
             headline(
                 title="girder-file-manager",
                 link="src/components/Snippet/FileManager.vue",
-                description="provides a wrapper around girder-data-browser.\
+                description="a wrapper around girder-data-browser.\
                   It packages the browser with defaults including folder creation, item upload,\
                   and a breadcrumb bar")
-          v-col
+          v-col.pa-0
             headline(
                 title="girder-data-details",
                 link="src/components/DataDetails.vue",
-                description="provides in-depth information about a single folder or item.")
+                description="in-depth information and controls for a single\
+                  folder or item, or batch operations for groups of objects.")
         v-row
           v-switch.ma-2(hide-details, label="Select", v-model="selectable")
           v-switch.ma-2(hide-details, label="Draggable", v-model="dragEnabled")
@@ -79,7 +83,7 @@ v-app.app
               label="Root Disabled",
               v-model="rootLocationDisabled")
         v-row
-          v-col(lg=8, md=6, sm=12)
+          v-col.pr-4(lg=8, md=6, sm=12)
             girder-file-manager(
                 ref="girderFileManager",
                 v-model="selected",
@@ -91,7 +95,7 @@ v-app.app
                 :root-location-disabled="rootLocationDisabled",
                 :upload-multiple="uploadMultiple",
                 :upload-enabled="uploadEnabled")
-          v-col
+          v-col.pl-0(lg=4, md=6, sm=12)
             girder-data-details(:value="detailsList", @action="handleAction")
 
         headline(
@@ -186,7 +190,10 @@ export default {
     location: {
       get() {
         return this.internalLocation || (
-          this.loggedOut ? { type: 'collections' } : this.girderRest.user
+          this.loggedOut ? {
+            _id: '5c8a72438d777f072b97f9e1',
+            _modelType: 'folder',
+          } : this.girderRest.user
         );
       },
       set(value) {
