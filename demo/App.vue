@@ -4,8 +4,13 @@ v-app.app
     v-container
       v-col(xl=8, offset-xl=2, lg=10, offset-lg=1, md=12, offset-md=0)
         .display-3 Girder Web Components
-        .title.mb-1 A Vue + Vuetify library for interacting with Kitware's
-          | data management platform, Girder
+        .title.mb-1 A Vue + Vuetify library
+          |  for interacting with
+          |
+          a(href="https://www.kitware.com/") Kitware's
+          |  data management platform,
+          |
+          a(href="https://girder.readthedocs.io/en/stable/") Girder
 
         img.pr-3(v-for="badge in badges", :key="badge", :src="badge")
 
