@@ -6,7 +6,7 @@ import Authentication from './Authentication/';
 import Breadcrumb from './Breadcrumb.vue';
 import DataBrowser from './DataBrowser.vue';
 import DataDetails from './DataDetails.vue';
-import job from './Job/';
+import job from './Job';
 import Markdown from './Markdown.vue';
 import MarkdownEditor from './MarkdownEditor.vue';
 import Search from './Search.vue';
