@@ -35,7 +35,7 @@ v-app.app
               label="Dark theme",
               v-model="$vuetify.theme.dark")
 
-        a(id="auth")
+        a#auth
         headline(
             title="girder-auth",
             link="src/components/Authentication/Authentication.vue",
@@ -57,7 +57,7 @@ v-app.app
               @click="girderRest.logout()") Log Out
             v-icon.pl-2 $vuetify.icons.logout
 
-        a(id="upload")
+        a#upload
         headline(
             title="girder-upload",
             link="src/components/Upload.vue",
@@ -67,7 +67,7 @@ v-app.app
               :dest="uploadDest",
               :post-upload="postUpload")
 
-        a(id="search")
+        a#search
         headline(
             title="girder-search",
             link="src/components/Search.vue",
@@ -77,7 +77,7 @@ v-app.app
 
         v-row
           v-col.pr-4(xl=8, lg=8, md=6, sm=12)
-            a(id="file-manager")
+            a#file-manager
             headline(
                 title="girder-file-manager",
                 link="src/components/Snippet/FileManager.vue",
@@ -85,7 +85,7 @@ v-app.app
                   It packages the browser with defaults including folder creation, item upload,\
                   and a breadcrumb bar")
           v-col.pa-0
-            a(id="data-details")
+            a#data-details
             headline(
                 title="girder-data-details",
                 link="src/components/DataDetails.vue",
@@ -116,21 +116,21 @@ v-app.app
           v-col.pl-0(lg=4, md=6, sm=12)
             girder-data-details(:value="detailsList", @action="handleAction")
 
-        a(id="job-list")
+        a#job-list
         headline(
             title="girder-job-list",
             link="src/components/Job/JobList.vue",
             description="display and filter girder jobs")
         girder-job-list
 
-        a(id="access-control")
+        a#access-control
         headline(
             title="girder-access-control",
             link="src/components/AccessControl.vue",
             description="access controls for folders and items")
         girder-access-control(:model="uploadDest")
 
-        a(id="upsert-folder")
+        a#upsert-folder
         headline(
             title="girder-upsert-folder",
             link="src/components/UpsertFolder.vue",
@@ -139,7 +139,7 @@ v-app.app
         v-card
           girder-upsert-folder(:location="uploadDest", :edit="upsertEdit")
 
-        a(id="breadcrumb")
+        a#breadcrumb
         headline(
             title="girder-breadcrumb",
             link="src/components/Breadcrumb.vue",
