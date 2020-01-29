@@ -1,5 +1,18 @@
 <template lang="pug">
 v-app.app
+  v-navigation-drawer(app)
+    v-list
+      nav-link.mb-1.font-weight-bold(title="Components")
+      nav-link(title="Authentication", href="#auth")
+      nav-link(title="Upload", href="#upload")
+      nav-link(title="Search", href="#search")
+      nav-link(title="File manager", href="#file-manager")
+      nav-link(title="Data details", href="#data-details")
+      nav-link(title="Job list", href="#job-list")
+      nav-link(title="Access control", href="#access-control")
+      nav-link(title="Add / edit folder", href="#upsert-folder")
+      nav-link(title="Breadcrumb", href="#breadcrumb")
+
   v-content
     v-container
       v-col(xl=8, offset-xl=2, lg=10, offset-lg=1, md=12, offset-md=0)
@@ -22,6 +35,7 @@ v-app.app
               label="Dark theme",
               v-model="$vuetify.theme.dark")
 
+        a#auth
         headline(
             title="girder-auth",
             link="src/components/Authentication/Authentication.vue",
@@ -43,6 +57,7 @@ v-app.app
               @click="girderRest.logout()") Log Out
             v-icon.pl-2 $vuetify.icons.logout
 
+        a#upload
         headline(
             title="girder-upload",
             link="src/components/Upload.vue",
@@ -52,6 +67,7 @@ v-app.app
               :dest="uploadDest",
               :post-upload="postUpload")
 
+        a#search
         headline(
             title="girder-search",
             link="src/components/Search.vue",
@@ -61,6 +77,7 @@ v-app.app
 
         v-row
           v-col.pr-4(xl=8, lg=8, md=6, sm=12)
+            a#file-manager
             headline(
                 title="girder-file-manager",
                 link="src/components/Snippet/FileManager.vue",
@@ -68,6 +85,7 @@ v-app.app
                   It packages the browser with defaults including folder creation, item upload,\
                   and a breadcrumb bar")
           v-col.pa-0
+            a#data-details
             headline(
                 title="girder-data-details",
                 link="src/components/DataDetails.vue",
@@ -98,18 +116,21 @@ v-app.app
           v-col.pl-0(lg=4, md=6, sm=12)
             girder-data-details(:value="detailsList", @action="handleAction")
 
+        a#job-list
         headline(
             title="girder-job-list",
             link="src/components/Job/JobList.vue",
             description="display and filter girder jobs")
         girder-job-list
 
+        a#access-control
         headline(
             title="girder-access-control",
             link="src/components/AccessControl.vue",
             description="access controls for folders and items")
         girder-access-control(:model="uploadDest")
 
+        a#upsert-folder
         headline(
             title="girder-upsert-folder",
             link="src/components/UpsertFolder.vue",
@@ -118,6 +139,7 @@ v-app.app
         v-card
           girder-upsert-folder(:location="uploadDest", :edit="upsertEdit")
 
+        a#breadcrumb
         headline(
             title="girder-breadcrumb",
             link="src/components/Breadcrumb.vue",
@@ -140,6 +162,7 @@ import { FileManager as GirderFileManager } from '@/components/Snippet';
 import { JobList as GirderJobList } from '@/components/Job';
 
 import Headline from './Headline.vue';
+import NavLink from './NavLink.vue';
 
 export default {
   name: 'App',
@@ -147,6 +170,7 @@ export default {
 
   components: {
     Headline,
+    NavLink,
     GirderAccessControl,
     GirderAuth,
     GirderBreadcrumb,

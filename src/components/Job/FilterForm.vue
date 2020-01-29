@@ -52,7 +52,7 @@ export default {
 v-card.job-filter(dark, color="primary")
   v-card-title
     v-container
-      h4 Girder Worker Jobs
+      h4 Jobs
       v-row(justify="center")
         v-col(sm=5, md=4)
           v-select(

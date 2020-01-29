@@ -24,7 +24,7 @@ export default {
   div
     .headline.font-weight-bold.mono.mt-8
       | {{ title }}
-      v-btn.ma-1(icon, :href="repoBase + link")
+      v-btn.ml-2(icon, :href="repoBase + link", title="View source")
         v-icon $vuetify.icons.externalLink
     .subtitle-1.mb-4 {{ description }}
 </template>
