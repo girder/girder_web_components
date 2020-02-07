@@ -1,8 +1,10 @@
 <script>
-import moment from 'moment';
-import * as status from './status';
+import { jobFormatter } from '../../utils/mixins';
+import JobProgress from './JobProgress.vue';
 
 export default {
+  components: { JobProgress },
+  mixins: [jobFormatter],
   props: {
     jobs: {
       type: Array,
@@ -36,7 +38,7 @@ export default {
   },
   computed: {
     items() {
-      return this.jobs.map(this.mapJobToRow);
+      return this.jobs.map(this.formatJob);
     },
     headers_() {
       const widgetHeader = {
@@ -58,27 +60,6 @@ export default {
       return { first, last };
     },
   },
-  methods: {
-    mapJobToRow(job) {
-      const statusDef = Object.assign({ text: 'Unknown' }, status.getByValue(job.status));
-      return Object.assign({
-        statusText: statusDef.text,
-        statusColor: statusDef.color,
-        statusTextColor: statusDef.textColor || 'white',
-        statusIcon: statusDef.icon,
-        updateString: moment(job.updated).format('dddd, MMMM D, YYYY @ h:mm a'),
-        progressNumber: this.progressAsNumber(job.progress),
-        indeterminate: statusDef.indeterminate,
-        spin: statusDef.spin,
-      }, job);
-    },
-    progressAsNumber(progress) {
-      if (!progress) {
-        return 100;
-      }
-      return 100 * (progress.current / progress.total);
-    },
-  },
 };
 </script>
 
@@ -95,17 +76,8 @@ v-data-table(
       td.one-line {{ props.item.title }}
       td.one-line {{ props.item.type }}
       td.one-line {{ props.item.updateString }}
-      td.one-line.status-line(nowrap, :title="props.item.statusText", width="1%")
-        v-row.flex-nowrap.ma-2(align="center")
-          v-progress-linear.progress-bar.mr-3(
-              :color="props.item.statusColor",
-              :value="props.item.progressNumber",
-              :indeterminate="!!props.item.indeterminate",
-              height="10")
-          v-icon.status-icon(
-              :color="props.item.statusColor",
-              :class="{ rotate: props.item.spin }",
-              :size="20") {{ props.item.statusIcon }}
+      td.one-line(nowrap, :title="props.item.statusText")
+        job-progress(:formatted-job="props.item")
       td.one-line.pa-0
         slot(name="jobwidget", v-bind="props")
   template(#footer.page-text="")
@@ -117,12 +89,6 @@ v-data-table(
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.status-line {
-  .progress-bar {
-    width: 150px;
-  }
 }
 
 .rotate {
