@@ -1,5 +1,9 @@
+import moment from 'moment';
+
 import { AccessType } from '../constants';
+import * as jobstatus from '../components/Job/status';
 import Upload from './upload';
+
 /**
  * for components that need to show a locale-formatted date
  */
@@ -65,6 +69,35 @@ const usernameFormatter = {
   methods: {
     formatUsername(user) {
       return `${user.firstName} ${user.lastName} (${user.login})`;
+    },
+  },
+};
+
+/**
+ * A mixin to generically fetch display properties
+ * from a girder_jobs.Job schema'd json object.
+ */
+const jobFormatter = {
+  methods: {
+    progressAsNumber(progress) {
+      if (!progress) {
+        return 100;
+      }
+      return 100 * (progress.current / progress.total);
+    },
+    formatJob(job) {
+      const statusDef = Object.assign({ text: 'Unknown' }, jobstatus.getByValue(job.status));
+      return {
+        statusText: statusDef.text,
+        statusColor: statusDef.color,
+        statusTextColor: statusDef.textColor || 'white',
+        statusIcon: statusDef.icon,
+        updateString: moment(job.updated).format('dddd, MMMM D, YYYY @ h:mm a'),
+        progressNumber: this.progressAsNumber(job.progress),
+        indeterminate: statusDef.indeterminate,
+        class: statusDef.class,
+        ...job,
+      };
     },
   },
 };
@@ -215,6 +248,7 @@ export {
   accessLevelChecker,
   dateFormatter,
   fileUploader,
+  jobFormatter,
   progressReporter,
   sizeFormatter,
   usernameFormatter,
