@@ -95,7 +95,7 @@ const jobFormatter = {
         updateString: moment(job.updated).format('dddd, MMMM D, YYYY @ h:mm a'),
         progressNumber: this.progressAsNumber(job.progress),
         indeterminate: statusDef.indeterminate,
-        spin: statusDef.spin,
+        class: statusDef.class,
         ...job,
       };
     },

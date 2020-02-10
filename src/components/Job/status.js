@@ -17,7 +17,7 @@ const statusMap = {
     text: 'Running',
     icon: 'mdi-autorenew',
     color: 'light-blue',
-    spin: true,
+    class: ['mdi-spin'],
   },
   SUCCESS: {
     value: 3,

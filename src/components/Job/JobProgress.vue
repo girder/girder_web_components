@@ -20,14 +20,14 @@ export default {
     />
     <v-icon
       :color="formattedJob.statusColor"
-      :class="{ rotate: formattedJob.spin }"
+      :class="formattedJob.class"
       :size="20"
       class="status-icon"
     >{{ formattedJob.statusIcon }}</v-icon>
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .progress-bar {
   min-width: 150px;
 }
