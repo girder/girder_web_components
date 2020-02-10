@@ -87,7 +87,7 @@ const jobFormatter = {
     },
     formatJob(job) {
       const statusDef = Object.assign({ text: 'Unknown' }, jobstatus.getByValue(job.status));
-      return Object.assign({
+      return {
         statusText: statusDef.text,
         statusColor: statusDef.color,
         statusTextColor: statusDef.textColor || 'white',
@@ -96,7 +96,8 @@ const jobFormatter = {
         progressNumber: this.progressAsNumber(job.progress),
         indeterminate: statusDef.indeterminate,
         spin: statusDef.spin,
-      }, job);
+        ...job,
+      };
     },
   },
 };
