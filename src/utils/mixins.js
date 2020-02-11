@@ -236,7 +236,7 @@ const fileUploader = {
           }
         }
       }
-      await postUpload();
+      await postUpload({ results });
       this.uploading = false;
       this.files = [];
       this.$emit('done', results);
