@@ -100,7 +100,7 @@ export default class RestClient extends Vue {
       headers[GirderOtp] = otp;
     }
 
-    const resp = await this.get('user/authentication', { headers, auth });
+    const resp = await this.get('user/authentication', { headers, auth, withCredentials: true });
     this.token = resp.data.authToken.token;
     this.user = resp.data.user;
 
