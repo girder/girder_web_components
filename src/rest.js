@@ -42,7 +42,7 @@ export default class RestClient extends Vue {
    *     (typically ending with "/api/v1").
    * @param {String} [opts.token] An initial value for the authentication token.
    * @param {Object} [opts.axios]  An axios instance to use for all requests.
-   * @param {Boolean} [opts.authenticateWithCredentials=false] Wehterh to set `withCredentials` on
+   * @param {Boolean} [opts.authenticateWithCredentials=false] Whether to set `withCredentials` on
    *     authentication requests, capturing the cross-origin Girder-Token cookie for later XSRF use.
    *     See issue #227 for further information.
    * @param {Boolean} [opts.useGirderAuthorizationHeader=false] Whether to use `Authorization` or
