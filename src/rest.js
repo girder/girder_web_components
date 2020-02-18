@@ -42,6 +42,9 @@ export default class RestClient extends Vue {
    *     (typically ending with "/api/v1").
    * @param {String} [opts.token] An initial value for the authentication token.
    * @param {Object} [opts.axios]  An axios instance to use for all requests.
+   * @param {Boolean} [opts.authenticateWithCredentials=false] Whether to set `withCredentials` on
+   *     authentication requests, capturing the cross-origin Girder-Token cookie for later XSRF use.
+   *     See issue #227 for further information.
    * @param {Boolean} [opts.useGirderAuthorizationHeader=false] Whether to use `Authorization` or
    *     `Girder-Authorization` as the header containing the basic auth credentials.
    * @param {Boolean} [opts.setLocalCookie=true] Whether to set the authentication token to a local
@@ -51,6 +54,7 @@ export default class RestClient extends Vue {
     apiRoot = '/api/v1',
     token = cookies.get('girderToken') || setCookieFromHash(window.location),
     axios = axios_.create(),
+    authenticateWithCredentials = false,
     useGirderAuthorizationHeader = false,
     setLocalCookie = true,
   } = {}) {
@@ -64,6 +68,7 @@ export default class RestClient extends Vue {
     Object.assign(this, axios, {
       apiRoot,
       setLocalCookie,
+      authenticateWithCredentials,
       useGirderAuthorizationHeader,
     });
 
@@ -100,7 +105,9 @@ export default class RestClient extends Vue {
       headers[GirderOtp] = otp;
     }
 
-    const resp = await this.get('user/authentication', { headers, auth, withCredentials: true });
+    const resp = await this.get('user/authentication', {
+      headers, auth, withCredentials: this.authenticateWithCredentials,
+    });
     this.token = resp.data.authToken.token;
     this.user = resp.data.user;
 
