@@ -16,7 +16,6 @@ v-card.girder-authentication-component
 <script>
 import GirderLogin from './Login.vue';
 import GirderRegistration from './Register.vue';
-import { OauthTokenPrefix, OauthTokenSuffix } from '../../rest';
 
 export default {
   inject: ['girderRest'],
@@ -34,6 +33,11 @@ export default {
     oauth: {
       type: Boolean,
       default: false,
+    },
+    /* Redirect URL for end of OAuth login flow. If not passed uses current URL. */
+    oauthRedirect: {
+      type: String,
+      default: null,
     },
     /* A full URL to be used as an anchor href to an external page. */
     forgotPasswordUrl: {
@@ -66,7 +70,7 @@ export default {
         try {
           return (await this.girderRest.get('oauth/provider', {
             params: {
-              redirect: `${window.location.href}${OauthTokenPrefix}{girderToken}${OauthTokenSuffix}`,
+              redirect: this.oauthRedirect || window.location.href,
               list: true,
             },
           })).data;
