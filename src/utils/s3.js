@@ -24,6 +24,15 @@ export default class S3Upload {
     return root.outerHTML;
   }
 
+  async complete() {
+    this.progress({
+      indeterminate: true,
+      current: this.file.size,
+      total: this.file.size,
+    });
+    return this.$rest.post('file/completion', stringify({ uploadId: this.upload._id }));
+  }
+
   async _multiChunkUpload() {
     const { headers, method, url } = this.upload.s3.request;
     const resp = await axios.request({
@@ -62,9 +71,7 @@ export default class S3Upload {
       this.partNumber += 1;
       this.offset += blob.size;
     }
-
-    this.progress({ indeterminate: true });
-    const resp = await this.$rest.post('file/completion', stringify({ uploadId: this.upload._id }));
+    const resp = await this.complete();
     const { headers, method, url } = resp.data.s3FinalizeRequest;
     await axios.request({
       data: this._finalizeMultipartXml(), headers, method, url,
@@ -88,8 +95,7 @@ export default class S3Upload {
         indeterminate: !e.lengthComputable,
       }),
     });
-    this.progress({ indeterminate: true });
-    return (await this.$rest.post('file/completion', stringify({ uploadId: this.upload._id }))).data;
+    return (await this.complete()).data;
   }
 
   async resume() {
