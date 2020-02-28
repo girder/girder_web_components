@@ -42,21 +42,20 @@ export default {
       type: Number,
       default: 0,
     },
-    currentIndex: {
-      type: Number,
-      default: 0,
-    },
   },
   computed: {
+    notDone() {
+      return this.value.filter(f => f.status !== 'done');
+    },
     shownFiles() {
       if (this.maxShow) {
-        return this.value.slice(this.currentIndex, this.maxShow + this.currentIndex);
+        return this.notDone.slice(0, this.maxShow);
       }
       return this.value;
     },
     hiddenCount() {
       if (this.maxShow) {
-        return Math.max(this.value.length - this.maxShow - this.currentIndex, 0);
+        return this.notDone.length - this.shownFiles.length;
       }
       return 0;
     },

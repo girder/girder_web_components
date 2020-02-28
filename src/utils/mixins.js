@@ -116,7 +116,7 @@ const fileUploader = {
       errorMessage: null,
       files: [],
       uploading: false,
-      currentIndex: 0,
+      indeterminate: false,
     };
   },
 
@@ -142,12 +142,18 @@ const fileUploader = {
   },
 
   methods: {
+    reset() {
+      this.files = [];
+      this.errorMessage = null;
+      this.uploading = false;
+      this.indeterminate = false;
+    },
+
     /**
      * Populate the internal list of files from an HTML FileList
      * @param {FileList} files from an input element
      */
     inputFilesChanged(files) {
-      this.currentIndex = 0;
       this.files = files.map(file => ({
         file,
         status: 'pending',
@@ -168,9 +174,6 @@ const fileUploader = {
      * @param {Array<Object>} files new file list
      */
     setFiles(files) {
-      if (this.currentIndex >= files.length) {
-        this.currentIndex = files.length - 1;
-      }
       this.files = files;
     },
 
@@ -183,47 +186,45 @@ const fileUploader = {
       postUpload = async () => {},
       uploadCls = Upload,
     }) {
-      const results = [];
       this.uploading = true;
+      this.indeterminate = true;
       this.errorMessage = null;
       await preUpload();
-      for (; this.currentIndex < this.files.length; this.currentIndex += 1) {
-        const file = this.files[this.currentIndex];
+      this.indeterminate = false;
+      const promiseList = this.files.map((file) => {
+        let promiseChain = Promise.resolve();
         if (file.status === 'done') {
           // We are resuming, skip already completed files
-          results.push(file.result);
+          return promiseChain.then(() => file.result);
+        }
+        const progress = (event) => {
+          this.$set(file, 'progress', event);
+        };
+        file.status = 'uploading';
+        file.progress.indeterminate = true;
+        if (file.upload) {
+          promiseChain = promiseChain.then(() => file.upload.resume());
         } else {
-          const progress = (event) => {
-            Object.assign(file.progress, event);
-          };
-          file.status = 'uploading';
-          file.progress.indeterminate = true;
-          try {
-            if (file.upload) {
-              // eslint-disable-next-line no-await-in-loop
-              file.result = await file.upload.resume();
-            } else {
-              // eslint-disable-next-line new-cap
-              file.upload = new uploadCls(file.file, {
-                $rest: this.girderRest,
-                parent: dest,
-                progress,
-              });
-              // eslint-disable-next-line no-await-in-loop
-              await file.upload.beforeUpload();
-              // eslint-disable-next-line no-await-in-loop
-              file.result = await file.upload.start();
-            }
-            // eslint-disable-next-line no-await-in-loop
+          // eslint-disable-next-line new-cap
+          file.upload = new uploadCls(file.file, {
+            $rest: this.girderRest,
+            parent: dest,
+            progress,
+          });
+          promiseChain = promiseChain
+            .then(() => file.upload.beforeUpload())
+            .then(() => file.upload.start());
+        }
+        return promiseChain
+          .then(async (result) => {
             await file.upload.afterUpload();
             delete file.upload;
-            results.push(file.result);
             file.status = 'done';
             file.progress.current = file.file.size;
-          } catch (error) {
-            // eslint-disable-next-line no-await-in-loop
+            return result;
+          })
+          .catch(async (error) => {
             await file.upload.onError(error);
-
             if (error.response) {
               this.errorMessage = error.response.data.message || 'An error occurred during upload.';
             } else {
@@ -232,11 +233,13 @@ const fileUploader = {
             file.status = 'error';
             this.uploading = false;
             this.$emit('error', { error, file });
-            return;
-          }
-        }
-      }
+            throw error;
+          });
+      });
+      const results = await Promise.all(promiseList);
+      this.indeterminate = true;
       await postUpload({ results });
+      this.indeterminate = false;
       this.uploading = false;
       this.files = [];
       this.$emit('done', results);
