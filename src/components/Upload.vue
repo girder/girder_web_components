@@ -4,7 +4,7 @@ v-card.fill-height(flat)
     slot(name="header")
       v-card-title(primary-title)
         div
-          .headline
+          .headline(v-if="!hideHeadline")
             | Upload to
             = " "
             span.font-weight-bold {{ dest.name }}
@@ -93,6 +93,10 @@ export default {
       type: String,
     },
     hideStartButton: {
+      default: false,
+      type: Boolean,
+    },
+    hideHeadline: {
       default: false,
       type: Boolean,
     },
