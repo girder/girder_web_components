@@ -18,7 +18,7 @@ v-card.fill-height(flat)
 
     v-card-actions(v-show="files.length && !errorMessage && !uploading")
       v-btn(text, @click="reset") Clear all
-      v-btn(text, color="primary", @click="startUpload") {{ startButtonText }}
+      v-btn(v-if="startButtonText.length > 0", text, color="primary", @click="startUpload") {{ startButtonText }}
 
     v-col
       slot(name="dropzone")
