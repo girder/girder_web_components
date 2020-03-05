@@ -4,7 +4,7 @@ v-card.fill-height(flat)
     slot(name="header")
       v-card-title(primary-title)
         div
-          .headline
+          .headline(v-if="!hideHeadline")
             | Upload to
             = " "
             span.font-weight-bold {{ dest.name }}
@@ -18,7 +18,11 @@ v-card.fill-height(flat)
 
     v-card-actions(v-show="files.length && !errorMessage && !uploading")
       v-btn(text, @click="reset") Clear all
-      v-btn(text, color="primary", @click="startUpload") {{ startButtonText }}
+      v-btn(
+          v-if="!hideStartButton",
+          text,
+          color="primary",
+          @click="startUpload") {{ startButtonText }}
 
     v-col
       slot(name="dropzone")
@@ -87,6 +91,14 @@ export default {
     startButtonText: {
       default: 'Start Upload',
       type: String,
+    },
+    hideStartButton: {
+      default: false,
+      type: Boolean,
+    },
+    hideHeadline: {
+      default: false,
+      type: Boolean,
     },
   },
   data: () => ({
