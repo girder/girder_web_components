@@ -107,6 +107,7 @@ const jobFormatter = {
  * The consumer is responsible for how the file list is populated, but
  * the helper methods `inputFilesChanged` and `setFiles` must be used
  * rather than setting `this.files` directly.
+ * @mixin
  */
 const fileUploader = {
   inject: ['girderRest'],
