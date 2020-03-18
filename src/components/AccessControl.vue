@@ -23,7 +23,7 @@ export default {
   },
   data() {
     return {
-      public: false,
+      public_: false,
       access: null,
       recursive: false,
       loading: false,
@@ -52,6 +52,18 @@ export default {
         },
       ];
     },
+    publicText() {
+      if (this.public_) {
+        return 'Anyone can view this folder';
+      }
+      return 'Access is required to view this folder';
+    },
+    recursiveText() {
+      if (this.recursive) {
+        return 'Also set this permissions on all subfolders';
+      }
+      return 'Apply permissions only to this folder';
+    },
   },
   watch: {
     model() {
@@ -70,7 +82,7 @@ export default {
     async getAccessControlData() {
       this.access = null;
       this.loading = true;
-      this.public = this.model.public;
+      this.public_ = this.model.public;
       try {
         const { data: access } = await this.girderRest.get(`${this.model._modelType}/${this.model._id}/access`);
         this.access = access;
@@ -119,7 +131,7 @@ export default {
       };
       const data = {
         access: JSON.stringify(access),
-        public: this.public,
+        public: this.public_,
         publicFlags: [],
         recurse: this.recursive,
         progress: true,
@@ -135,62 +147,97 @@ export default {
 };
 </script>
 
-<template lang="pug">
-  v-card.px-3.py-2.access-control
-    v-card-title
-      div
-        .title Access control
-        breadcrumb(
-            :location="model",
-            readonly,
-            no-root)
-    v-card-text.pt-0
-      v-switch.mb-4(
-          v-model="public",
-          label="Public",
-          :hint="public?'Anyone can view this folder':'Access is required to view this folder'",
-          persistent-hint)
-      v-subheader Users / Groups
-      transition(name="height", mode="out-in")
-        v-list.group-user(v-if="groupsAndUsers.length", two-line)
-          transition-group(name="height2")
-            v-list-item(v-for="model of groupsAndUsers", :key="model.id")
-              v-list-item-action.mr-5
-                v-icon {{$vuetify.icons.values[model.login?'user':'group']}}
-              v-list-item-content
-                v-list-item-title {{model.name}}
-                v-list-item-subtitle {{model.login||model.description}}
-              v-list-item-action.mr-5
-                v-select.level(:items="permissions",
-                    light,
-                    solo,
-                    hide-details,
-                    dense,
-                    v-model="model.level")
-              v-list-item-action.mr-5
-                v-btn(icon, @click="remove(model)")
-                  v-icon mdi-minus-circle
-        .mt-1.mb-2(v-if="!groupsAndUsers.length && !loading") Empty
-      v-subheader Grant access
-      search.search.mb-3(
-          hide-search-icon,
-          :search-type-options="[{ name: 'User', value: 'user'},\
-            { name: 'Group', value: 'group'}]",
-          :search-types="['user', 'group']",
-          placeholder="User or group name",
-          @select="groupOrUserSelected")
-      v-switch.mt-0(
-          v-model="recursive",
-          label="Include subfolders",
-          :hint="recursive?\
-            'Also set this permissions on all subfolders':\
-            'Apply permissions only to this folder'",
-          persistent-hint)
-    slot(name="card-actions", v-bind="{ save, loading }")
-      v-card-actions
-        v-spacer
-        v-btn(text, @click="$emit('close')") Cancel
-        v-btn(color="primary", depressed, @click="save") Save
+<template>
+  <v-card class="px-3 py-2 access-control">
+    <v-card-title>
+      <div>
+        <div class="title">Access control</div>
+        <breadcrumb
+          :location="model"
+          readonly="readonly"
+          no-root="no-root"/>
+      </div>
+    </v-card-title>
+    <v-card-text class="pt-0">
+      <v-switch
+        v-model="public_"
+        :hint="publicText"
+        class="mb-4"
+        label="Public"
+        persistent-hint="persistent-hint"/>
+      <v-subheader>Users / Groups</v-subheader>
+      <transition
+        name="height"
+        mode="out-in">
+        <v-list
+          v-if="groupsAndUsers.length"
+          class="group-user"
+          two-line="two-line">
+          <transition-group name="height2">
+            <v-list-item
+              v-for="model of groupsAndUsers"
+              :key="model.id">
+              <v-list-item-action class="mr-5">
+                <v-icon>{{ $vuetify.icons.values[model.login?'user':'group'] }}</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>{{ model.name }}</v-list-item-title>
+                <v-list-item-subtitle>{{ model.login||model.description }}</v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action class="mr-5">
+                <v-select
+                  :items="permissions"
+                  v-model="model.level"
+                  class="level"
+                  light="light"
+                  solo="solo"
+                  hide-details="hide-details"
+                  dense="dense"/>
+              </v-list-item-action>
+              <v-list-item-action class="mr-5">
+                <v-btn
+                  icon="icon"
+                  @click="remove(model)">
+                  <v-icon>mdi-minus-circle</v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </v-list-item>
+          </transition-group>
+        </v-list>
+        <div
+          v-if="!groupsAndUsers.length && !loading"
+          class="mt-1 mb-2">Empty</div>
+      </transition>
+      <v-subheader>Grant access</v-subheader>
+      <search
+        :search-type-options="[{ name: 'User', value: 'user'}, { name: 'Group', value: 'group'}]"
+        :search-types="['user', 'group']"
+        class="search mb-3"
+        hide-search-icon="hide-search-icon"
+        placeholder="User or group name"
+        @select="groupOrUserSelected"/>
+      <v-switch
+        v-model="recursive"
+        :hint="recursiveText"
+        class="mt-0"
+        label="Include subfolders"
+        persistent-hint="persistent-hint"/>
+    </v-card-text>
+    <slot
+      v-bind="{ save, loading }"
+      name="card-actions">
+      <v-card-actions>
+        <v-spacer/>
+        <v-btn
+          text="text"
+          @click="$emit('close')">Cancel</v-btn>
+        <v-btn
+          color="primary"
+          depressed="depressed"
+          @click="save">Save</v-btn>
+      </v-card-actions>
+    </slot>
+  </v-card>
 </template>
 
 <style lang="scss" scoped>

@@ -108,20 +108,29 @@ export default {
 };
 </script>
 
-<template lang="pug">
-v-card.girder-job-list(color="primary")
-  filter-form(
-      :from-date.sync="jobFilter.fromDate",
-      :to-date.sync="jobFilter.toDate",
-      :status.sync="jobFilter.status",
-      :job-type.sync="jobFilter.jobType",
-      :status-list="typeAndStatusList.statuses",
-      :job-type-list="typeAndStatusList.types")
-  job-table(
-      :jobs="jobs",
-      :options.sync="options",
-      :more-pages="morePages",
-      @job-click="(e, job)=>$emit('job-click', e, job)")
-    template(#jobwidget="props", v-if="$scopedSlots.jobwidget")
-      slot(name="jobwidget", v-bind="props")
+<template>
+  <v-card
+    class="girder-job-list"
+    color="primary">
+    <filter-form
+      :from-date.sync="jobFilter.fromDate"
+      :to-date.sync="jobFilter.toDate"
+      :status.sync="jobFilter.status"
+      :job-type.sync="jobFilter.jobType"
+      :status-list="typeAndStatusList.statuses"
+      :job-type-list="typeAndStatusList.types"/>
+    <job-table
+      :jobs="jobs"
+      :options.sync="options"
+      :more-pages="morePages"
+      @job-click="(e, job) => $emit('job-click', e, job)">
+      <template
+        v-if="$scopedSlots.jobwidget"
+        #jobwidget="props">
+        <slot
+          v-bind="props"
+          name="jobwidget"/>
+      </template>
+    </job-table>
+  </v-card>
 </template>

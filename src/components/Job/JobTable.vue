@@ -63,25 +63,33 @@ export default {
 };
 </script>
 
-<template lang="pug">
-v-data-table(
-    item-key="_id",
-    :headers="headers_",
-    :items="items",
-    :server-items-length="serverItemsLength",
-    :options="options",
-    @update:options="$emit('update:options', $event)")
-  template(#item="props")
-    tr(@click="$emit('job-click', $event, props.item)")
-      td.one-line {{ props.item.title }}
-      td.one-line {{ props.item.type }}
-      td.one-line {{ props.item.updateString }}
-      td.one-line(nowrap, :title="props.item.statusText")
-        job-progress(:formatted-job="props.item")
-      td.one-line.pa-0
-        slot(name="jobwidget", v-bind="props")
-  template(#footer.page-text="")
-    .v-datatable__actions__options {{ pageRange.first }}-{{ pageRange.last }}
+<template>
+  <v-data-table
+    :headers="headers_"
+    :items="items"
+    :server-items-length="serverItemsLength"
+    :options="options"
+    item-key="_id"
+    @update:options="$emit('update:options', $event)"><template #item="props">
+      <tr @click="$emit('job-click', $event, props.item)">
+        <td class="one-line">{{ props.item.title }}</td>
+        <td class="one-line">{{ props.item.type }}</td>
+        <td class="one-line">{{ props.item.updateString }}</td>
+        <td
+          :title="props.item.statusText"
+          class="one-line"
+          nowrap="nowrap">
+          <job-progress :formatted-job="props.item"/>
+        </td>
+        <td class="one-line pa-0">
+          <slot
+            v-bind="props"
+            name="jobwidget"/>
+        </td>
+      </tr>
+    </template><template #footer.page-text="">
+      <div class="v-datatable__actions__options">{{ pageRange.first }}-{{ pageRange.last }}</div>
+  </template></v-data-table>
 </template>
 
 <style lang="scss" scoped>

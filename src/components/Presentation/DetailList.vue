@@ -1,12 +1,27 @@
-<template lang="pug">
-v-list(v-if="rows.length", dense)
-  v-subheader.subtitle-1.font-weight-bold.pl-4 {{ title }}
-  template(v-for="val, i in rows")
-    v-list-item.allow-select(:key="i", v-on="clickable ? {click: () => $emit('click', val)} : {}")
-      slot(name="row", :datum="val")
-        v-list-item-content
-          .body-2.no-overflow {{ val }}
-    v-divider.mx-3(v-if="i < rows.length - 1")
+<template>
+  <v-list
+    v-if="rows.length"
+    dense="dense">
+    <v-subheader class="subtitle-1 font-weight-bold pl-4">{{ title }}</v-subheader>
+    <template v-for="(val, i) in rows">
+      <v-list-item
+        :key="`${i}-li`"
+        class="allow-select"
+        v-on="clickable ? {click: () => $emit('click', val)} : {}">
+        <slot
+          :datum="val"
+          name="row">
+          <v-list-item-content>
+            <div class="body-2 no-overflow">{{ val }}</div>
+          </v-list-item-content>
+        </slot>
+      </v-list-item>
+      <v-divider
+        v-if="i < rows.length - 1"
+        :key="`${i}-divider`"
+        class="mx-3"/>
+    </template>
+  </v-list>
 </template>
 
 <script>

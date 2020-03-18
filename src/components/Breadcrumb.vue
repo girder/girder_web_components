@@ -100,29 +100,43 @@ export default {
 };
 </script>
 
-<template lang="pug">
-.girder-breadcrumb-component
-  v-icon.home-button.mr-3(
-      v-if="girderRest.user && !readonly",
-      color="accent",
-      @click="$emit('crumbclick', girderRest.user)",
-      :disabled="location._id === girderRest.user._id") $vuetify.icons.userHome
-  v-breadcrumbs.font-weight-bold.pa-0(:items="breadcrumb")
-    span.subheading.font-weight-bold(:disabled="readonly", slot="divider") /
-    template(#item="{ item }")
-      v-breadcrumbs-item(
-          tag="a",
-          :disabled="(readonly || breadcrumb.indexOf(item) == breadcrumb.length-1)",
-          @click="$emit('crumbclick', item)")
-        template(v-if="['folder', 'user', 'collection'].indexOf(item.type) !== -1")
-          span.accent--text {{ item.name }}
-        template(v-else-if="item.type==='users'")
-          v-icon.mdi-18px.accent--text $vuetify.icons.user
-        template(v-else-if="item.type==='collections'")
-          v-icon.mdi-18px.accent--text $vuetify.icons.collection
-        template(v-else-if="item.type==='root'")
-          v-icon.mdi-18px.accent--text $vuetify.icons.globe
-        span(v-else) {{ item }}
+<template>
+  <div class="girder-breadcrumb-component">
+    <v-icon
+      v-if="girderRest.user && !readonly"
+      :disabled="location._id === girderRest.user._id"
+      class="home-button mr-3"
+      color="accent"
+      @click="$emit('crumbclick', girderRest.user)">$vuetify.icons.userHome</v-icon>
+    <v-breadcrumbs
+      :items="breadcrumb"
+      class="font-weight-bold pa-0">
+      <span
+        slot="divider"
+        :disabled="readonly"
+        class="subheading font-weight-bold">/</span>
+      <template #item="{ item }">
+        <v-breadcrumbs-item
+          :disabled="(readonly || breadcrumb.indexOf(item) == breadcrumb.length-1)"
+          tag="a"
+          @click="$emit('crumbclick', item)">
+          <template v-if="['folder', 'user', 'collection'].indexOf(item.type) !== -1">
+            <span class="accent--text">{{ item.name }}</span>
+          </template>
+          <template v-else-if="item.type==='users'">
+            <v-icon class="mdi-18px accent--text">$vuetify.icons.user</v-icon>
+          </template>
+          <template v-else-if="item.type==='collections'">
+            <v-icon class="mdi-18px accent--text">$vuetify.icons.collection</v-icon>
+          </template>
+          <template v-else-if="item.type==='root'">
+            <v-icon class="mdi-18px accent--text">$vuetify.icons.globe</v-icon>
+          </template>
+          <span v-else>{{ item }}</span>
+        </v-breadcrumbs-item>
+      </template>
+    </v-breadcrumbs>
+  </div>
 </template>
 
 <style lang="scss">

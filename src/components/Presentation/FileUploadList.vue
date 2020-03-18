@@ -1,31 +1,56 @@
-<template lang="pug">
-  v-list(v-show="value.length", dense)
-    .file-tile(v-for="(file, i) in shownFiles", :key="file.file.name",
-        :class="`status-${file.status}`")
-      v-divider(v-if="i > 0")
-      v-list-item
-        v-list-item-icon
-          v-btn(v-if="file.status === 'pending'", icon, @click="$emit('input', splice(i))")
-            v-icon $vuetify.icons.close
-          v-progress-circular(v-if="file.status === 'uploading'",
-              color="primary",
-              :rotate="-90",
-              :value="progressPercent({...file.progress, total: file.progress.size })",
-              :indeterminate="file.progress.indeterminate")
-          v-icon(v-if="file.status === 'done'", color="success", large) $vuetify.icons.complete
-          v-icon(v-if="file.status === 'error'", color="error", large) $vuetify.icons.error
-        v-list-item-content
-          v-list-item-title {{ file.file.name }}
-          v-list-item-subtitle
-            span(v-if="file.progress.current") {{ formatSize(file.progress.current ) }} /
-            = " "
-            span {{ formatSize(file.file.size) }}
-        slot(name="item", v-bind="{ file }")
-    template(v-if="hiddenCount")
-      v-divider
-      v-list-item
-        v-list-item-content
-          .grey--text.subtitle-1 + {{ hiddenCount }} more...
+<template>
+  <v-list
+    v-show="value.length"
+    dense="dense">
+    <div
+      v-for="(file, i) in shownFiles"
+      :key="file.file.name"
+      :class="`status-${file.status}`"
+      class="file-tile">
+      <v-divider v-if="i > 0"/>
+      <v-list-item>
+        <v-list-item-icon>
+          <v-btn
+            v-if="file.status === 'pending'"
+            icon="icon"
+            @click="$emit('input', splice(i))">
+            <v-icon>$vuetify.icons.close</v-icon>
+          </v-btn>
+          <v-progress-circular
+            v-if="file.status === 'uploading'"
+            :rotate="-90"
+            :value="progressPercent({...file.progress, total: file.progress.size })"
+            :indeterminate="file.progress.indeterminate"
+            color="primary"/>
+          <v-icon
+            v-if="file.status === 'done'"
+            color="success"
+            large="large">$vuetify.icons.complete</v-icon>
+          <v-icon
+            v-if="file.status === 'error'"
+            color="error"
+            large="large">$vuetify.icons.error</v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>{{ file.file.name }}</v-list-item-title>
+          <v-list-item-subtitle>
+            <span v-if="file.progress.current">{{ formatSize(file.progress.current ) }} /</span>
+            <span>{{ formatSize(file.file.size) }}</span>
+          </v-list-item-subtitle>
+        </v-list-item-content>
+        <slot
+          v-bind="{ file }"
+          name="item"/>
+      </v-list-item>
+    </div><template v-if="hiddenCount">
+      <v-divider/>
+      <v-list-item>
+        <v-list-item-content>
+          <div class="grey--text subtitle-1">+ {{ hiddenCount }} more...</div>
+        </v-list-item-content>
+      </v-list-item>
+    </template>
+  </v-list>
 </template>
 
 <script>

@@ -1,51 +1,64 @@
-<template lang="pug">
-.login-widget
-  v-alert.mt-0(
-      dismissible,
-      transition="scale-transition",
-      v-for="err in alerts.errors",
-      :key="err",
-      :value="!!err",
-      type="error") {{ err }}
-  v-container
-    v-form(@submit.prevent="login", ref="login")
-      v-text-field(
-          v-if="!otpFormVisible || forceOtp",
-          v-model="username",
-          label="Username or e-mail",
-          autofocus,
-          :rules="nonEmptyRules",
-          prepend-icon="$vuetify.icons.user",
-          type="text")
-      v-text-field(
-          v-if="!otpFormVisible || forceOtp",
-          v-model="password",
-          type="password",
-          label="Password",
-          :rules="nonEmptyRules",
-          prepend-icon="$vuetify.icons.lock")
-      v-text-field(
-          v-if="otpFormVisible || forceOtp",
-          v-model="otp",
-          type="text",
-          label="Authentication code",
-          :rules="otpRules",
-          prepend-icon="$vuetify.icons.otp")
-      v-card-actions
-        v-btn.ml-0(type="submit",
-            color="primary",
-            :disabled="inProgress",
-            :loading="inProgress")
-          v-icon(left) $vuetify.icons.login
-          | {{ otpFormVisible ? 'Verify code' : 'Login' }}
-        template(v-if="!hideForgotPassword")
-          v-spacer
-          v-btn(
-              text, color="primary", :to="forgotPasswordRoute", :href="forgotPasswordUrl",
-              @click="$emit('forgotpassword')") Forgot Password?
-  template(v-if="oauthProviders && oauthProviders.length")
-    v-divider
-    girder-oauth(:providers="oauthProviders")
+<template>
+  <div class="login-widget">
+    <v-alert
+      v-for="err in alerts.errors"
+      :key="err"
+      :value="!!err"
+      class="mt-0"
+      dismissible="dismissible"
+      transition="scale-transition"
+      type="error">{{ err }}</v-alert>
+    <v-container>
+      <v-form
+        ref="login"
+        @submit.prevent="login">
+        <v-text-field
+          v-if="!otpFormVisible || forceOtp"
+          v-model="username"
+          :rules="nonEmptyRules"
+          label="Username or e-mail"
+          autofocus="autofocus"
+          prepend-icon="$vuetify.icons.user"
+          type="text"/>
+        <v-text-field
+          v-if="!otpFormVisible || forceOtp"
+          v-model="password"
+          :rules="nonEmptyRules"
+          type="password"
+          label="Password"
+          prepend-icon="$vuetify.icons.lock"/>
+        <v-text-field
+          v-if="otpFormVisible || forceOtp"
+          v-model="otp"
+          :rules="otpRules"
+          type="text"
+          label="Authentication code"
+          prepend-icon="$vuetify.icons.otp"/>
+        <v-card-actions>
+          <v-btn
+            :disabled="inProgress"
+            :loading="inProgress"
+            class="ml-0"
+            type="submit"
+            color="primary">
+            <v-icon left="left">$vuetify.icons.login</v-icon>
+            {{ otpFormVisible ? 'Verify code' : 'Login' }}
+          </v-btn><template v-if="!hideForgotPassword">
+            <v-spacer/>
+            <v-btn
+              :to="forgotPasswordRoute"
+              :href="forgotPasswordUrl"
+              text="text"
+              color="primary"
+              @click="$emit('forgotpassword')">Forgot Password?</v-btn>
+          </template>
+        </v-card-actions>
+      </v-form>
+    </v-container><template v-if="oauthProviders && oauthProviders.length">
+      <v-divider/>
+      <girder-oauth :providers="oauthProviders"/>
+    </template>
+  </div>
 </template>
 
 <script>

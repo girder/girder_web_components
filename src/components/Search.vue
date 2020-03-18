@@ -155,80 +155,133 @@ export default {
 };
 </script>
 
-<template lang="pug">
-v-row.align-center.girder-searchbar(no-gutters)
-  v-icon.mr-3.mdi-24px(v-if="!hideSearchIcon", color="white") $vuetify.icons.search
-  v-menu(
-      offset-y,
-      content-class="girder-searchbar-menu",
-      transition="slide-y-transition",
-      :open-on-click="false",
-      :value="searchText",
-      :nudge-bottom="6")
-    template(#activator="{ on }")
-      v-text-field(v-on="on", v-model="searchText", light, solo, hide-details, clearable,
-          :placeholder="placeholder")
-    v-list(dense)
-      v-list-item(
-          v-show="!loading",
-          v-for="result in quickResults",
-          @click="selectResult(result)",
-          :key="result._id")
-        slot(name="searchresult", v-bind="result")
-          v-list-item-action.mr-2
-            v-icon {{ $vuetify.icons.values[result._modelType] }}
-          v-list-item-content
-            v-list-item-title {{ result.name || formatUsername(result) }}
-      v-list-item(v-show="searchText && quickResults.length === 0 && !loading")
-        slot(name="noresult", v-bind="{ searchText }")
-          v-list-item-action
-            v-icon $vuetify.icons.alert
-          v-list-item-content
-            v-list-item-title No results found for query '{{ searchText }}'
-            v-list-item-subtitle Modify search parameters or refine your query.
-      v-list-item(v-show="!loading && showMore && searchResults.length > maxQuickResults",
-          @click="$emit('moreresults', searchParams)")
-        v-list-item-action
-          v-icon $vuetify.icons.more
-        v-list-item-content
-          v-list-item-title More
-      //- Skeleton search results shown as "loading" animation
-      v-list-item(
-          v-show="loading",
-          v-for="i in Math.round(maxQuickResults / 2)",
-          :key="`skeleton-${i}`")
-        v-list-item-action
-          v-icon.grey--text.text--lighten-1 $vuetify.icons.circle
-        v-list-item-content
-          v-list-item-title.skeleton.skeleton--text.mb-2(
-              :style="{ maxWidth: (70 + (4 * (i % 3))) + '%', height: '12px' }")
-          v-list-item-subtitle.skeleton.skeleton--text(
-              :style="{ maxWidth: (50 - (4 * (i % 2))) + '%', height: '6px' }")
-  v-menu(
-      v-if="!hideOptionsMenu",
-      v-model="searchOptionsMenu",
-      offset-y,
-      left,
-      content-class="girder-search-arrow-menu",
-      :close-on-content-click="false")
-    template(#activator="{ on }")
-      v-btn(icon, v-on="on")
-        v-icon.mdi-24px $vuetify.icons.settings
-    v-card
-      v-card-actions
-        v-col.pa-0.flex-column(no-gutters)
-          v-radio-group.my-2(hide-details, v-model="internalSearchMode")
-            v-radio.mb-1(v-for="mode in searchModeOptions",
-                :key="mode.value",
-                :label="mode.name",
-                :value="mode.value")
-          v-divider
-          v-checkbox.mt-1(v-for="searchType in searchTypeOptions",
-              hide-details,
-              :key="searchType.value",
-              v-model="internalSearchTypes",
-              :label="searchType.name",
-              :value="searchType.value")
+<template>
+  <v-row
+    class="align-center girder-searchbar"
+    no-gutters="no-gutters">
+    <v-icon
+      v-if="!hideSearchIcon"
+      class="mr-3 mdi-24px"
+      color="white">$vuetify.icons.search</v-icon>
+    <v-menu
+      :open-on-click="false"
+      :value="searchText"
+      :nudge-bottom="6"
+      offset-y="offset-y"
+      content-class="girder-searchbar-menu"
+      transition="slide-y-transition"><template #activator="{ on }">
+        <v-text-field
+          v-model="searchText"
+          :placeholder="placeholder"
+          light="light"
+          solo="solo"
+          hide-details="hide-details"
+          clearable="clearable"
+          v-on="on"/>
+      </template>
+      <v-list dense="dense">
+        <v-list-item
+          v-for="result in quickResults"
+          v-show="!loading"
+          :key="result._id"
+          @click="selectResult(result)">
+          <slot
+            v-bind="result"
+            name="searchresult">
+            <v-list-item-action class="mr-2">
+              <v-icon>{{ $vuetify.icons.values[result._modelType] }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ result.name || formatUsername(result) }}</v-list-item-title>
+            </v-list-item-content>
+          </slot>
+        </v-list-item>
+        <v-list-item v-show="searchText && quickResults.length === 0 && !loading">
+          <slot
+            v-bind="{ searchText }"
+            name="noresult">
+            <v-list-item-action>
+              <v-icon>$vuetify.icons.alert</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>No results found for query '{{ searchText }}'</v-list-item-title>
+              <v-list-item-subtitle>
+                Modify search parameters or refine your query.
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </slot>
+        </v-list-item>
+        <v-list-item
+          v-show="!loading && showMore && searchResults.length > maxQuickResults"
+          @click="$emit('moreresults', searchParams)">
+          <v-list-item-action>
+            <v-icon>$vuetify.icons.more</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>More</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item
+          v-for="i in Math.round(maxQuickResults / 2)"
+          v-show="loading"
+          :key="`skeleton-${i}`">
+          <v-list-item-action>
+            <v-icon class="grey--text text--lighten-1">$vuetify.icons.circle</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title
+              :style="{ maxWidth: (70 + (4 * (i % 3))) + '%', height: '12px' }"
+              class="skeleton skeleton--text mb-2"/>
+            <v-list-item-subtitle
+              :style="{ maxWidth: (50 - (4 * (i % 2))) + '%', height: '6px' }"
+              class="skeleton skeleton--text"/>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+    <v-menu
+      v-if="!hideOptionsMenu"
+      v-model="searchOptionsMenu"
+      :close-on-content-click="false"
+      offset-y="offset-y"
+      left="left"
+      content-class="girder-search-arrow-menu"><template #activator="{ on }">
+        <v-btn
+          icon="icon"
+          v-on="on">
+          <v-icon class="mdi-24px">$vuetify.icons.settings</v-icon>
+        </v-btn>
+      </template>
+      <v-card>
+        <v-card-actions>
+          <v-col
+            class="pa-0 flex-column"
+            no-gutters="no-gutters">
+            <v-radio-group
+              v-model="internalSearchMode"
+              class="my-2"
+              hide-details="hide-details">
+              <v-radio
+                v-for="mode in searchModeOptions"
+                :key="mode.value"
+                :label="mode.name"
+                :value="mode.value"
+                class="mb-1"/>
+            </v-radio-group>
+            <v-divider/>
+            <v-checkbox
+              v-for="searchType in searchTypeOptions"
+              :key="searchType.value"
+              v-model="internalSearchTypes"
+              :label="searchType.name"
+              :value="searchType.value"
+              class="mt-1"
+              hide-details="hide-details"/>
+          </v-col>
+        </v-card-actions>
+      </v-card>
+    </v-menu>
+  </v-row>
 </template>
 
 <style lang="scss">

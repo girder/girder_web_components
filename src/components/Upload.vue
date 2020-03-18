@@ -1,49 +1,77 @@
-<template lang="pug">
-v-card.fill-height(flat)
-  v-row.flex-column.fill-height(no-gutters)
-    slot(name="header")
-      v-card-title(primary-title)
-        div
-          .headline(v-if="!hideHeadline")
-            | Upload to
-            = " "
-            span.font-weight-bold {{ dest.name }}
-          .grey--text.title {{ statusMessage }}
-
-    v-progress-linear(
-        v-if="uploading",
-        :value="totalProgressPercent",
-        :indeterminate="indeterminate",
-        height="20")
-
-    v-card-actions(v-show="files.length && !errorMessage && !uploading")
-      v-btn(text, @click="reset") Clear all
-      v-btn(
-          v-if="!hideStartButton",
-          text,
-          color="primary",
-          @click="startUpload") {{ startButtonText }}
-
-    v-col
-      slot(name="dropzone")
-        dropzone(v-if="!files.length",
-            @change="inputFilesChanged",
-            :message="dropzoneMessage",
-            :multiple="multiple",
-            :accept="accept")
-
-    div(v-if="errorMessage")
-      v-alert(:value="true", dark, tile, type="error") {{ errorMessage }}
-        v-btn.ml-3(
-            v-if="!uploading",
-            dark,
-            small,
-            outlined,
-            @click="startUpload") Resume upload
-        v-btn.ml-3(v-if="!uploading", dark, small, outlined, @click="reset") Abort
-
-    slot(name="files", v-bind="{ files, setFiles, maxShow }")
-      file-upload-list(@input="setFiles", v-bind="{ value: files, maxShow }")
+<template>
+  <v-card
+    class="fill-height"
+    flat="flat">
+    <v-row
+      class="flex-column fill-height"
+      no-gutters="no-gutters">
+      <slot name="header">
+        <v-card-title primary-title="primary-title">
+          <div>
+            <div
+              v-if="!hideHeadline"
+              class="headline">Upload to <span class="font-weight-bold">{{ dest.name }}</span>
+            </div>
+            <div class="grey--text title">{{ statusMessage }}</div>
+          </div>
+        </v-card-title>
+      </slot>
+      <v-progress-linear
+        v-if="uploading"
+        :value="totalProgressPercent"
+        :indeterminate="indeterminate"
+        height="20"/>
+      <v-card-actions v-show="files.length && !errorMessage && !uploading">
+        <v-btn
+          text="text"
+          @click="reset">Clear all</v-btn>
+        <v-btn
+          v-if="!hideStartButton"
+          text="text"
+          color="primary"
+          @click="startUpload">{{ startButtonText }}</v-btn>
+      </v-card-actions>
+      <v-col>
+        <slot name="dropzone">
+          <dropzone
+            v-if="!files.length"
+            :message="dropzoneMessage"
+            :multiple="multiple"
+            :accept="accept"
+            @change="inputFilesChanged"/>
+        </slot>
+      </v-col>
+      <div v-if="errorMessage">
+        <v-alert
+          :value="true"
+          dark="dark"
+          tile="tile"
+          type="error">{{ errorMessage }}
+          <v-btn
+            v-if="!uploading"
+            class="ml-3"
+            dark="dark"
+            small="small"
+            outlined="outlined"
+            @click="startUpload">Resume upload</v-btn>
+          <v-btn
+            v-if="!uploading"
+            class="ml-3"
+            dark="dark"
+            small="small"
+            outlined="outlined"
+            @click="reset">Abort</v-btn>
+        </v-alert>
+      </div>
+      <slot
+        v-bind="{ files, setFiles, maxShow }"
+        name="files">
+        <file-upload-list
+          v-bind="{ value: files, maxShow }"
+          @input="setFiles"/>
+      </slot>
+    </v-row>
+  </v-card>
 </template>
 
 <script>

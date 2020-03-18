@@ -20,7 +20,6 @@ jobs:
           paths:
             - project
       - run: yarn lint --no-fix
-      - run: yarn lint:pug
       - run: yarn lint:style
       # --runInBand https://discuss.circleci.com/t/babel-7-jest-results-in-timeout/25383
       # https://jestjs.io/docs/en/troubleshooting.html#tests-are-extremely-slow-on-docker-and-or-continuous-integration-ci-server
@@ -40,7 +39,7 @@ jobs:
             - "eb:dc:cd:0a:f4:99:56:3f:79:f7:22:a2:6c:21:56:c7"
       - deploy:
           command: .circleci/pages-deploy.sh
-  
+
   publish:
     docker:
       - image: circleci/node:10

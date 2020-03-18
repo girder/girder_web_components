@@ -38,38 +38,59 @@ export default {
 };
 </script>
 
-<template lang="pug">
-.girder-markdown-editor
-
-  v-tabs.md-tab(v-model="activeTab")
-
-    v-tab(key="edit") Edit
-    v-tab-item
-      v-textarea(
-          hide-details,
-          v-model="text_",
-          filled,
-          single-line,
-          :label="label",
-          :placeholder="placeholder")
-
-    v-tab(key="preview") Preview
-    v-tab-item.md-preview.pa-2.grey.lighten-3
-      girder-markdown(:text="text_")
-
-  v-toolbar(dark, color="secondary darken-2")
-    span.hidden-xs-only Supports
-      a(href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet")  Markdown
-    v-spacer
-    v-toolbar-items
-      v-btn(text, @click="activeTab = 0", :class="{ active: activeTab === 0 }")
-        v-row.flex-column.align-center.justify-content(no-gutters)
-          v-icon.mdi-24px $vuetify.icons.edit
-          span.caption.text-capitalize Write
-      v-btn(text, @click="activeTab = 1", :class="{ active: activeTab === 1 }")
-        v-row.flex-column.align-center.justify-content(no-gutters)
-          v-icon.mdi-24px $vuetify.icons.preview
-          span.caption.text-capitalize Preview
+<template>
+  <div class="girder-markdown-editor">
+    <v-tabs
+      v-model="activeTab"
+      class="md-tab">
+      <v-tab key="edit">Edit</v-tab>
+      <v-tab-item>
+        <v-textarea
+          v-model="text_"
+          :label="label"
+          :placeholder="placeholder"
+          hide-details="hide-details"
+          filled="filled"
+          single-line="single-line"/>
+      </v-tab-item>
+      <v-tab key="preview">Preview</v-tab>
+      <v-tab-item class="md-preview pa-2 grey lighten-3">
+        <girder-markdown :text="text_"/>
+      </v-tab-item>
+    </v-tabs>
+    <v-toolbar
+      dark="dark"
+      color="secondary darken-2">
+      <span class="hidden-xs-only">
+        Supports <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown</a>
+      </span>
+      <v-spacer/>
+      <v-toolbar-items>
+        <v-btn
+          :class="{ active: activeTab === 0 }"
+          text="text"
+          @click="activeTab = 0">
+          <v-row
+            class="flex-column align-center justify-content"
+            no-gutters="no-gutters">
+            <v-icon class="mdi-24px">$vuetify.icons.edit</v-icon>
+            <span class="caption text-capitalize">Write</span>
+          </v-row>
+        </v-btn>
+        <v-btn
+          :class="{ active: activeTab === 1 }"
+          text="text"
+          @click="activeTab = 1">
+          <v-row
+            class="flex-column align-center justify-content"
+            no-gutters="no-gutters">
+            <v-icon class="mdi-24px">$vuetify.icons.preview</v-icon>
+            <span class="caption text-capitalize">Preview</span>
+          </v-row>
+        </v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+  </div>
 </template>
 
 <style lang="scss">
