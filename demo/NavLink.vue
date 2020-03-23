@@ -25,7 +25,8 @@ export default {
   <v-list-item
     :link="!!href"
     :href="href"
-    v-on="listeners">
+    v-on="listeners"
+  >
     <v-list-item-content>
       <v-list-item-title>{{ title }}</v-list-item-title>
     </v-list-item-content>

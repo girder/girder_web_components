@@ -208,27 +208,33 @@ export default {
       @drag="$emit('drag', $event)"
       @dragstart="$emit('dragstart', $event)"
       @dragend="$emit('dragend', $event)"
-      @drop="$emit('drop', $event)">
+      @drop="$emit('drop', $event)"
+    >
       <template #breadcrumb="props">
         <girder-breadcrumb
           :location="props.location"
           :root-location-disabled="props.rootLocationDisabled"
-          @crumbclick="props.changeLocation($event)"/>
+          @crumbclick="props.changeLocation($event)"
+        />
       </template><template #headerwidget>
-        <slot name="headerwidget"/>
+        <slot name="headerwidget" />
         <v-dialog
           v-if="shouldShowUpload"
           v-model="uploaderDialog"
-          max-width="800px"><template #activator="{ on }">
+          max-width="800px"
+        >
+          <template #activator="{ on }">
             <v-btn
               class="ma-0"
               text="text"
               small="small"
-              v-on="on">
+              v-on="on"
+            >
               <v-icon
                 class="mdi-24px mr-1"
                 left="left"
-                color="accent">$vuetify.icons.fileNew</v-icon>
+                color="accent"
+              >$vuetify.icons.fileNew</v-icon>
               <span class="hidden-xs-only">Upload</span>
             </v-btn>
           </template>
@@ -238,21 +244,26 @@ export default {
             :post-upload="postUploadInternal"
             :multiple="uploadMultiple"
             :max-show="uploadMaxShow"
-            :accept="uploadAccept"/>
+            :accept="uploadAccept"
+          />
         </v-dialog>
         <v-dialog
           v-if="newFolderEnabled && !isRootLocation(internalLocation) && girderRest.user"
           v-model="newFolderDialog"
-          max-width="800px"><template #activator="{ on }">
+          max-width="800px"
+        >
+          <template #activator="{ on }">
             <v-btn
               class="ma-0"
               text="text"
               small="small"
-              v-on="on">
+              v-on="on"
+            >
               <v-icon
                 class="mdi-24px mr-1"
                 left="left"
-                color="accent">$vuetify.icons.folderNew</v-icon>
+                color="accent"
+              >$vuetify.icons.folderNew</v-icon>
               <span class="hidden-xs-only">New Folder</span>
             </v-btn>
           </template>
@@ -261,24 +272,29 @@ export default {
             :pre-upsert="preUpsert"
             :post-upsert="postUpsertInternal"
             :key="internalLocation._id"
-            @dismiss="newFolderDialog = false"/>
+            @dismiss="newFolderDialog = false"
+          />
         </v-dialog>
       </template><template #row-widget="props">
         <slot
           v-bind="props"
-          name="row-widget"/>
-    </template></girder-data-browser>
+          name="row-widget"
+        />
+      </template>
+    </girder-data-browser>
     <v-menu
       v-model="collectionAndFolderMenu.show"
       :position-x="collectionAndFolderMenu.x"
       :position-y="collectionAndFolderMenu.y"
       absolute="absolute"
       offset-y="offset-y"
-      dark="dark">
+      dark="dark"
+    >
       <v-list dense="dense">
         <v-list-item
           :disabled="!hasAccessPermission"
-          @click="showAccessControlDialog=true">
+          @click="showAccessControlDialog=true"
+        >
           <v-list-item-title>Access control</v-list-item-title>
         </v-list-item>
       </v-list>
@@ -288,13 +304,15 @@ export default {
       max-width="700px"
       persistent="persistent"
       eager="eager"
-      scrollable="scrollable">
+      scrollable="scrollable"
+    >
       <girder-access-control
         v-if="actOnItem"
         :model="actOnItem"
         :has-permission.sync="hasAccessPermission"
         @close="showAccessControlDialog=false"
-        @model-access-changed="$refs.girderBrowser.refresh()"/>
+        @model-access-changed="$refs.girderBrowser.refresh()"
+      />
     </v-dialog>
   </v-card>
 </template>

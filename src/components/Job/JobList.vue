@@ -111,25 +111,30 @@ export default {
 <template>
   <v-card
     class="girder-job-list"
-    color="primary">
+    color="primary"
+  >
     <filter-form
       :from-date.sync="jobFilter.fromDate"
       :to-date.sync="jobFilter.toDate"
       :status.sync="jobFilter.status"
       :job-type.sync="jobFilter.jobType"
       :status-list="typeAndStatusList.statuses"
-      :job-type-list="typeAndStatusList.types"/>
+      :job-type-list="typeAndStatusList.types"
+    />
     <job-table
       :jobs="jobs"
       :options.sync="options"
       :more-pages="morePages"
-      @job-click="(e, job) => $emit('job-click', e, job)">
+      @job-click="(e, job) => $emit('job-click', e, job)"
+    >
       <template
         v-if="$scopedSlots.jobwidget"
-        #jobwidget="props">
+        #jobwidget="props"
+      >
         <slot
           v-bind="props"
-          name="jobwidget"/>
+          name="jobwidget"
+        />
       </template>
     </job-table>
   </v-card>

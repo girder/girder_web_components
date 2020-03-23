@@ -7,7 +7,8 @@
       class="mt-0"
       dismissible="dismissible"
       transition="scale-transition"
-      type="error">{{ err }}</v-alert>
+      type="error"
+    >{{ err }}</v-alert>
     <v-alert
       v-for="info in alerts.infos"
       :key="info"
@@ -15,53 +16,63 @@
       class="mt-0"
       dismissible="dismissible"
       transition="scale-transition"
-      type="info">{{ info }}</v-alert>
+      type="info"
+    >{{ info }}</v-alert>
     <v-container>
       <v-form
         ref="form"
-        @submit.prevent="register">
+        @submit.prevent="register"
+      >
         <v-text-field
           v-model="login"
           :rules="nonEmptyRules"
           label="Username"
           type="text"
-          autofocus="autofocus"/>
+          autofocus="autofocus"
+        />
         <v-text-field
           v-model="email"
           :rules="nonEmptyRules"
           label="Email"
-          type="email"/>
+          type="email"
+        />
         <v-text-field
           v-model="firstName"
           :rules="nonEmptyRules"
           label="First Name"
-          type="text"/>
+          type="text"
+        />
         <v-text-field
           v-model="lastName"
           :rules="nonEmptyRules"
           label="Last Name"
-          type="text"/>
+          type="text"
+        />
         <v-text-field
           v-model="password"
           :rules="nonEmptyRules"
           type="password"
-          label="Password"/>
+          label="Password"
+        />
         <v-text-field
           v-model="retypePassword"
           :rules="retypeMustMatchPasswordRules"
           type="password"
-          label="Retype password"/>
+          label="Retype password"
+        />
         <v-btn
           :loading="inProgress"
           class="ml-0"
           type="submit"
-          color="primary">Register</v-btn>
+          color="primary"
+        >Register</v-btn>
       </v-form>
     </v-container><template v-if="oauthProviders && oauthProviders.length">
-      <v-divider/>
+      <v-divider />
       <girder-oauth
         :providers="oauthProviders"
-        verb="register"/>
+        verb="register"
+      />
     </template>
   </div>
 </template>

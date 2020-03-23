@@ -1,19 +1,22 @@
 <template>
   <v-list
     v-show="value.length"
-    dense="dense">
+    dense="dense"
+  >
     <div
       v-for="(file, i) in shownFiles"
       :key="file.file.name"
       :class="`status-${file.status}`"
-      class="file-tile">
-      <v-divider v-if="i > 0"/>
+      class="file-tile"
+    >
+      <v-divider v-if="i > 0" />
       <v-list-item>
         <v-list-item-icon>
           <v-btn
             v-if="file.status === 'pending'"
             icon="icon"
-            @click="$emit('input', splice(i))">
+            @click="$emit('input', splice(i))"
+          >
             <v-icon>$vuetify.icons.close</v-icon>
           </v-btn>
           <v-progress-circular
@@ -21,15 +24,18 @@
             :rotate="-90"
             :value="progressPercent({...file.progress, total: file.progress.size })"
             :indeterminate="file.progress.indeterminate"
-            color="primary"/>
+            color="primary"
+          />
           <v-icon
             v-if="file.status === 'done'"
             color="success"
-            large="large">$vuetify.icons.complete</v-icon>
+            large="large"
+          >$vuetify.icons.complete</v-icon>
           <v-icon
             v-if="file.status === 'error'"
             color="error"
-            large="large">$vuetify.icons.error</v-icon>
+            large="large"
+          >$vuetify.icons.error</v-icon>
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>{{ file.file.name }}</v-list-item-title>
@@ -40,10 +46,11 @@
         </v-list-item-content>
         <slot
           v-bind="{ file }"
-          name="item"/>
+          name="item"
+        />
       </v-list-item>
     </div><template v-if="hiddenCount">
-      <v-divider/>
+      <v-divider />
       <v-list-item>
         <v-list-item-content>
           <div class="grey--text subtitle-1">+ {{ hiddenCount }} more...</div>
@@ -98,9 +105,7 @@ export default {
 
 <style lang="scss" scoped>
 .file-tile {
-  transition:
-    width 0.8s ease-in-out 1s,
-    height 0.8s ease-in-out 1s,
+  transition: width 0.8s ease-in-out 1s, height 0.8s ease-in-out 1s,
     background-color 0.5s ease-in-out;
   width: 100%;
 

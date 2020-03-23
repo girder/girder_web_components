@@ -1,16 +1,19 @@
 <template>
   <v-list
     v-if="rows.length"
-    dense="dense">
+    dense="dense"
+  >
     <v-subheader class="subtitle-1 font-weight-bold pl-4">{{ title }}</v-subheader>
     <template v-for="(val, i) in rows">
       <v-list-item
         :key="`${i}-li`"
         class="allow-select"
-        v-on="clickable ? {click: () => $emit('click', val)} : {}">
+        v-on="clickable ? {click: () => $emit('click', val)} : {}"
+      >
         <slot
           :datum="val"
-          name="row">
+          name="row"
+        >
           <v-list-item-content>
             <div class="body-2 no-overflow">{{ val }}</div>
           </v-list-item-content>
@@ -19,7 +22,8 @@
       <v-divider
         v-if="i < rows.length - 1"
         :key="`${i}-divider`"
-        class="mx-3"/>
+        class="mx-3"
+      />
     </template>
   </v-list>
 </template>

@@ -107,19 +107,23 @@ export default {
       :disabled="location._id === girderRest.user._id"
       class="home-button mr-3"
       color="accent"
-      @click="$emit('crumbclick', girderRest.user)">$vuetify.icons.userHome</v-icon>
+      @click="$emit('crumbclick', girderRest.user)"
+    >$vuetify.icons.userHome</v-icon>
     <v-breadcrumbs
       :items="breadcrumb"
-      class="font-weight-bold pa-0">
+      class="font-weight-bold pa-0"
+    >
       <span
         slot="divider"
         :disabled="readonly"
-        class="subheading font-weight-bold">/</span>
+        class="subheading font-weight-bold"
+      >/</span>
       <template #item="{ item }">
         <v-breadcrumbs-item
           :disabled="(readonly || breadcrumb.indexOf(item) == breadcrumb.length-1)"
           tag="a"
-          @click="$emit('crumbclick', item)">
+          @click="$emit('crumbclick', item)"
+        >
           <template v-if="['folder', 'user', 'collection'].indexOf(item.type) !== -1">
             <span class="accent--text">{{ item.name }}</span>
           </template>

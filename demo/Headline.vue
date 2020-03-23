@@ -27,7 +27,8 @@ export default {
         :href="repoBase + link"
         class="ml-2"
         icon="icon"
-        title="View source">
+        title="View source"
+      >
         <v-icon>$vuetify.icons.externalLink</v-icon>
       </v-btn>
     </div>

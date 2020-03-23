@@ -42,7 +42,8 @@ export default {
   <div class="girder-markdown-editor">
     <v-tabs
       v-model="activeTab"
-      class="md-tab">
+      class="md-tab"
+    >
       <v-tab key="edit">Edit</v-tab>
       <v-tab-item>
         <v-textarea
@@ -51,28 +52,32 @@ export default {
           :placeholder="placeholder"
           hide-details="hide-details"
           filled="filled"
-          single-line="single-line"/>
+          single-line="single-line"
+        />
       </v-tab-item>
       <v-tab key="preview">Preview</v-tab>
       <v-tab-item class="md-preview pa-2 grey lighten-3">
-        <girder-markdown :text="text_"/>
+        <girder-markdown :text="text_" />
       </v-tab-item>
     </v-tabs>
     <v-toolbar
       dark="dark"
-      color="secondary darken-2">
+      color="secondary darken-2"
+    >
       <span class="hidden-xs-only">
         Supports <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown</a>
       </span>
-      <v-spacer/>
+      <v-spacer />
       <v-toolbar-items>
         <v-btn
           :class="{ active: activeTab === 0 }"
           text="text"
-          @click="activeTab = 0">
+          @click="activeTab = 0"
+        >
           <v-row
             class="flex-column align-center justify-content"
-            no-gutters="no-gutters">
+            no-gutters="no-gutters"
+          >
             <v-icon class="mdi-24px">$vuetify.icons.edit</v-icon>
             <span class="caption text-capitalize">Write</span>
           </v-row>
@@ -80,10 +85,12 @@ export default {
         <v-btn
           :class="{ active: activeTab === 1 }"
           text="text"
-          @click="activeTab = 1">
+          @click="activeTab = 1"
+        >
           <v-row
             class="flex-column align-center justify-content"
-            no-gutters="no-gutters">
+            no-gutters="no-gutters"
+          >
             <v-icon class="mdi-24px">$vuetify.icons.preview</v-icon>
             <span class="caption text-capitalize">Preview</span>
           </v-row>

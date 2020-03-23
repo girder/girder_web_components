@@ -70,7 +70,9 @@ export default {
     :server-items-length="serverItemsLength"
     :options="options"
     item-key="_id"
-    @update:options="$emit('update:options', $event)"><template #item="props">
+    @update:options="$emit('update:options', $event)"
+  >
+    <template #item="props">
       <tr @click="$emit('job-click', $event, props.item)">
         <td class="one-line">{{ props.item.title }}</td>
         <td class="one-line">{{ props.item.type }}</td>
@@ -78,18 +80,22 @@ export default {
         <td
           :title="props.item.statusText"
           class="one-line"
-          nowrap="nowrap">
-          <job-progress :formatted-job="props.item"/>
+          nowrap="nowrap"
+        >
+          <job-progress :formatted-job="props.item" />
         </td>
         <td class="one-line pa-0">
           <slot
             v-bind="props"
-            name="jobwidget"/>
+            name="jobwidget"
+          />
         </td>
       </tr>
-    </template><template #footer.page-text="">
+    </template>
+    <template #footer.page-text="">
       <div class="v-datatable__actions__options">{{ pageRange.first }}-{{ pageRange.last }}</div>
-  </template></v-data-table>
+    </template>
+  </v-data-table>
 </template>
 
 <style lang="scss" scoped>

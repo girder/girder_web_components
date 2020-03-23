@@ -85,11 +85,15 @@ export default {
     hide-default-header="hide-default-header"
     item-key="_id"
     @input="$emit('input', $event)"
-    @update:options="$emit('update:options', $event)"><template #header="vDataTableHeaderProps">
+    @update:options="$emit('update:options', $event)"
+  >
+    <template #header="vDataTableHeaderProps">
       <slot
         v-bind="vDataTableHeaderProps"
-        name="header"/>
-    </template><template #item="props">
+        name="header"
+      />
+    </template>
+    <template #item="props">
       <tr
         :draggable="draggable"
         :active="props.isSelected"
@@ -100,42 +104,56 @@ export default {
         @drag="$emit('drag', { items: [props], event: $event })"
         @dragstart="$emit('dragstart', { items: [props], event: $event })"
         @dragend="$emit('dragend', { items: [props], event: $event })"
-        @drop="$emit('drop', { items: [props], event: $event })">
+        @drop="$emit('drop', { items: [props], event: $event })"
+      >
         <td
           v-if="selectable"
-          class="pl-3 pr-0">
+          class="pl-3 pr-0"
+        >
           <v-checkbox
             :input-value="props.isSelected"
             accent="accent"
             hide-details="hide-details"
-            @change="props.select"/>
+            @change="props.select"
+          />
         </td>
         <td
           class="pl-3"
           colspan="2"
-          @contextmenu="$emit('row-right-click', props.item, $event)"><span
+          @contextmenu="$emit('row-right-click', props.item, $event)"
+        >
+          <span
             :class="getItemClass(props.item)"
             class="text-container nobreak"
-            @click.stop="$emit('rowclick', props.item)">
+            @click.stop="$emit('rowclick', props.item)"
+          >
             <v-icon
               :color="props.isSelected ? 'accent' : ''"
-              class="pr-2">{{ $vuetify.icons.values[props.item.icon] }}</v-icon>
+              class="pr-2"
+            >{{ $vuetify.icons.values[props.item.icon] }}</v-icon>
             {{ props.item.name }}
             <slot
               v-bind="props"
-              name="row-widget"/>
-        </span></td>
+              name="row-widget"
+            />
+          </span>
+        </td>
         <td class="text-right nobreak">{{ props.item.humanSize }}</td>
       </tr>
-    </template><template #no-data="">
+    </template>
+    <template #no-data="">
       <div
         class="text-center"
-        width="100%">No Data Available</div>
-    </template><template #no-results="">
+        width="100%"
+      >No Data Available</div>
+    </template>
+    <template #no-results="">
       <div
         class="text-center"
-        width="100%">No Data Available</div>
-  </template></v-data-table>
+        width="100%"
+      >No Data Available</div>
+    </template>
+  </v-data-table>
 </template>
 
 

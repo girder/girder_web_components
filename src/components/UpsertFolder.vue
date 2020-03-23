@@ -111,12 +111,14 @@ export default {
     <v-card flat="flat">
       <v-row
         class="pa-2 flex-column"
-        no-gutters="no-gutters">
+        no-gutters="no-gutters"
+      >
         <slot name="header">
           <v-card-title
             class="pb-0"
-            primary-title="primary-title">
-            <h5 class="display-1"/>{{ edit ? 'Edit Folder' : 'Create New Folder' }}
+            primary-title="primary-title"
+          >
+            <h5 class="display-1" />{{ edit ? 'Edit Folder' : 'Create New Folder' }}
           </v-card-title>
         </slot>
         <v-card-text>
@@ -124,30 +126,36 @@ export default {
             ref="folderName"
             v-model="name"
             autofocus="autofocus"
-            label="Folder Name"/>
+            label="Folder Name"
+          />
           <girder-breadcrumb
             v-bind="{ location, append }"
             class="mb-3"
-            readonly="readonly"/>
+            readonly="readonly"
+          />
           <girder-markdown-editor
             v-model="description"
-            label="Description (Optional)"/>
+            label="Description (Optional)"
+          />
           <v-alert
             :value="!!error"
             type="error"
             dismissible="dismissible"
-            transition="scale-transition">{{ error }}</v-alert>
+            transition="scale-transition"
+          >{{ error }}</v-alert>
         </v-card-text>
         <v-card-actions>
-          <v-spacer/>
+          <v-spacer />
           <v-btn
             text="text"
-            @click="$emit('dismiss')">Cancel</v-btn>
+            @click="$emit('dismiss')"
+          >Cancel</v-btn>
           <v-btn
             :disabled="!name"
             depressed="depressed"
             color="primary"
-            type="submit">{{ edit ? 'Save Changes' : 'Create Folder' }}</v-btn>
+            type="submit"
+          >{{ edit ? 'Save Changes' : 'Create Folder' }}</v-btn>
         </v-card-actions>
       </v-row>
     </v-card>
