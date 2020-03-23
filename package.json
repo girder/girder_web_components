@@ -4,10 +4,10 @@
   "scripts": {
     "serve": "vue-cli-service serve demo/main.js",
     "build": "vue-cli-service build --target lib --name girder src/index.js",
-    "lint": "vue-cli-service lint src/ tests/ demo/ '*.js' '.*.js' '{src,tests,demo}/**/.*.js'",
+    "test:unit": "vue-cli-service test:unit",
+    "lint": "vue-cli-service lint src/ tests/ demo/ '*.js' '{src,tests,demo}/**/.*.js'",
     "build:demo": "vue-cli-service build --dest _site/ demo/main.js",
-    "lint:style": "stylelint 'src/**/*.vue' 'demo/**/*.vue'",
-    "test:unit": "vue-cli-service test:unit"
+    "lint:style": "stylelint 'src/**/*.vue' 'demo/**/*.vue'"
   },
   "main": "dist/girder.umd.min.js",
   "files": [
@@ -28,31 +28,37 @@
     "vuetify": "^2.2.4"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.11.0",
-    "@vue/cli-plugin-eslint": "^3.11.0",
-    "@vue/cli-plugin-unit-jest": "^3.11.0",
-    "@vue/cli-service": "^3.11.0",
-    "@vue/eslint-config-airbnb": "^3.0.0",
+    "@vue/cli-plugin-babel": "^4.2.3",
+    "@vue/cli-plugin-eslint": "~4.2.0",
+    "@vue/cli-plugin-unit-jest": "^4.2.3",
+    "@vue/cli-service": "~4.2.3",
+    "@vue/eslint-config-airbnb": "^5.0.2",
     "@vue/test-utils": "^1.0.0-beta.29",
     "axios-mock-adapter": "^1.15.0",
     "babel-core": "7.0.0-bridge.0",
+    "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-vue": "^6.1.2",
     "sass": "^1.22.7",
-    "sass-loader": "^7.1.0",
+    "sass-loader": "^8.0.2",
     "stylelint": "^9.6.0",
     "stylelint-config-standard": "^18.2.0",
-    "vue-cli-plugin-vuetify": "^0.6.3",
+    "vue-cli-plugin-vuetify": "~2.0.5",
     "vue-template-compiler": "^2.6.10",
-    "vuetify-loader": "^1.3.0"
+    "vuetify-loader": "^1.4.3"
   },
   "eslintConfig": {
     "root": true,
     "env": {
-      "browser": true
+      "browser": true,
+      "node": true
     },
     "extends": [
       "plugin:vue/recommended",
-      "@vue/airbnb"
+      "@vue/airbnb",
+      "plugin:vue/essential"
     ],
     "rules": {
       "no-param-reassign": [
@@ -65,7 +71,18 @@
     },
     "parserOptions": {
       "parser": "babel-eslint"
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/__tests__/*.{j,t}s?(x)",
+          "**/tests/unit/**/*.spec.{j,t}s?(x)"
+        ],
+        "env": {
+          "jest": true
+        }
+      }
+    ]
   },
   "postcss": {
     "plugins": {
