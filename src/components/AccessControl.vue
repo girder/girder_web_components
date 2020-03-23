@@ -180,19 +180,21 @@ export default {
         >
           <transition-group name="height2">
             <v-list-item
-              v-for="model of groupsAndUsers"
-              :key="model.id"
+              v-for="resource of groupsAndUsers"
+              :key="resource.id"
             >
               <v-list-item-action class="mr-5">
-                <v-icon>{{ $vuetify.icons.values[model.login?'user':'group'] }}</v-icon>
+                <v-icon>{{ $vuetify.icons.values[resource.login?'user':'group'] }}</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>{{ model.name }}</v-list-item-title>
-                <v-list-item-subtitle>{{ model.login||model.description }}</v-list-item-subtitle>
+                <v-list-item-title>{{ resource.name }}</v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ resource.login||resource.description }}
+                </v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action class="mr-5">
                 <v-select
-                  v-model="model.level"
+                  v-model="resource.level"
                   :items="permissions"
                   class="level"
                   light="light"
@@ -204,7 +206,7 @@ export default {
               <v-list-item-action class="mr-5">
                 <v-btn
                   icon="icon"
-                  @click="remove(model)"
+                  @click="remove(resource)"
                 >
                   <v-icon>mdi-minus-circle</v-icon>
                 </v-btn>

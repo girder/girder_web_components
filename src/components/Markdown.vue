@@ -19,10 +19,12 @@ export default {
 </script>
 
 <template>
+  <!-- eslint-disable vue/no-v-html -->
   <div
     class="g-md-viewer"
     v-html="markdown"
   />
+  <!-- eslint-enable vue/no-v-html -->
 </template>
 
 <style lang="scss">
