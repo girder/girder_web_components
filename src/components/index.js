@@ -1,5 +1,4 @@
 import '@mdi/font/css/materialdesignicons.min.css';
-import 'vuetify/dist/vuetify.min.css';
 
 import AccessControl from './AccessControl.vue';
 import Authentication from './Authentication/';
