@@ -67,6 +67,14 @@ export default {
       const itemSelectable = getLocationType(item) !== 'item';
       return { 'select-cursor': itemSelectable };
     },
+    emitDrag(eventname, event, items) {
+      const modelListString = JSON.stringify(items.map(({ item }) => ({
+        _id: item._id,
+        _modelType: item._modelType,
+      })));
+      event.dataTransfer.setData('application/x-girder-items', modelListString);
+      this.$emit(eventname, { event, items });
+    },
   },
 };
 </script>
@@ -101,10 +109,9 @@ export default {
         :key="props.item._id"
         class="itemRow"
         @click="handleRowSelect($event, props)"
-        @drag="$emit('drag', { items: [props], event: $event })"
-        @dragstart="$emit('dragstart', { items: [props], event: $event })"
-        @dragend="$emit('dragend', { items: [props], event: $event })"
-        @drop="$emit('drop', { items: [props], event: $event })"
+        @drag="emitDrag('drag', $event, [props])"
+        @dragstart="emitDrag('dragstart', $event, [props])"
+        @dragend="emitDrag('dragend', $event, [props])"
       >
         <td
           v-if="selectable"
