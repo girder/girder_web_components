@@ -52,14 +52,16 @@ export default {
   <v-card
     class="job-filter"
     dark="dark"
-    color="primary">
+    color="primary"
+  >
     <v-card-title>
       <v-container>
         <h4>Jobs</h4>
         <v-row justify="center">
           <v-col
             sm="5"
-            md="4">
+            md="4"
+          >
             <v-select
               :items="jobTypeList"
               :value="jobType"
@@ -68,11 +70,13 @@ export default {
               clearable="clearable"
               color="white"
               dense="dense"
-              @input="$emit('update:jobType', $event ? $event : null)"/>
+              @input="$emit('update:jobType', $event ? $event : null)"
+            />
           </v-col>
           <v-col
             sm="5"
-            md="4">
+            md="4"
+          >
             <v-select
               :items="statusItemList"
               :value="status"
@@ -81,7 +85,8 @@ export default {
               clearable="clearable"
               color="white"
               dense="dense"
-              @input="$emit('update:status', $event ? $event : null)"/>
+              @input="$emit('update:status', $event ? $event : null)"
+            />
           </v-col>
         </v-row>
       </v-container>

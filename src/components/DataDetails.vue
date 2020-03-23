@@ -4,18 +4,22 @@
       flat="flat"
       dark="dark"
       dense="dense"
-      color="primary">
+      color="primary"
+    >
       <v-toolbar-title class="subtitle-1">
         <v-icon class="pr-2 mdi-18px">{{ icon }}</v-icon>{{ title }}
       </v-toolbar-title>
-      <v-spacer/>
+      <v-spacer />
       <v-dialog
         v-if="datum"
         v-model="showUpsert"
-        max-width="800px"><template v-slot:activator="{ on }">
+        max-width="800px"
+      >
+        <template v-slot:activator="{ on }">
           <v-btn
             icon="icon"
-            v-on="on">
+            v-on="on"
+          >
             <v-icon class="mdi-18px">{{ $vuetify.icons.edit }}</v-icon>
           </v-btn>
         </template>
@@ -23,46 +27,57 @@
           :edit="true"
           :key="datum._id"
           :location="datum"
-          @dismiss="showUpsert = false"/>
+          @dismiss="showUpsert = false"
+        />
       </v-dialog>
     </v-toolbar>
     <girder-markdown
       v-if="details && details.description"
       :text="details.description"
-      class="mx-3 mt-2"/>
+      class="mx-3 mt-2"
+    />
     <girder-detail-list
       :rows="info"
-      title="Info"/>
+      title="Info"
+    />
     <girder-detail-list
       v-if="meta.length"
       :rows="meta"
-      title="Meta"><template #row="props">
+      title="Meta"
+    >
+      <template #row="props">
         <v-row justify="space-between">
           <v-col class="shrink py-1 body-2 font-weight-bold">{{ props.datum.key }}</v-col>
           <v-col class="py-1 body-2 d-flex justify-end">{{ props.datum.value }}</v-col>
         </v-row>
-    </template></girder-detail-list>
+      </template>
+    </girder-detail-list>
     <girder-detail-list
       v-if="files.length"
       :title="`Files (${files.length})`"
-      :rows="files"/>
+      :rows="files"
+    />
     <girder-detail-list
       v-if="actions.length"
       :clickable="true"
       :rows="actions"
       title="Actions"
-      @click="handleAction"><template #row="props">
+      @click="handleAction"
+    >
+      <template #row="props">
         <v-list-item-icon class="mr-1">
           <v-icon
             :color="props.datum.color"
-            class="pr-2">
+            class="pr-2"
+          >
             {{ props.datum.icon || $vuetify.icons.values[props.datum.iconKey] }}
           </v-icon>
         </v-list-item-icon>
         <v-list-item-content :class="`${props.datum.color}--text`">
           {{ props.datum.name }}
         </v-list-item-content>
-    </template></girder-detail-list>
+      </template>
+    </girder-detail-list>
   </v-card>
 </template>
 

@@ -3,24 +3,28 @@
     <v-tabs
       v-model="activeTab"
       background-color="primary"
-      dark="dark">
-      <v-tabs-slider color="yellow"/>
+      dark="dark"
+    >
+      <v-tabs-slider color="yellow" />
       <v-tab key="login">Log In</v-tab>
       <v-tab
         v-if="register"
-        key="registration">Register</v-tab>
+        key="registration"
+      >Register</v-tab>
     </v-tabs>
     <v-tabs-items v-model="activeTab">
       <v-tab-item key="login-box">
         <girder-login
           :oauth-providers="oauthProviders"
           v-bind="{ forceOtp, forgotPasswordUrl, forgotPasswordRoute, hideForgotPassword }"
-          @forgotpassword="$emit('forgotpassword')"/>
+          @forgotpassword="$emit('forgotpassword')"
+        />
       </v-tab-item>
       <v-tab-item
         v-if="register"
-        key="registration-box">
-        <girder-registration :oauth-providers="oauthProviders"/>
+        key="registration-box"
+      >
+        <girder-registration :oauth-providers="oauthProviders" />
       </v-tab-item>
     </v-tabs-items>
   </v-card>
@@ -77,12 +81,14 @@ export default {
     async oauthProviders() {
       if (this.oauth) {
         try {
-          return (await this.girderRest.get('oauth/provider', {
-            params: {
-              redirect: `${window.location.href}${OauthTokenPrefix}{girderToken}${OauthTokenSuffix}`,
-              list: true,
-            },
-          })).data;
+          return (
+            await this.girderRest.get('oauth/provider', {
+              params: {
+                redirect: `${window.location.href}${OauthTokenPrefix}{girderToken}${OauthTokenSuffix}`,
+                list: true,
+              },
+            })
+          ).data;
         } catch (e) {
           return [];
         }

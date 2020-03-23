@@ -4,7 +4,8 @@
     class="dropzone-wrapper"
     @dragenter="dropzoneClass = 'animate'"
     @dragleave="dropzoneClass = null"
-    @drop="dropzoneClass = null">
+    @drop="dropzoneClass = null"
+  >
     <v-row class="flex-column align-center justify-center fill-height dropzone-message">
       <v-icon size="50px">$vuetify.icons.fileUpload</v-icon>
       <div class="title mt-3">{{ message }}</div>
@@ -13,7 +14,8 @@
       :accept="accept"
       class="file-input"
       type="file"
-      @change="$emit('change', Array(...$event.target.files))" >
+      @change="$emit('change', Array(...$event.target.files))"
+    >
   </div>
 </template>
 

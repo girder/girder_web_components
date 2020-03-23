@@ -1,16 +1,19 @@
 <template>
   <v-card
     class="fill-height"
-    flat="flat">
+    flat="flat"
+  >
     <v-row
       class="flex-column fill-height"
-      no-gutters="no-gutters">
+      no-gutters="no-gutters"
+    >
       <slot name="header">
         <v-card-title primary-title="primary-title">
           <div>
             <div
               v-if="!hideHeadline"
-              class="headline">Upload to <span class="font-weight-bold">{{ dest.name }}</span>
+              class="headline"
+            >Upload to <span class="font-weight-bold">{{ dest.name }}</span>
             </div>
             <div class="grey--text title">{{ statusMessage }}</div>
           </div>
@@ -20,16 +23,19 @@
         v-if="uploading"
         :value="totalProgressPercent"
         :indeterminate="indeterminate"
-        height="20"/>
+        height="20"
+      />
       <v-card-actions v-show="files.length && !errorMessage && !uploading">
         <v-btn
           text="text"
-          @click="reset">Clear all</v-btn>
+          @click="reset"
+        >Clear all</v-btn>
         <v-btn
           v-if="!hideStartButton"
           text="text"
           color="primary"
-          @click="startUpload">{{ startButtonText }}</v-btn>
+          @click="startUpload"
+        >{{ startButtonText }}</v-btn>
       </v-card-actions>
       <v-col>
         <slot name="dropzone">
@@ -38,7 +44,8 @@
             :message="dropzoneMessage"
             :multiple="multiple"
             :accept="accept"
-            @change="inputFilesChanged"/>
+            @change="inputFilesChanged"
+          />
         </slot>
       </v-col>
       <div v-if="errorMessage">
@@ -46,29 +53,34 @@
           :value="true"
           dark="dark"
           tile="tile"
-          type="error">{{ errorMessage }}
+          type="error"
+        >{{ errorMessage }}
           <v-btn
             v-if="!uploading"
             class="ml-3"
             dark="dark"
             small="small"
             outlined="outlined"
-            @click="startUpload">Resume upload</v-btn>
+            @click="startUpload"
+          >Resume upload</v-btn>
           <v-btn
             v-if="!uploading"
             class="ml-3"
             dark="dark"
             small="small"
             outlined="outlined"
-            @click="reset">Abort</v-btn>
+            @click="reset"
+          >Abort</v-btn>
         </v-alert>
       </div>
       <slot
         v-bind="{ files, setFiles, maxShow }"
-        name="files">
+        name="files"
+      >
         <file-upload-list
           v-bind="{ value: files, maxShow }"
-          @input="setFiles"/>
+          @input="setFiles"
+        />
       </slot>
     </v-row>
   </v-card>

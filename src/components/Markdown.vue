@@ -21,7 +21,8 @@ export default {
 <template>
   <div
     class="g-md-viewer"
-    v-html="markdown" />
+    v-html="markdown"
+  />
 </template>
 
 <style lang="scss">

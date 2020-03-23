@@ -155,7 +155,8 @@ export default {
         <breadcrumb
           :location="model"
           readonly="readonly"
-          no-root="no-root"/>
+          no-root="no-root"
+        />
       </div>
     </v-card-title>
     <v-card-text class="pt-0">
@@ -164,19 +165,23 @@ export default {
         :hint="publicText"
         class="mb-4"
         label="Public"
-        persistent-hint="persistent-hint"/>
+        persistent-hint="persistent-hint"
+      />
       <v-subheader>Users / Groups</v-subheader>
       <transition
         name="height"
-        mode="out-in">
+        mode="out-in"
+      >
         <v-list
           v-if="groupsAndUsers.length"
           class="group-user"
-          two-line="two-line">
+          two-line="two-line"
+        >
           <transition-group name="height2">
             <v-list-item
               v-for="model of groupsAndUsers"
-              :key="model.id">
+              :key="model.id"
+            >
               <v-list-item-action class="mr-5">
                 <v-icon>{{ $vuetify.icons.values[model.login?'user':'group'] }}</v-icon>
               </v-list-item-action>
@@ -192,12 +197,14 @@ export default {
                   light="light"
                   solo="solo"
                   hide-details="hide-details"
-                  dense="dense"/>
+                  dense="dense"
+                />
               </v-list-item-action>
               <v-list-item-action class="mr-5">
                 <v-btn
                   icon="icon"
-                  @click="remove(model)">
+                  @click="remove(model)"
+                >
                   <v-icon>mdi-minus-circle</v-icon>
                 </v-btn>
               </v-list-item-action>
@@ -206,7 +213,8 @@ export default {
         </v-list>
         <div
           v-if="!groupsAndUsers.length && !loading"
-          class="mt-1 mb-2">Empty</div>
+          class="mt-1 mb-2"
+        >Empty</div>
       </transition>
       <v-subheader>Grant access</v-subheader>
       <search
@@ -215,26 +223,31 @@ export default {
         class="search mb-3"
         hide-search-icon="hide-search-icon"
         placeholder="User or group name"
-        @select="groupOrUserSelected"/>
+        @select="groupOrUserSelected"
+      />
       <v-switch
         v-model="recursive"
         :hint="recursiveText"
         class="mt-0"
         label="Include subfolders"
-        persistent-hint="persistent-hint"/>
+        persistent-hint="persistent-hint"
+      />
     </v-card-text>
     <slot
       v-bind="{ save, loading }"
-      name="card-actions">
+      name="card-actions"
+    >
       <v-card-actions>
-        <v-spacer/>
+        <v-spacer />
         <v-btn
           text="text"
-          @click="$emit('close')">Cancel</v-btn>
+          @click="$emit('close')"
+        >Cancel</v-btn>
         <v-btn
           color="primary"
           depressed="depressed"
-          @click="save">Save</v-btn>
+          @click="save"
+        >Save</v-btn>
       </v-card-actions>
     </slot>
   </v-card>

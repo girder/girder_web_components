@@ -7,11 +7,13 @@
       class="mt-0"
       dismissible="dismissible"
       transition="scale-transition"
-      type="error">{{ err }}</v-alert>
+      type="error"
+    >{{ err }}</v-alert>
     <v-container>
       <v-form
         ref="login"
-        @submit.prevent="login">
+        @submit.prevent="login"
+      >
         <v-text-field
           v-if="!otpFormVisible || forceOtp"
           v-model="username"
@@ -19,44 +21,49 @@
           label="Username or e-mail"
           autofocus="autofocus"
           prepend-icon="$vuetify.icons.user"
-          type="text"/>
+          type="text"
+        />
         <v-text-field
           v-if="!otpFormVisible || forceOtp"
           v-model="password"
           :rules="nonEmptyRules"
           type="password"
           label="Password"
-          prepend-icon="$vuetify.icons.lock"/>
+          prepend-icon="$vuetify.icons.lock"
+        />
         <v-text-field
           v-if="otpFormVisible || forceOtp"
           v-model="otp"
           :rules="otpRules"
           type="text"
           label="Authentication code"
-          prepend-icon="$vuetify.icons.otp"/>
+          prepend-icon="$vuetify.icons.otp"
+        />
         <v-card-actions>
           <v-btn
             :disabled="inProgress"
             :loading="inProgress"
             class="ml-0"
             type="submit"
-            color="primary">
+            color="primary"
+          >
             <v-icon left="left">$vuetify.icons.login</v-icon>
             {{ otpFormVisible ? 'Verify code' : 'Login' }}
           </v-btn><template v-if="!hideForgotPassword">
-            <v-spacer/>
+            <v-spacer />
             <v-btn
               :to="forgotPasswordRoute"
               :href="forgotPasswordUrl"
               text="text"
               color="primary"
-              @click="$emit('forgotpassword')">Forgot Password?</v-btn>
+              @click="$emit('forgotpassword')"
+            >Forgot Password?</v-btn>
           </template>
         </v-card-actions>
       </v-form>
     </v-container><template v-if="oauthProviders && oauthProviders.length">
-      <v-divider/>
-      <girder-oauth :providers="oauthProviders"/>
+      <v-divider />
+      <girder-oauth :providers="oauthProviders" />
     </template>
   </div>
 </template>
@@ -68,9 +75,7 @@ import GirderOauth from './OAuth.vue';
 const OTP_MAGIC_SUBSTRING = 'authentication must include a one-time password';
 
 // Validation rules
-const nonEmptyRules = [
-  v => !!v || 'Item is required',
-];
+const nonEmptyRules = [v => !!v || 'Item is required'];
 const otpRules = [
   (v) => {
     const phrase = '6 digit number';

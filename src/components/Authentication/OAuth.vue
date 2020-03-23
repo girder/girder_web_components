@@ -7,7 +7,8 @@
       :dark="iconMap[provider.id].dark"
       :color="iconMap[provider.id].color"
       :href="provider.url"
-      class="ml-0 mr-3">
+      class="ml-0 mr-3"
+    >
       <v-icon left="left">{{ $vuetify.icons.values[iconMap[provider.id].icon] }}</v-icon>
       {{ provider.name }}
     </v-btn>
