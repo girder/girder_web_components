@@ -204,7 +204,30 @@
                 :root-location-disabled="rootLocationDisabled"
                 :upload-multiple="uploadMultiple"
                 :upload-enabled="uploadEnabled"
+                @dragend="dragend"
               />
+              <v-card
+                v-if="dragEnabled"
+                class="mt-4"
+                @dragenter.prevent=""
+                @dragover.prevent=""
+                @drop="drop"
+              >
+                <v-card-title> Drop Zone </v-card-title>
+                <v-card-text>
+                  <p v-if="!(dropped.length)"> Drag a row here to see results </p>
+                  <ul
+                    v-for="drop in dropped"
+                    v-else
+                    :key="drop.item._id"
+                    class="header"
+                  >
+                    <li>type: {{ drop.item._modelType }}</li>
+                    <li>name: {{ drop.item.name }} </li>
+                    <li>size: {{ drop.item.size }}</li>
+                  </ul>
+                </v-card-text>
+              </v-card>
             </v-col>
             <v-col
               class="pl-0"
@@ -315,6 +338,8 @@ export default {
         'https://img.shields.io/bundlephobia/min/@girder/components?style=for-the-badge',
         'https://img.shields.io/github/stars/girder/girder_web_components?style=for-the-badge',
       ],
+      dropped: [],
+      droppedStrings: [],
     };
   },
 
@@ -371,6 +396,16 @@ export default {
     },
     postUpload() {
       this.$refs.girderFileManager.refresh();
+    },
+    dragend({ items }) {
+      // demonstrate how to get dropped item list from data table, which is the source
+      // of the drag event.
+      this.dropped = items;
+    },
+    drop(event) {
+      // demonstrate how to get dropped item details from the destination drop event
+      // note that this value is unused in the app, and exists only for documentation.
+      this.droppedStrings = event.dataTransfer.getData('application/x-girder-items');
     },
   },
 };
