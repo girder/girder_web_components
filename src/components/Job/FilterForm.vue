@@ -48,30 +48,48 @@ export default {
 };
 </script>
 
-<template lang="pug">
-v-card.job-filter(dark, color="primary")
-  v-card-title
-    v-container
-      h4 Jobs
-      v-row(justify="center")
-        v-col(sm=5, md=4)
-          v-select(
-              label="Job Type",
-              :items="jobTypeList",
-              :value="jobType",
-              clearable,
-              color="white",
-              :menu-props="{'content-class':'girder-job-filter-form-menu'}",
-              dense,
-              @input="$emit('update:jobType', $event ? $event : null)")
-        v-col(sm=5, md=4)
-          v-select(
-              label="Status",
-              :items="statusItemList",
-              :value="status",
-              clearable,
-              color="white",
-              :menu-props="{'content-class':'girder-job-filter-form-menu'}",
-              dense,
-              @input="$emit('update:status', $event ? $event : null)")
+<template>
+  <v-card
+    class="job-filter"
+    dark="dark"
+    color="primary"
+  >
+    <v-card-title>
+      <v-container>
+        <h4>Jobs</h4>
+        <v-row justify="center">
+          <v-col
+            sm="5"
+            md="4"
+          >
+            <v-select
+              :items="jobTypeList"
+              :value="jobType"
+              :menu-props="{'content-class':'girder-job-filter-form-menu'}"
+              label="Job Type"
+              clearable="clearable"
+              color="white"
+              dense="dense"
+              @input="$emit('update:jobType', $event ? $event : null)"
+            />
+          </v-col>
+          <v-col
+            sm="5"
+            md="4"
+          >
+            <v-select
+              :items="statusItemList"
+              :value="status"
+              :menu-props="{'content-class':'girder-job-filter-form-menu'}"
+              label="Status"
+              clearable="clearable"
+              color="white"
+              dense="dense"
+              @input="$emit('update:status', $event ? $event : null)"
+            />
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card-title>
+  </v-card>
 </template>

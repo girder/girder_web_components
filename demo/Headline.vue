@@ -20,13 +20,20 @@ export default {
 };
 </script>
 
-<template lang="pug">
-  div
-    .headline.font-weight-bold.mono.mt-8
-      | {{ title }}
-      v-btn.ml-2(icon, :href="repoBase + link", title="View source")
-        v-icon $vuetify.icons.externalLink
-    .subtitle-1.mb-4 {{ description }}
+<template>
+  <div>
+    <div class="headline font-weight-bold mono mt-8">{{ title }}
+      <v-btn
+        :href="repoBase + link"
+        class="ml-2"
+        icon="icon"
+        title="View source"
+      >
+        <v-icon>$vuetify.icons.externalLink</v-icon>
+      </v-btn>
+    </div>
+    <div class="subtitle-1 mb-4">{{ description }}</div>
+  </div>
 </template>
 
 <style scoped>

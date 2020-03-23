@@ -308,37 +308,68 @@ export default {
 };
 </script>
 
-<template lang="pug">
-girder-data-table.girder-file-browser(
-    v-model="internalValue",
-    :draggable="draggable",
-    :rows="rows",
-    :options.sync="options",
-    :items-per-page-options="itemsPerPageOptions",
-    :server-items-length="serverItemsLength",
-    :loading="loading",
-    :selectable="internalSelectable",
-    @rowclick="rowClick",
-    @row-right-click="$emit('row-right-click', arguments[0], arguments[1])",
-    @drag="$emit('drag', $event)",
-    @dragstart="$emit('dragstart', $event)",
-    @dragend="$emit('dragend', $event)",
-    @drop="$emit('drop', $event)")
-  template(#header="{ props, on }")
-    thead
-      tr.secondary(:class="$vuetify.theme.dark?'darken-2':'lighten-5'")
-        th.pl-3.pr-0(width="1%", v-if="internalSelectable")
-          v-checkbox.pr-2(
-              color="accent",
-              hide-details,
-              :input-value="props.everyItem",
-              :indeterminate="internalValue.length > 0 && !props.everyItem",
-              @click.native="on['toggle-select-all'](!props.everyItem)")
-        th.pl-3(colspan="10", width="99%")
-          v-row.ma-1
-            slot(name="breadcrumb", v-bind="{ location, changeLocation, rootLocationDisabled }")
-            v-spacer
-            slot(name="headerwidget", v-bind="{ location, changeLocation, rootLocationDisabled }")
-  template(#row-widget="props")
-    slot(name="row-widget", v-bind="props")
+<template>
+  <girder-data-table
+    v-model="internalValue"
+    :draggable="draggable"
+    :rows="rows"
+    :options.sync="options"
+    :items-per-page-options="itemsPerPageOptions"
+    :server-items-length="serverItemsLength"
+    :loading="loading"
+    :selectable="internalSelectable"
+    class="girder-file-browser"
+    @rowclick="rowClick"
+    @row-right-click="$emit('row-right-click', arguments[0], arguments[1])"
+    @drag="$emit('drag', $event)"
+    @dragstart="$emit('dragstart', $event)"
+    @dragend="$emit('dragend', $event)"
+    @drop="$emit('drop', $event)"
+  >
+    <template #header="{ props, on }">
+      <thead>
+        <tr
+          :class="$vuetify.theme.dark?'darken-2':'lighten-5'"
+          class="secondary"
+        >
+          <th
+            v-if="internalSelectable"
+            class="pl-3 pr-0"
+            width="1%"
+          >
+            <v-checkbox
+              :input-value="props.everyItem"
+              :indeterminate="internalValue.length > 0 && !props.everyItem"
+              class="pr-2"
+              color="accent"
+              hide-details="hide-details"
+              @click.native="on['toggle-select-all'](!props.everyItem)"
+            />
+          </th>
+          <th
+            class="pl-3"
+            colspan="10"
+            width="99%"
+          >
+            <v-row class="ma-1">
+              <slot
+                v-bind="{ location, changeLocation, rootLocationDisabled }"
+                name="breadcrumb"
+              />
+              <v-spacer />
+              <slot
+                v-bind="{ location, changeLocation, rootLocationDisabled }"
+                name="headerwidget"
+              />
+            </v-row>
+          </th>
+        </tr>
+      </thead>
+    </template><template #row-widget="props">
+      <slot
+        v-bind="props"
+        name="row-widget"
+      />
+    </template>
+  </girder-data-table>
 </template>

@@ -18,8 +18,11 @@ export default {
 };
 </script>
 
-<template lang="pug">
-.g-md-viewer(v-html="markdown")
+<template>
+  <div
+    class="g-md-viewer"
+    v-html="markdown"
+  />
 </template>
 
 <style lang="scss">

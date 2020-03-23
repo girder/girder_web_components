@@ -190,87 +190,129 @@ export default {
 };
 </script>
 
-<template lang="pug">
-v-card.girder-data-browser-snippet
-  girder-data-browser(
-      ref="girderBrowser",
-      :location.sync="internalLocation",
-      :selectable="selectable",
-      :draggable="dragEnabled",
-      :root-location-disabled="rootLocationDisabled",
-      :value="value",
-      @input="$emit('input', $event)",
-      @selection-changed="$emit('selection-changed', $event)",
-      @rowclick="$emit('rowclick', $event)",
-      @row-right-click="rowRightClick",
-      @drag="$emit('drag', $event)",
-      @dragstart="$emit('dragstart', $event)",
-      @dragend="$emit('dragend', $event)",
-      @drop="$emit('drop', $event)",
-      :initial-items-per-page="initialItemsPerPage",
-      :items-per-page-options="itemsPerPageOptions")
-    template(#breadcrumb="props")
-      girder-breadcrumb(
-          :location="props.location",
-          @crumbclick="props.changeLocation($event)",
-          :root-location-disabled="props.rootLocationDisabled")
-    template(#headerwidget)
-      slot(name="headerwidget")
-      v-dialog(v-model="uploaderDialog",
-          v-if="shouldShowUpload",
-          max-width="800px")
-        template(#activator="{ on }")
-          v-btn.ma-0(
-              v-on="on",
-              text,
-              small)
-            v-icon.mdi-24px.mr-1(left, color="accent") $vuetify.icons.fileNew
-            span.hidden-xs-only Upload
-        girder-upload(
-            :dest="uploadDest",
-            :pre-upload="preUpload",
-            :post-upload="postUploadInternal",
-            :multiple="uploadMultiple",
-            :max-show="uploadMaxShow",
-            :accept="uploadAccept")
-      v-dialog(v-model="newFolderDialog",
-          v-if="newFolderEnabled && !isRootLocation(internalLocation) && girderRest.user",
-          max-width="800px")
-        template(#activator="{ on }")
-          v-btn.ma-0(
-              v-on="on",
-              text,
-              small)
-            v-icon.mdi-24px.mr-1(left, color="accent") $vuetify.icons.folderNew
-            span.hidden-xs-only New Folder
-        girder-upsert-folder(
-            :location="internalLocation",
-            :pre-upsert="preUpsert",
-            :post-upsert="postUpsertInternal",
-            :key="internalLocation._id",
-            @dismiss="newFolderDialog = false")
-    template(#row-widget="props")
-      slot(name="row-widget", v-bind="props")
-  v-menu(
-      v-model="collectionAndFolderMenu.show",
-      :position-x="collectionAndFolderMenu.x",
-      :position-y="collectionAndFolderMenu.y",
-      absolute,
-      offset-y,
-      dark)
-    v-list(dense)
-      v-list-item(@click="showAccessControlDialog=true", :disabled="!hasAccessPermission")
-        v-list-item-title Access control
-  v-dialog(
-      v-model="showAccessControlDialog",
-      max-width="700px",
-      persistent,
-      eager,
-      scrollable)
-    girder-access-control(
-        v-if="actOnItem",
-        :model="actOnItem",
-        :has-permission.sync="hasAccessPermission",
-        @close="showAccessControlDialog=false",
-        @model-access-changed="$refs.girderBrowser.refresh()")
+<template>
+  <v-card class="girder-data-browser-snippet">
+    <girder-data-browser
+      ref="girderBrowser"
+      :location.sync="internalLocation"
+      :selectable="selectable"
+      :draggable="dragEnabled"
+      :root-location-disabled="rootLocationDisabled"
+      :value="value"
+      :initial-items-per-page="initialItemsPerPage"
+      :items-per-page-options="itemsPerPageOptions"
+      @input="$emit('input', $event)"
+      @selection-changed="$emit('selection-changed', $event)"
+      @rowclick="$emit('rowclick', $event)"
+      @row-right-click="rowRightClick"
+      @drag="$emit('drag', $event)"
+      @dragstart="$emit('dragstart', $event)"
+      @dragend="$emit('dragend', $event)"
+      @drop="$emit('drop', $event)"
+    >
+      <template #breadcrumb="props">
+        <girder-breadcrumb
+          :location="props.location"
+          :root-location-disabled="props.rootLocationDisabled"
+          @crumbclick="props.changeLocation($event)"
+        />
+      </template><template #headerwidget>
+        <slot name="headerwidget" />
+        <v-dialog
+          v-if="shouldShowUpload"
+          v-model="uploaderDialog"
+          max-width="800px"
+        >
+          <template #activator="{ on }">
+            <v-btn
+              class="ma-0"
+              text="text"
+              small="small"
+              v-on="on"
+            >
+              <v-icon
+                class="mdi-24px mr-1"
+                left="left"
+                color="accent"
+              >$vuetify.icons.fileNew</v-icon>
+              <span class="hidden-xs-only">Upload</span>
+            </v-btn>
+          </template>
+          <girder-upload
+            :dest="uploadDest"
+            :pre-upload="preUpload"
+            :post-upload="postUploadInternal"
+            :multiple="uploadMultiple"
+            :max-show="uploadMaxShow"
+            :accept="uploadAccept"
+          />
+        </v-dialog>
+        <v-dialog
+          v-if="newFolderEnabled && !isRootLocation(internalLocation) && girderRest.user"
+          v-model="newFolderDialog"
+          max-width="800px"
+        >
+          <template #activator="{ on }">
+            <v-btn
+              class="ma-0"
+              text="text"
+              small="small"
+              v-on="on"
+            >
+              <v-icon
+                class="mdi-24px mr-1"
+                left="left"
+                color="accent"
+              >$vuetify.icons.folderNew</v-icon>
+              <span class="hidden-xs-only">New Folder</span>
+            </v-btn>
+          </template>
+          <girder-upsert-folder
+            :location="internalLocation"
+            :pre-upsert="preUpsert"
+            :post-upsert="postUpsertInternal"
+            :key="internalLocation._id"
+            @dismiss="newFolderDialog = false"
+          />
+        </v-dialog>
+      </template><template #row-widget="props">
+        <slot
+          v-bind="props"
+          name="row-widget"
+        />
+      </template>
+    </girder-data-browser>
+    <v-menu
+      v-model="collectionAndFolderMenu.show"
+      :position-x="collectionAndFolderMenu.x"
+      :position-y="collectionAndFolderMenu.y"
+      absolute="absolute"
+      offset-y="offset-y"
+      dark="dark"
+    >
+      <v-list dense="dense">
+        <v-list-item
+          :disabled="!hasAccessPermission"
+          @click="showAccessControlDialog=true"
+        >
+          <v-list-item-title>Access control</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+    <v-dialog
+      v-model="showAccessControlDialog"
+      max-width="700px"
+      persistent="persistent"
+      eager="eager"
+      scrollable="scrollable"
+    >
+      <girder-access-control
+        v-if="actOnItem"
+        :model="actOnItem"
+        :has-permission.sync="hasAccessPermission"
+        @close="showAccessControlDialog=false"
+        @model-access-changed="$refs.girderBrowser.refresh()"
+      />
+    </v-dialog>
+  </v-card>
 </template>

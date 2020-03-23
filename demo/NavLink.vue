@@ -21,8 +21,14 @@ export default {
 };
 </script>
 
-<template lang="pug">
-  v-list-item(:link="!!href", :href="href", v-on="listeners")
-    v-list-item-content
-      v-list-item-title {{ title }}
+<template>
+  <v-list-item
+    :link="!!href"
+    :href="href"
+    v-on="listeners"
+  >
+    <v-list-item-content>
+      <v-list-item-title>{{ title }}</v-list-item-title>
+    </v-list-item-content>
+  </v-list-item>
 </template>

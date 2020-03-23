@@ -1,16 +1,33 @@
-<template lang="pug">
-v-card.girder-authentication-component
-  v-tabs(v-model="activeTab", background-color="primary", dark)
-    v-tabs-slider(color="yellow")
-    v-tab(key="login") Log In
-    v-tab(key="registration", v-if="register") Register
-  v-tabs-items(v-model="activeTab")
-    v-tab-item(key="login-box")
-      girder-login(:oauth-providers="oauthProviders",
-          v-bind="{ forceOtp, forgotPasswordUrl, forgotPasswordRoute, hideForgotPassword }",
-          @forgotpassword="$emit('forgotpassword')")
-    v-tab-item(key="registration-box", v-if="register")
-      girder-registration(:oauth-providers="oauthProviders")
+<template>
+  <v-card class="girder-authentication-component">
+    <v-tabs
+      v-model="activeTab"
+      background-color="primary"
+      dark="dark"
+    >
+      <v-tabs-slider color="yellow" />
+      <v-tab key="login">Log In</v-tab>
+      <v-tab
+        v-if="register"
+        key="registration"
+      >Register</v-tab>
+    </v-tabs>
+    <v-tabs-items v-model="activeTab">
+      <v-tab-item key="login-box">
+        <girder-login
+          :oauth-providers="oauthProviders"
+          v-bind="{ forceOtp, forgotPasswordUrl, forgotPasswordRoute, hideForgotPassword }"
+          @forgotpassword="$emit('forgotpassword')"
+        />
+      </v-tab-item>
+      <v-tab-item
+        v-if="register"
+        key="registration-box"
+      >
+        <girder-registration :oauth-providers="oauthProviders" />
+      </v-tab-item>
+    </v-tabs-items>
+  </v-card>
 </template>
 
 <script>
@@ -64,12 +81,14 @@ export default {
     async oauthProviders() {
       if (this.oauth) {
         try {
-          return (await this.girderRest.get('oauth/provider', {
-            params: {
-              redirect: `${window.location.href}${OauthTokenPrefix}{girderToken}${OauthTokenSuffix}`,
-              list: true,
-            },
-          })).data;
+          return (
+            await this.girderRest.get('oauth/provider', {
+              params: {
+                redirect: `${window.location.href}${OauthTokenPrefix}{girderToken}${OauthTokenSuffix}`,
+                list: true,
+              },
+            })
+          ).data;
         } catch (e) {
           return [];
         }

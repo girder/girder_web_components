@@ -106,35 +106,58 @@ export default {
 };
 </script>
 
-<template lang="pug">
-v-form(@submit.prevent="upsert")
-  v-card(flat)
-    v-row.pa-2.flex-column(no-gutters)
-      slot(name="header")
-        v-card-title.pb-0(primary-title)
-          h5.display-1
-          | {{ edit ? 'Edit Folder' : 'Create New Folder'}}
-      v-card-text
-        v-text-field(
-            ref="folderName",
-            v-model="name",
-            autofocus,
-            label="Folder Name")
-        girder-breadcrumb.mb-3(v-bind="{ location, append }", readonly)
-        girder-markdown-editor(
-            v-model="description",
-            label="Description (Optional)")
-        v-alert(
-            type="error",
-            :value="!!error",
-            dismissible,
-            transition="scale-transition") {{ error }}
-      v-card-actions
-        v-spacer
-        v-btn(text, @click="$emit('dismiss')") Cancel
-        v-btn(
-            depressed,
-            color="primary",
-            type="submit",
-            :disabled="!name") {{ edit ? 'Save Changes' : 'Create Folder' }}
+<template>
+  <v-form @submit.prevent="upsert">
+    <v-card flat="flat">
+      <v-row
+        class="pa-2 flex-column"
+        no-gutters="no-gutters"
+      >
+        <slot name="header">
+          <v-card-title
+            class="pb-0"
+            primary-title="primary-title"
+          >
+            <h5 class="display-1" />{{ edit ? 'Edit Folder' : 'Create New Folder' }}
+          </v-card-title>
+        </slot>
+        <v-card-text>
+          <v-text-field
+            ref="folderName"
+            v-model="name"
+            autofocus="autofocus"
+            label="Folder Name"
+          />
+          <girder-breadcrumb
+            v-bind="{ location, append }"
+            class="mb-3"
+            readonly="readonly"
+          />
+          <girder-markdown-editor
+            v-model="description"
+            label="Description (Optional)"
+          />
+          <v-alert
+            :value="!!error"
+            type="error"
+            dismissible="dismissible"
+            transition="scale-transition"
+          >{{ error }}</v-alert>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            text="text"
+            @click="$emit('dismiss')"
+          >Cancel</v-btn>
+          <v-btn
+            :disabled="!name"
+            depressed="depressed"
+            color="primary"
+            type="submit"
+          >{{ edit ? 'Save Changes' : 'Create Folder' }}</v-btn>
+        </v-card-actions>
+      </v-row>
+    </v-card>
+  </v-form>
 </template>

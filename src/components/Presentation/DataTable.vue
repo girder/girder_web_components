@@ -71,51 +71,89 @@ export default {
 };
 </script>
 
-<template lang="pug">
-v-data-table.girder-data-table(
-    show-select,
-    hide-default-header,
-    :headers-length="4",
-    :value="value",
-    @input="$emit('input', $event)",
-    :options="options",
-    :footer-props="{'items-per-page-options': itemsPerPageOptions}",
-    @update:options="$emit('update:options', $event)",
-    :items="rows",
-    :server-items-length="serverItemsLength",
-    :loading="loading ? 'accent' : false",
-    item-key="_id")
-
-  template(#header="vDataTableHeaderProps")
-    slot(name="header", v-bind="vDataTableHeaderProps")
-
-  template(#item="props")
-    tr.itemRow(:draggable="draggable", :active="props.isSelected",
-        :class="getRowClass(props.item)",
-        @click="handleRowSelect($event, props)",
-        @drag="$emit('drag', { items: [props], event: $event })",
-        @dragstart="$emit('dragstart', { items: [props], event: $event })",
-        @dragend="$emit('dragend', { items: [props], event: $event })",
-        @drop="$emit('drop', { items: [props], event: $event })",
-        :key="props.item._id")
-      td.pl-3.pr-0(v-if="selectable")
-        v-checkbox(
-            :input-value="props.isSelected", accent, hide-details, @change="props.select")
-      td.pl-3(colspan="2", @contextmenu="$emit('row-right-click', props.item, $event)")
-        span.text-container.nobreak(
-            :class="getItemClass(props.item)",
-            @click.stop="$emit('rowclick', props.item)")
-          v-icon.pr-2(:color="props.isSelected ? 'accent' : ''")
-            | {{ $vuetify.icons.values[props.item.icon] }}
-          | {{ props.item.name }}
-          slot(name="row-widget", v-bind="props")
-      td.text-right.nobreak {{ props.item.humanSize }}
-
-  template(#no-data="")
-    .text-center(width="100%") No Data Available
-
-  template(#no-results="")
-    .text-center(width="100%") No Data Available
+<template>
+  <v-data-table
+    :headers-length="4"
+    :value="value"
+    :options="options"
+    :footer-props="{'items-per-page-options': itemsPerPageOptions}"
+    :items="rows"
+    :server-items-length="serverItemsLength"
+    :loading="loading ? 'accent' : false"
+    class="girder-data-table"
+    show-select="show-select"
+    hide-default-header="hide-default-header"
+    item-key="_id"
+    @input="$emit('input', $event)"
+    @update:options="$emit('update:options', $event)"
+  >
+    <template #header="vDataTableHeaderProps">
+      <slot
+        v-bind="vDataTableHeaderProps"
+        name="header"
+      />
+    </template>
+    <template #item="props">
+      <tr
+        :draggable="draggable"
+        :active="props.isSelected"
+        :class="getRowClass(props.item)"
+        :key="props.item._id"
+        class="itemRow"
+        @click="handleRowSelect($event, props)"
+        @drag="$emit('drag', { items: [props], event: $event })"
+        @dragstart="$emit('dragstart', { items: [props], event: $event })"
+        @dragend="$emit('dragend', { items: [props], event: $event })"
+        @drop="$emit('drop', { items: [props], event: $event })"
+      >
+        <td
+          v-if="selectable"
+          class="pl-3 pr-0"
+        >
+          <v-checkbox
+            :input-value="props.isSelected"
+            accent="accent"
+            hide-details="hide-details"
+            @change="props.select"
+          />
+        </td>
+        <td
+          class="pl-3"
+          colspan="2"
+          @contextmenu="$emit('row-right-click', props.item, $event)"
+        >
+          <span
+            :class="getItemClass(props.item)"
+            class="text-container nobreak"
+            @click.stop="$emit('rowclick', props.item)"
+          >
+            <v-icon
+              :color="props.isSelected ? 'accent' : ''"
+              class="pr-2"
+            >{{ $vuetify.icons.values[props.item.icon] }}</v-icon>
+            {{ props.item.name }}
+            <slot
+              v-bind="props"
+              name="row-widget"
+            />
+          </span>
+        </td>
+        <td class="text-right nobreak">{{ props.item.humanSize }}</td>
+      </tr>
+    </template>
+    <template #no-data="">
+      <div
+        class="text-center"
+        width="100%"
+      >No Data Available</div>
+    </template>
+    <template #no-results="">
+      <div
+        class="text-center"
+        width="100%"
+      >No Data Available</div>
+    </template>
+  </v-data-table>
 </template>
 
 

@@ -1,13 +1,22 @@
-<template lang="pug">
-  .dropzone-wrapper(
-      :class="dropzoneClass",
-      @dragenter="dropzoneClass = 'animate'",
-      @dragleave="dropzoneClass = null", @drop="dropzoneClass = null")
-    v-row.flex-column.align-center.justify-center.fill-height.dropzone-message
-      v-icon(size="50px") $vuetify.icons.fileUpload
-      .title.mt-3 {{ message }}
-    input.file-input(type="file", :multiple="multiple", :accept="accept",
-        @change="$emit('change',Array(...$event.target.files))")
+<template>
+  <div
+    :class="dropzoneClass"
+    class="dropzone-wrapper"
+    @dragenter="dropzoneClass = 'animate'"
+    @dragleave="dropzoneClass = null"
+    @drop="dropzoneClass = null"
+  >
+    <v-row class="flex-column align-center justify-center fill-height dropzone-message">
+      <v-icon size="50px">$vuetify.icons.fileUpload</v-icon>
+      <div class="title mt-3">{{ message }}</div>
+    </v-row><input
+      :multiple="multiple"
+      :accept="accept"
+      class="file-input"
+      type="file"
+      @change="$emit('change', Array(...$event.target.files))"
+    >
+  </div>
 </template>
 
 <script>

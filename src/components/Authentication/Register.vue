@@ -1,58 +1,80 @@
-<template lang="pug">
-.register-widget
-  v-alert.mt-0(
-      dismissible,
-      transition="scale-transition",
-      v-for="err in alerts.errors",
-      :key="err",
-      :value="true",
-      type="error") {{ err }}
-  v-alert.mt-0(
-      dismissible,
-      transition="scale-transition",
-      v-for="info in alerts.infos",
-      :key="info",
-      :value="true",
-      type="info") {{ info }}
-  v-container
-    v-form(@submit.prevent="register", ref="form")
-      v-text-field(
-          v-model="login",
-          label="Username",
-          :rules="nonEmptyRules",
-          type="text",
-          autofocus)
-      v-text-field(
-          v-model="email",
-          label="Email",
-          :rules="nonEmptyRules",
-          type="email")
-      v-text-field(
-          v-model="firstName",
-          label="First Name",
-          :rules="nonEmptyRules",
-          type="text")
-      v-text-field(
-          v-model="lastName",
-          label="Last Name",
-          :rules="nonEmptyRules",
-          type="text")
-      v-text-field(
-          v-model="password",
-          type="password",
-          label="Password",
-          :rules="nonEmptyRules")
-      v-text-field(
-          v-model="retypePassword",
-          type="password",
-          label="Retype password",
-          :rules="retypeMustMatchPasswordRules")
-      v-btn.ml-0(type="submit",
-          color="primary",
-          :loading="inProgress") Register
-  template(v-if="oauthProviders && oauthProviders.length")
-    v-divider
-    girder-oauth(verb="register", :providers="oauthProviders")
+<template>
+  <div class="register-widget">
+    <v-alert
+      v-for="err in alerts.errors"
+      :key="err"
+      :value="true"
+      class="mt-0"
+      dismissible="dismissible"
+      transition="scale-transition"
+      type="error"
+    >{{ err }}</v-alert>
+    <v-alert
+      v-for="info in alerts.infos"
+      :key="info"
+      :value="true"
+      class="mt-0"
+      dismissible="dismissible"
+      transition="scale-transition"
+      type="info"
+    >{{ info }}</v-alert>
+    <v-container>
+      <v-form
+        ref="form"
+        @submit.prevent="register"
+      >
+        <v-text-field
+          v-model="login"
+          :rules="nonEmptyRules"
+          label="Username"
+          type="text"
+          autofocus="autofocus"
+        />
+        <v-text-field
+          v-model="email"
+          :rules="nonEmptyRules"
+          label="Email"
+          type="email"
+        />
+        <v-text-field
+          v-model="firstName"
+          :rules="nonEmptyRules"
+          label="First Name"
+          type="text"
+        />
+        <v-text-field
+          v-model="lastName"
+          :rules="nonEmptyRules"
+          label="Last Name"
+          type="text"
+        />
+        <v-text-field
+          v-model="password"
+          :rules="nonEmptyRules"
+          type="password"
+          label="Password"
+        />
+        <v-text-field
+          v-model="retypePassword"
+          :rules="retypeMustMatchPasswordRules"
+          type="password"
+          label="Retype password"
+        />
+        <v-btn
+          :loading="inProgress"
+          class="ml-0"
+          type="submit"
+          color="primary"
+        >Register</v-btn>
+      </v-form>
+    </v-container><template v-if="oauthProviders && oauthProviders.length">
+      <v-divider />
+      <girder-oauth
+        :providers="oauthProviders"
+        verb="register"
+      />
+    </template>
+  </div>
 </template>
 
 <script>

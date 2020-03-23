@@ -71,7 +71,7 @@ describe('AccessControl', () => {
       users: [],
     });
 
-    const transionStub = config.stubs.transition;
+    const transitionStub = config.stubs.transition;
     // AccessConrol is using transtion but somehow the transitionStub
     // comes with @vue/test-utils causes error, disabling it makes it works
     config.stubs.transition = false;
@@ -88,7 +88,7 @@ describe('AccessControl', () => {
       },
       provide: { girderRest },
     });
-    config.stubs.transition = transionStub;
+    config.stubs.transition = transitionStub;
     await flushPromises();
     expect(wrapper.find({ name: 'v-switch' }).props('value')).toBe(false);
     expect(wrapper.findAll({ name: 'v-list-item' }).length).toBe(0);
@@ -97,7 +97,7 @@ describe('AccessControl', () => {
       .findAll({ name: 'v-switch' })
       .at(0)
       .vm.$emit('input', true);
-    expect(wrapper.vm.public).toBe(true);
+    expect(wrapper.vm.public_).toBe(true);
     const girderSearch = wrapper.find(GirderSearch).vm;
     girderSearch.$emit('select', {
       _modelType: 'user',
