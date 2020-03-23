@@ -42,7 +42,7 @@ describe('FilterForm.vue', () => {
       sync: false,
     });
     const statusSelect = wrapper.findAll({ name: 'v-select' }).at(1);
-    expect(statusSelect.vm.items.map(s => s.value)).toEqual([0, 1, 2, 3]);
+    expect(statusSelect.vm.items.map((s) => s.value)).toEqual([0, 1, 2, 3]);
   });
 
   it('mount with custom status item', () => {
@@ -62,7 +62,7 @@ describe('FilterForm.vue', () => {
       sync: false,
     });
     const statusSelect = wrapper.findAll({ name: 'v-select' }).at(1);
-    expect(statusSelect.vm.items.map(s => s.value)).toEqual([999, 0, 1, 2]);
+    expect(statusSelect.vm.items.map((s) => s.value)).toEqual([999, 0, 1, 2]);
   });
 
   it('mount with unknown status item', () => {
@@ -75,6 +75,6 @@ describe('FilterForm.vue', () => {
       sync: false,
     });
     const statusSelect = wrapper.findAll({ name: 'v-select' }).at(1);
-    expect(statusSelect.vm.items.map(s => s.value)).toEqual([0, 1, 2]);
+    expect(statusSelect.vm.items.map((s) => s.value)).toEqual([0, 1, 2]);
   });
 });

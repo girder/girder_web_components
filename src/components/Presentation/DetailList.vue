@@ -3,7 +3,9 @@
     v-if="rows.length"
     dense="dense"
   >
-    <v-subheader class="subtitle-1 font-weight-bold pl-4">{{ title }}</v-subheader>
+    <v-subheader class="subtitle-1 font-weight-bold pl-4">
+      {{ title }}
+    </v-subheader>
     <template v-for="(val, i) in rows">
       <v-list-item
         :key="`${i}-li`"
@@ -15,7 +17,9 @@
           name="row"
         >
           <v-list-item-content>
-            <div class="body-2 no-overflow">{{ val }}</div>
+            <div class="body-2 no-overflow">
+              {{ val }}
+            </div>
           </v-list-item-content>
         </slot>
       </v-list-item>

@@ -9,7 +9,9 @@
       :href="provider.url"
       class="ml-0 mr-3"
     >
-      <v-icon left="left">{{ $vuetify.icons.values[iconMap[provider.id].icon] }}</v-icon>
+      <v-icon left="left">
+        {{ $vuetify.icons.values[iconMap[provider.id].icon] }}
+      </v-icon>
       {{ provider.name }}
     </v-btn>
   </v-container>

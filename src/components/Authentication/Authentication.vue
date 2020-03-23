@@ -6,11 +6,15 @@
       dark="dark"
     >
       <v-tabs-slider color="yellow" />
-      <v-tab key="login">Log In</v-tab>
+      <v-tab key="login">
+        Log In
+      </v-tab>
       <v-tab
         v-if="register"
         key="registration"
-      >Register</v-tab>
+      >
+        Register
+      </v-tab>
     </v-tabs>
     <v-tabs-items v-model="activeTab">
       <v-tab-item key="login-box">

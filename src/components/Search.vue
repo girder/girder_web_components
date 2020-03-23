@@ -28,7 +28,7 @@ export const SearchTypeOptions = [
     value: 'item',
   },
 ];
-const DefaultSearchTypes = SearchTypeOptions.map(t => t.value);
+const DefaultSearchTypes = SearchTypeOptions.map((t) => t.value);
 
 export default {
   mixins: [usernameFormatter],
@@ -62,7 +62,7 @@ export default {
       default: () => SearchTypeOptions,
     },
     searchTypes: {
-      validator: val => Array.isArray(val) || val === null,
+      validator: (val) => Array.isArray(val) || val === null,
       default: null,
     },
     showMore: {
@@ -133,7 +133,7 @@ export default {
             const { data } = await this.girderRest.get('resource/search', {
               params: this.searchParams,
             });
-            results = [].concat(...this.internalSearchTypes.map(t => data[t]));
+            results = [].concat(...this.internalSearchTypes.map((t) => data[t]));
           }
         } catch (err) {
           this.$emit('error', err.message || 'Unknown error during search');
@@ -164,7 +164,9 @@ export default {
       v-if="!hideSearchIcon"
       class="mr-3 mdi-24px"
       color="white"
-    >$vuetify.icons.search</v-icon>
+    >
+      $vuetify.icons.search
+    </v-icon>
     <v-menu
       :open-on-click="false"
       :value="searchText"
@@ -236,7 +238,9 @@ export default {
           :key="`skeleton-${i}`"
         >
           <v-list-item-action>
-            <v-icon class="grey--text text--lighten-1">$vuetify.icons.circle</v-icon>
+            <v-icon class="grey--text text--lighten-1">
+              $vuetify.icons.circle
+            </v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title
@@ -264,7 +268,9 @@ export default {
           icon="icon"
           v-on="on"
         >
-          <v-icon class="mdi-24px">$vuetify.icons.settings</v-icon>
+          <v-icon class="mdi-24px">
+            $vuetify.icons.settings
+          </v-icon>
         </v-btn>
       </template>
       <v-card>

@@ -16,8 +16,7 @@ export default {
     model: {
       type: Object,
       required: true,
-      validator: model =>
-        createLocationValidator(false)(model) && model._modelType !== 'user',
+      validator: (model) => createLocationValidator(false)(model) && model._modelType !== 'user',
     },
     hasPermission: { type: Boolean, required: false, default: false },
   },
@@ -103,7 +102,7 @@ export default {
       }
     },
     groupOrUserSelected(selectedModel) {
-      if (!this.groupsAndUsers.find(model => model.id === selectedModel._id)) {
+      if (!this.groupsAndUsers.find((model) => model.id === selectedModel._id)) {
         this.access[`${selectedModel._modelType}s`].push({
           flags: [],
           id: selectedModel._id,
@@ -151,7 +150,9 @@ export default {
   <v-card class="px-3 py-2 access-control">
     <v-card-title>
       <div>
-        <div class="title">Access control</div>
+        <div class="title">
+          Access control
+        </div>
         <breadcrumb
           :location="model"
           readonly="readonly"
@@ -179,20 +180,22 @@ export default {
         >
           <transition-group name="height2">
             <v-list-item
-              v-for="model of groupsAndUsers"
-              :key="model.id"
+              v-for="resource of groupsAndUsers"
+              :key="resource.id"
             >
               <v-list-item-action class="mr-5">
-                <v-icon>{{ $vuetify.icons.values[model.login?'user':'group'] }}</v-icon>
+                <v-icon>{{ $vuetify.icons.values[resource.login?'user':'group'] }}</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>{{ model.name }}</v-list-item-title>
-                <v-list-item-subtitle>{{ model.login||model.description }}</v-list-item-subtitle>
+                <v-list-item-title>{{ resource.name }}</v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ resource.login||resource.description }}
+                </v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action class="mr-5">
                 <v-select
+                  v-model="resource.level"
                   :items="permissions"
-                  v-model="model.level"
                   class="level"
                   light="light"
                   solo="solo"
@@ -203,7 +206,7 @@ export default {
               <v-list-item-action class="mr-5">
                 <v-btn
                   icon="icon"
-                  @click="remove(model)"
+                  @click="remove(resource)"
                 >
                   <v-icon>mdi-minus-circle</v-icon>
                 </v-btn>
@@ -214,7 +217,9 @@ export default {
         <div
           v-if="!groupsAndUsers.length && !loading"
           class="mt-1 mb-2"
-        >Empty</div>
+        >
+          Empty
+        </div>
       </transition>
       <v-subheader>Grant access</v-subheader>
       <search
@@ -242,12 +247,16 @@ export default {
         <v-btn
           text="text"
           @click="$emit('close')"
-        >Cancel</v-btn>
+        >
+          Cancel
+        </v-btn>
         <v-btn
           color="primary"
           depressed="depressed"
           @click="save"
-        >Save</v-btn>
+        >
+          Save
+        </v-btn>
       </v-card-actions>
     </slot>
   </v-card>

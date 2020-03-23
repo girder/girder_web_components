@@ -30,12 +30,16 @@
             v-if="file.status === 'done'"
             color="success"
             large="large"
-          >$vuetify.icons.complete</v-icon>
+          >
+            $vuetify.icons.complete
+          </v-icon>
           <v-icon
             v-if="file.status === 'error'"
             color="error"
             large="large"
-          >$vuetify.icons.error</v-icon>
+          >
+            $vuetify.icons.error
+          </v-icon>
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>{{ file.file.name }}</v-list-item-title>
@@ -53,7 +57,9 @@
       <v-divider />
       <v-list-item>
         <v-list-item-content>
-          <div class="grey--text subtitle-1">+ {{ hiddenCount }} more...</div>
+          <div class="grey--text subtitle-1">
+            + {{ hiddenCount }} more...
+          </div>
         </v-list-item-content>
       </v-list-item>
     </template>
@@ -77,7 +83,7 @@ export default {
   },
   computed: {
     notDone() {
-      return this.value.filter(f => f.status !== 'done');
+      return this.value.filter((f) => f.status !== 'done');
     },
     shownFiles() {
       if (this.maxShow) {

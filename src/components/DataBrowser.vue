@@ -121,7 +121,7 @@ export default {
               nItems: data.nItems || 0,
             },
           };
-        } else if (type === 'users' || type === 'collections') {
+        } if (type === 'users' || type === 'collections') {
           const { data } = await this.girderRest.get(`${this.getResourceType(type)}/details`);
           return {
             ...counts,
@@ -129,7 +129,7 @@ export default {
               [Object.keys(data)[0]]: Object.values(data)[0],
             },
           };
-        } else if (type === 'root') {
+        } if (type === 'root') {
           return { ...counts, ...{ nUsers: 1, nCollections: 1 } };
         }
         return counts;
@@ -238,8 +238,8 @@ export default {
         };
         promises.push(this.girderRest.get(GIRDER_ITEM_ENDPOINT, { params: itemParams }));
       }
-      const responses = (await Promise.all(promises)).map(response => response.data);
-      const rows = [].concat.apply(...responses).map(item => ({
+      const responses = (await Promise.all(promises)).map((response) => response.data);
+      const rows = [].concat.apply(...responses).map((item) => ({
         ...item,
         humanSize: item.size ? this.formatSize(item.size) : '',
         icon: this.getModelIcon(item),
@@ -257,7 +257,7 @@ export default {
           offset: (page - 1) * itemsPerPage,
         },
       });
-      const rows = items.map(item => ({
+      const rows = items.map((item) => ({
         ...item,
         name:
           item._modelType === 'user'

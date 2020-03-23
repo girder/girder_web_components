@@ -2,7 +2,9 @@ import MockAdapter from 'axios-mock-adapter';
 import { shallowMount } from '@vue/test-utils';
 import RestClient from '@/rest';
 import Search from '@/components/Search.vue';
-import { flushPromises, girderVue, vuetify, wrapMock as w } from './utils';
+import {
+  flushPromises, girderVue, vuetify, wrapMock as w,
+} from './utils';
 
 const localVue = girderVue();
 

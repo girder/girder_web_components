@@ -142,20 +142,26 @@ export default {
             type="error"
             dismissible="dismissible"
             transition="scale-transition"
-          >{{ error }}</v-alert>
+          >
+            {{ error }}
+          </v-alert>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
           <v-btn
             text="text"
             @click="$emit('dismiss')"
-          >Cancel</v-btn>
+          >
+            Cancel
+          </v-btn>
           <v-btn
             :disabled="!name"
             depressed="depressed"
             color="primary"
             type="submit"
-          >{{ edit ? 'Save Changes' : 'Create Folder' }}</v-btn>
+          >
+            {{ edit ? 'Save Changes' : 'Create Folder' }}
+          </v-btn>
         </v-card-actions>
       </v-row>
     </v-card>

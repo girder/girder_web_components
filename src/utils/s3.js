@@ -44,7 +44,7 @@ export default class S3Upload {
   }
 
   async _sendChunks() {
-    const onUploadProgress = e => this.progress({
+    const onUploadProgress = (e) => this.progress({
       current: this.offset + e.loaded,
       total: this.file.size,
       indeterminate: !e.lengthComputable,
@@ -89,7 +89,7 @@ export default class S3Upload {
       headers,
       method,
       url,
-      onUploadProgress: e => this.progress({
+      onUploadProgress: (e) => this.progress({
         current: e.loaded,
         total: this.file.size,
         indeterminate: !e.lengthComputable,

@@ -1,7 +1,7 @@
 import '@mdi/font/css/materialdesignicons.min.css';
 
 import AccessControl from './AccessControl.vue';
-import Authentication from './Authentication/';
+import Authentication from './Authentication';
 import Breadcrumb from './Breadcrumb.vue';
 import DataBrowser from './DataBrowser.vue';
 import DataDetails from './DataDetails.vue';

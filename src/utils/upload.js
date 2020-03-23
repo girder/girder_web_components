@@ -34,7 +34,7 @@ export default class Upload extends UploadBase {
   }
 
   async _sendChunks() {
-    const onUploadProgress = e => this.progress({
+    const onUploadProgress = (e) => this.progress({
       indeterminate: !e.lengthComputable,
       current: this.offset + e.loaded,
       size: this.file.size,

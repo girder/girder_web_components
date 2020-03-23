@@ -74,9 +74,15 @@ export default {
   >
     <template #item="props">
       <tr @click="$emit('job-click', $event, props.item)">
-        <td class="one-line">{{ props.item.title }}</td>
-        <td class="one-line">{{ props.item.type }}</td>
-        <td class="one-line">{{ props.item.updateString }}</td>
+        <td class="one-line">
+          {{ props.item.title }}
+        </td>
+        <td class="one-line">
+          {{ props.item.type }}
+        </td>
+        <td class="one-line">
+          {{ props.item.updateString }}
+        </td>
         <td
           :title="props.item.statusText"
           class="one-line"
@@ -93,7 +99,9 @@ export default {
       </tr>
     </template>
     <template #footer.page-text="">
-      <div class="v-datatable__actions__options">{{ pageRange.first }}-{{ pageRange.last }}</div>
+      <div class="v-datatable__actions__options">
+        {{ pageRange.first }}-{{ pageRange.last }}
+      </div>
     </template>
   </v-data-table>
 </template>

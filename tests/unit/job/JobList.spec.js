@@ -30,11 +30,12 @@ describe('JobList.vue', () => {
   }
 
   async function mountAndWait(options = {}) {
-    const wrapper = shallowMount(JobList, Object.assign({
+    const wrapper = shallowMount(JobList, {
       localVue,
       vuetify,
       provide: { girderRest, notificationBus },
-    }, options));
+      ...options,
+    });
     await waitForResponses(wrapper);
     return wrapper;
   }

@@ -13,9 +13,12 @@
             <div
               v-if="!hideHeadline"
               class="headline"
-            >Upload to <span class="font-weight-bold">{{ dest.name }}</span>
+            >
+              Upload to <span class="font-weight-bold">{{ dest.name }}</span>
             </div>
-            <div class="grey--text title">{{ statusMessage }}</div>
+            <div class="grey--text title">
+              {{ statusMessage }}
+            </div>
           </div>
         </v-card-title>
       </slot>
@@ -29,13 +32,17 @@
         <v-btn
           text="text"
           @click="reset"
-        >Clear all</v-btn>
+        >
+          Clear all
+        </v-btn>
         <v-btn
           v-if="!hideStartButton"
           text="text"
           color="primary"
           @click="startUpload"
-        >{{ startButtonText }}</v-btn>
+        >
+          {{ startButtonText }}
+        </v-btn>
       </v-card-actions>
       <v-col>
         <slot name="dropzone">
@@ -54,7 +61,8 @@
           dark="dark"
           tile="tile"
           type="error"
-        >{{ errorMessage }}
+        >
+          {{ errorMessage }}
           <v-btn
             v-if="!uploading"
             class="ml-3"
@@ -62,7 +70,9 @@
             small="small"
             outlined="outlined"
             @click="startUpload"
-          >Resume upload</v-btn>
+          >
+            Resume upload
+          </v-btn>
           <v-btn
             v-if="!uploading"
             class="ml-3"
@@ -70,7 +80,9 @@
             small="small"
             outlined="outlined"
             @click="reset"
-          >Abort</v-btn>
+          >
+            Abort
+          </v-btn>
         </v-alert>
       </div>
       <slot
@@ -153,8 +165,8 @@ export default {
     },
     statusMessage() {
       if (this.uploading) {
-        return `${this.formatSize(this.totalProgress)} / ${this.formatSize(this.totalSize)} ` +
-          `(${this.totalProgressPercent}%)`;
+        return `${this.formatSize(this.totalProgress)} / ${this.formatSize(this.totalSize)} `
+          + `(${this.totalProgressPercent}%)`;
       }
       return `${this.files.length} selected (${this.formatSize(this.totalSize)} total)`;
     },

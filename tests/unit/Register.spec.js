@@ -68,7 +68,7 @@ describe('Register', () => {
     });
     wrapper.find({ name: 'v-form' }).trigger('submit');
     await flushPromises();
-    expect(wrapper.find({ name: 'v-alert' }).vm.$slots.default[0].text).toEqual('Invalid email address.');
+    expect(wrapper.find({ name: 'v-alert' }).vm.$slots.default[0].text.trim()).toEqual('Invalid email address.');
 
     wrapper.setData({ email: 'test@email.com' });
     mock.onPost('user').replyOnce(200, {

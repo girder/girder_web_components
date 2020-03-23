@@ -43,8 +43,8 @@ const sizeFormatter = {
  */
 const accessLevelChecker = {
   methods: {
-    hasWriteAccess: resource => resource._accessLevel >= AccessType.WRITE,
-    hasAdminAccess: resource => resource._accessLevel >= AccessType.ADMIN,
+    hasWriteAccess: (resource) => resource._accessLevel >= AccessType.WRITE,
+    hasAdminAccess: (resource) => resource._accessLevel >= AccessType.ADMIN,
   },
 };
 
@@ -86,7 +86,7 @@ const jobFormatter = {
       return 100 * (progress.current / progress.total);
     },
     formatJob(job) {
-      const statusDef = Object.assign({ text: 'Unknown' }, jobstatus.getByValue(job.status));
+      const statusDef = { text: 'Unknown', ...jobstatus.getByValue(job.status) };
       return {
         statusText: statusDef.text,
         statusColor: statusDef.color,
@@ -154,7 +154,7 @@ const fileUploader = {
      * @param {FileList} files from an input element
      */
     inputFilesChanged(files) {
-      this.files = files.map(file => ({
+      this.files = files.map((file) => ({
         file,
         status: 'pending',
         progress: {

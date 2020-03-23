@@ -72,7 +72,7 @@ export default class RestClient extends Vue {
       useGirderAuthorizationHeader,
     });
 
-    this.interceptors.request.use(config => ({
+    this.interceptors.request.use((config) => ({
       ...config,
       baseURL: this.apiRoot,
       headers: {

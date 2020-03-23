@@ -7,7 +7,9 @@
       color="primary"
     >
       <v-toolbar-title class="subtitle-1">
-        <v-icon class="pr-2 mdi-18px">{{ icon }}</v-icon>{{ title }}
+        <v-icon class="pr-2 mdi-18px">
+          {{ icon }}
+        </v-icon>{{ title }}
       </v-toolbar-title>
       <v-spacer />
       <v-dialog
@@ -20,12 +22,14 @@
             icon="icon"
             v-on="on"
           >
-            <v-icon class="mdi-18px">{{ $vuetify.icons.edit }}</v-icon>
+            <v-icon class="mdi-18px">
+              {{ $vuetify.icons.edit }}
+            </v-icon>
           </v-btn>
         </template>
         <girder-upsert-folder
-          :edit="true"
           :key="datum._id"
+          :edit="true"
           :location="datum"
           @dismiss="showUpsert = false"
         />
@@ -47,8 +51,12 @@
     >
       <template #row="props">
         <v-row justify="space-between">
-          <v-col class="shrink py-1 body-2 font-weight-bold">{{ props.datum.key }}</v-col>
-          <v-col class="py-1 body-2 d-flex justify-end">{{ props.datum.value }}</v-col>
+          <v-col class="shrink py-1 body-2 font-weight-bold">
+            {{ props.datum.key }}
+          </v-col>
+          <v-col class="py-1 body-2 d-flex justify-end">
+            {{ props.datum.value }}
+          </v-col>
         </v-row>
       </template>
     </girder-detail-list>
@@ -163,7 +171,7 @@ export const DefaultActionKeys = [
     handler() {
       const { value: items } = this;
       const lists = { item: [], folder: [] };
-      items.forEach(item => lists[item._modelType].push(item._id));
+      items.forEach((item) => lists[item._modelType].push(item._id));
       download(this.girderRest.apiRoot, 'resource', null, `?resources=${JSON.stringify(lists)}`);
     },
   },
@@ -175,7 +183,7 @@ export const DefaultActionKeys = [
     async handler() {
       const { value: items } = this;
       const lists = { item: [], folder: [] };
-      items.forEach(item => lists[item._modelType].push(item._id));
+      items.forEach((item) => lists[item._modelType].push(item._id));
       await this.girderRest.delete('resource', {
         params: { resources: JSON.stringify(lists), progress: true },
       });
@@ -214,7 +222,7 @@ export default {
     async details() {
       if (this.datum && this.datum.created) {
         return this.datum;
-      } else if (this.datum && this.datum._id && this.datum._modelType) {
+      } if (this.datum && this.datum._id && this.datum._modelType) {
         const { data } = await this.girderRest.get(`${this.datum._modelType}/${this.datum._id}`);
         return data;
       }
@@ -225,7 +233,7 @@ export default {
       async get() {
         if (this.datum && this.datum._modelType === 'item') {
           const { data } = await this.girderRest.get(`item/${this.datum._id}/files`);
-          return data.map(f => f.name);
+          return data.map((f) => f.name);
         }
         return [];
       },
@@ -262,7 +270,7 @@ export default {
           }
           return `${k.name}${val}`;
         });
-      } else if (this.value.length > 1) {
+      } if (this.value.length > 1) {
         /* If this is a multi-selection */
         const reducer = (acc, curr) => {
           acc[curr._modelType] += 1;
@@ -275,8 +283,8 @@ export default {
           size: 0,
         });
         const countMessages = ['item', 'folder']
-          .filter(k => typeCounts[k] > 0)
-          .map(k => `${typeCounts[k]} ${k}(s) selected`);
+          .filter((k) => typeCounts[k] > 0)
+          .map((k) => `${typeCounts[k]} ${k}(s) selected`);
         const sizeMessage = `Total size: ${this.formatSize(typeCounts.size)}`;
         return [...countMessages, sizeMessage];
       }
@@ -287,7 +295,7 @@ export default {
         return [];
       }
       const actionType = this.datum ? this.datum._modelType : 'multi';
-      return this.actionKeys.filter(k => k.for.includes(actionType));
+      return this.actionKeys.filter((k) => k.for.includes(actionType));
     },
   },
   methods: {
