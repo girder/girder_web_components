@@ -8,7 +8,9 @@
       dismissible="dismissible"
       transition="scale-transition"
       type="error"
-    >{{ err }}</v-alert>
+    >
+      {{ err }}
+    </v-alert>
     <v-container>
       <v-form
         ref="login"
@@ -47,7 +49,9 @@
             type="submit"
             color="primary"
           >
-            <v-icon left="left">$vuetify.icons.login</v-icon>
+            <v-icon left="left">
+              $vuetify.icons.login
+            </v-icon>
             {{ otpFormVisible ? 'Verify code' : 'Login' }}
           </v-btn><template v-if="!hideForgotPassword">
             <v-spacer />
@@ -57,7 +61,9 @@
               text="text"
               color="primary"
               @click="$emit('forgotpassword')"
-            >Forgot Password?</v-btn>
+            >
+              Forgot Password?
+            </v-btn>
           </template>
         </v-card-actions>
       </v-form>
@@ -75,7 +81,7 @@ import GirderOauth from './OAuth.vue';
 const OTP_MAGIC_SUBSTRING = 'authentication must include a one-time password';
 
 // Validation rules
-const nonEmptyRules = [v => !!v || 'Item is required'];
+const nonEmptyRules = [(v) => !!v || 'Item is required'];
 const otpRules = [
   (v) => {
     const phrase = '6 digit number';

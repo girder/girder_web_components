@@ -23,7 +23,9 @@ export default {
       :class="formattedJob.class"
       :size="20"
       class="status-icon"
-    >{{ formattedJob.statusIcon }}</v-icon>
+    >
+      {{ formattedJob.statusIcon }}
+    </v-icon>
   </div>
 </template>
 

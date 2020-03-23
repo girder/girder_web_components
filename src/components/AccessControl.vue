@@ -16,8 +16,7 @@ export default {
     model: {
       type: Object,
       required: true,
-      validator: model =>
-        createLocationValidator(false)(model) && model._modelType !== 'user',
+      validator: (model) => createLocationValidator(false)(model) && model._modelType !== 'user',
     },
     hasPermission: { type: Boolean, required: false, default: false },
   },
@@ -103,7 +102,7 @@ export default {
       }
     },
     groupOrUserSelected(selectedModel) {
-      if (!this.groupsAndUsers.find(model => model.id === selectedModel._id)) {
+      if (!this.groupsAndUsers.find((model) => model.id === selectedModel._id)) {
         this.access[`${selectedModel._modelType}s`].push({
           flags: [],
           id: selectedModel._id,
@@ -151,7 +150,9 @@ export default {
   <v-card class="px-3 py-2 access-control">
     <v-card-title>
       <div>
-        <div class="title">Access control</div>
+        <div class="title">
+          Access control
+        </div>
         <breadcrumb
           :location="model"
           readonly="readonly"
@@ -191,8 +192,8 @@ export default {
               </v-list-item-content>
               <v-list-item-action class="mr-5">
                 <v-select
-                  :items="permissions"
                   v-model="model.level"
+                  :items="permissions"
                   class="level"
                   light="light"
                   solo="solo"
@@ -214,7 +215,9 @@ export default {
         <div
           v-if="!groupsAndUsers.length && !loading"
           class="mt-1 mb-2"
-        >Empty</div>
+        >
+          Empty
+        </div>
       </transition>
       <v-subheader>Grant access</v-subheader>
       <search
@@ -242,12 +245,16 @@ export default {
         <v-btn
           text="text"
           @click="$emit('close')"
-        >Cancel</v-btn>
+        >
+          Cancel
+        </v-btn>
         <v-btn
           color="primary"
           depressed="depressed"
           @click="save"
-        >Save</v-btn>
+        >
+          Save
+        </v-btn>
       </v-card-actions>
     </slot>
   </v-card>

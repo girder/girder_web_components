@@ -7,8 +7,12 @@
     @drop="dropzoneClass = null"
   >
     <v-row class="flex-column align-center justify-center fill-height dropzone-message">
-      <v-icon size="50px">$vuetify.icons.fileUpload</v-icon>
-      <div class="title mt-3">{{ message }}</div>
+      <v-icon size="50px">
+        $vuetify.icons.fileUpload
+      </v-icon>
+      <div class="title mt-3">
+        {{ message }}
+      </div>
     </v-row><input
       :multiple="multiple"
       :accept="accept"

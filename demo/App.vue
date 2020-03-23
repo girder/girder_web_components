@@ -54,8 +54,11 @@
           md="12"
           offset-md="0"
         >
-          <div class="display-3">Girder Web Components</div>
-          <div class="title mb-1">A Vue + Vuetify library for interacting with
+          <div class="display-3">
+            Girder Web Components
+          </div>
+          <div class="title mb-1">
+            A Vue + Vuetify library for interacting with
             <a href="https://www.kitware.com/">Kitware's</a>
             data management platform,
             <a href="https://girder.readthedocs.io/en/stable/">Girder</a>
@@ -66,7 +69,8 @@
             class="pr-3"
           >
           <v-row class="ma-0">
-            <div class="title mb-1">This demo integrates with
+            <div class="title mb-1">
+              This demo integrates with
               <a href="https://data.kitware.com">data.kitware.com</a>
             </div>
             <v-switch
@@ -96,10 +100,10 @@
             />
           </v-row><template v-if="loggedOut">
             <girder-auth
+              :key="girderRest.token"
               :force-otp="false"
               :register="authRegister"
               :oauth="authOauth"
-              :key="girderRest.token"
               :forgot-password-url="forgotPasswordUrl"
             />
           </template><template v-else>
@@ -107,8 +111,11 @@
               v-if="!loggedOut"
               color="primary"
               @click="girderRest.logout()"
-            >Log Out
-              <v-icon class="pl-2">$vuetify.icons.logout</v-icon>
+            >
+              Log Out
+              <v-icon class="pl-2">
+                $vuetify.icons.logout
+              </v-icon>
             </v-btn>
           </template><a id="upload" />
           <headline
@@ -137,7 +144,8 @@
               lg="8"
               md="6"
               sm="12"
-            ><a id="file-manager" />
+            >
+              <a id="file-manager" />
               <headline
                 title="girder-file-manager"
                 link="src/components/Snippet/FileManager.vue"
@@ -145,7 +153,8 @@
                 defaults including folder creation, item upload, and a breadcrumb bar"
               />
             </v-col>
-            <v-col class="pa-0"><a id="data-details" />
+            <v-col class="pa-0">
+              <a id="data-details" />
               <headline
                 title="girder-data-details"
                 link="src/components/DataDetails.vue"
@@ -348,7 +357,7 @@ export default {
     detailsList() {
       if (this.selected.length) {
         return this.selected;
-      } else if (this.location && this.location._id) {
+      } if (this.location && this.location._id) {
         return [this.location];
       }
       return [];

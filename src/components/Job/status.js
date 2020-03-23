@@ -83,7 +83,7 @@ function get(statusName) {
 }
 
 function getByValue(value) {
-  return Object.values(statusMap).find(status => status.value === value);
+  return Object.values(statusMap).find((status) => status.value === value);
 }
 
 function register(status = {}) {

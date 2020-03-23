@@ -44,7 +44,9 @@ export default {
       v-model="activeTab"
       class="md-tab"
     >
-      <v-tab key="edit">Edit</v-tab>
+      <v-tab key="edit">
+        Edit
+      </v-tab>
       <v-tab-item>
         <v-textarea
           v-model="text_"
@@ -55,7 +57,9 @@ export default {
           single-line="single-line"
         />
       </v-tab-item>
-      <v-tab key="preview">Preview</v-tab>
+      <v-tab key="preview">
+        Preview
+      </v-tab>
       <v-tab-item class="md-preview pa-2 grey lighten-3">
         <girder-markdown :text="text_" />
       </v-tab-item>
@@ -78,7 +82,9 @@ export default {
             class="flex-column align-center justify-content"
             no-gutters="no-gutters"
           >
-            <v-icon class="mdi-24px">$vuetify.icons.edit</v-icon>
+            <v-icon class="mdi-24px">
+              $vuetify.icons.edit
+            </v-icon>
             <span class="caption text-capitalize">Write</span>
           </v-row>
         </v-btn>
@@ -91,7 +97,9 @@ export default {
             class="flex-column align-center justify-content"
             no-gutters="no-gutters"
           >
-            <v-icon class="mdi-24px">$vuetify.icons.preview</v-icon>
+            <v-icon class="mdi-24px">
+              $vuetify.icons.preview
+            </v-icon>
             <span class="caption text-capitalize">Preview</span>
           </v-row>
         </v-btn>

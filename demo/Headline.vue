@@ -22,7 +22,8 @@ export default {
 
 <template>
   <div>
-    <div class="headline font-weight-bold mono mt-8">{{ title }}
+    <div class="headline font-weight-bold mono mt-8">
+      {{ title }}
       <v-btn
         :href="repoBase + link"
         class="ml-2"
@@ -32,7 +33,9 @@ export default {
         <v-icon>$vuetify.icons.externalLink</v-icon>
       </v-btn>
     </div>
-    <div class="subtitle-1 mb-4">{{ description }}</div>
+    <div class="subtitle-1 mb-4">
+      {{ description }}
+    </div>
   </div>
 </template>
 

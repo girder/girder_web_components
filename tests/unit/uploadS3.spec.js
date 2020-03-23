@@ -134,8 +134,8 @@ describe('S3 upload behavior', () => {
       const etags = doc.querySelectorAll('CompleteMultipartUpload > Part > ETag');
       expect(parts.length).toBe(etags.length);
       expect(etags.length).toBe(2);
-      expect([...parts].map(el => el.textContent)).toEqual(['1', '2']);
-      expect([...etags].map(el => el.textContent)).toEqual(['etag1', 'etag2']);
+      expect([...parts].map((el) => el.textContent)).toEqual(['1', '2']);
+      expect([...etags].map((el) => el.textContent)).toEqual(['etag1', 'etag2']);
 
       finalized = true;
       return [200];

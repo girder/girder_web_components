@@ -65,14 +65,14 @@ export default {
         }
         if (!rootLocationDisabled) {
           if (
-            type === 'users' ||
-            (user && breadcrumb.length && breadcrumb[0].type === 'user')
+            type === 'users'
+            || (user && breadcrumb.length && breadcrumb[0].type === 'user')
           ) {
             breadcrumb.unshift({ type: 'users' });
           }
           if (
-            type === 'collections' ||
-            (breadcrumb.length && breadcrumb[0].type === 'collection')
+            type === 'collections'
+            || (breadcrumb.length && breadcrumb[0].type === 'collection')
           ) {
             breadcrumb.unshift({ type: 'collections' });
           }
@@ -108,7 +108,9 @@ export default {
       class="home-button mr-3"
       color="accent"
       @click="$emit('crumbclick', girderRest.user)"
-    >$vuetify.icons.userHome</v-icon>
+    >
+      $vuetify.icons.userHome
+    </v-icon>
     <v-breadcrumbs
       :items="breadcrumb"
       class="font-weight-bold pa-0"
@@ -128,13 +130,19 @@ export default {
             <span class="accent--text">{{ item.name }}</span>
           </template>
           <template v-else-if="item.type==='users'">
-            <v-icon class="mdi-18px accent--text">$vuetify.icons.user</v-icon>
+            <v-icon class="mdi-18px accent--text">
+              $vuetify.icons.user
+            </v-icon>
           </template>
           <template v-else-if="item.type==='collections'">
-            <v-icon class="mdi-18px accent--text">$vuetify.icons.collection</v-icon>
+            <v-icon class="mdi-18px accent--text">
+              $vuetify.icons.collection
+            </v-icon>
           </template>
           <template v-else-if="item.type==='root'">
-            <v-icon class="mdi-18px accent--text">$vuetify.icons.globe</v-icon>
+            <v-icon class="mdi-18px accent--text">
+              $vuetify.icons.globe
+            </v-icon>
           </template>
           <span v-else>{{ item }}</span>
         </v-breadcrumbs-item>

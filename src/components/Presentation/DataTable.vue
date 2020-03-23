@@ -49,7 +49,7 @@ export default {
           const [start, end] = [this.lastCheckBoxIdx, props.index + 1].sort();
           const newlySelectedRows = this.rows
             .slice(start, end)
-            .filter(row => this.value.find(el => el._id === row._id) === undefined);
+            .filter((row) => this.value.find((el) => el._id === row._id) === undefined);
           this.$emit('input', newlySelectedRows.concat(this.value));
         }
         this.lastCheckBoxIdx = props.index;
@@ -95,10 +95,10 @@ export default {
     </template>
     <template #item="props">
       <tr
+        :key="props.item._id"
         :draggable="draggable"
         :active="props.isSelected"
         :class="getRowClass(props.item)"
-        :key="props.item._id"
         class="itemRow"
         @click="handleRowSelect($event, props)"
         @drag="$emit('drag', { items: [props], event: $event })"
@@ -138,20 +138,26 @@ export default {
             />
           </span>
         </td>
-        <td class="text-right nobreak">{{ props.item.humanSize }}</td>
+        <td class="text-right nobreak">
+          {{ props.item.humanSize }}
+        </td>
       </tr>
     </template>
     <template #no-data="">
       <div
         class="text-center"
         width="100%"
-      >No Data Available</div>
+      >
+        No Data Available
+      </div>
     </template>
     <template #no-results="">
       <div
         class="text-center"
         width="100%"
-      >No Data Available</div>
+      >
+        No Data Available
+      </div>
     </template>
   </v-data-table>
 </template>

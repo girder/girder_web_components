@@ -5,7 +5,7 @@ import {
   DataBrowser as GirderDataBrowser,
   Breadcrumb as GirderBreadcrumb,
   AccessControl as GirderAccessControl,
-} from '../';
+} from '..';
 import {
   getLocationType,
   isRootLocation,
@@ -117,7 +117,7 @@ export default {
         const { location, lazyLocation } = this;
         if (location) {
           return location;
-        } else if (lazyLocation) {
+        } if (lazyLocation) {
           return lazyLocation;
         }
         return { type: 'root' };
@@ -158,7 +158,7 @@ export default {
       this.$refs.girderBrowser.refresh();
       this.uploaderDialog = false;
       return Promise.all([
-        new Promise(resolve => setTimeout(resolve, 400)),
+        new Promise((resolve) => setTimeout(resolve, 400)),
         this.postUpload(),
       ]);
     },
@@ -166,7 +166,7 @@ export default {
       this.$refs.girderBrowser.refresh();
       this.newFolderDialog = false;
       return Promise.all([
-        new Promise(resolve => setTimeout(resolve, 400)),
+        new Promise((resolve) => setTimeout(resolve, 400)),
         this.postUpsert(),
       ]);
     },
@@ -234,7 +234,9 @@ export default {
                 class="mdi-24px mr-1"
                 left="left"
                 color="accent"
-              >$vuetify.icons.fileNew</v-icon>
+              >
+                $vuetify.icons.fileNew
+              </v-icon>
               <span class="hidden-xs-only">Upload</span>
             </v-btn>
           </template>
@@ -263,15 +265,17 @@ export default {
                 class="mdi-24px mr-1"
                 left="left"
                 color="accent"
-              >$vuetify.icons.folderNew</v-icon>
+              >
+                $vuetify.icons.folderNew
+              </v-icon>
               <span class="hidden-xs-only">New Folder</span>
             </v-btn>
           </template>
           <girder-upsert-folder
+            :key="internalLocation._id"
             :location="internalLocation"
             :pre-upsert="preUpsert"
             :post-upsert="postUpsertInternal"
-            :key="internalLocation._id"
             @dismiss="newFolderDialog = false"
           />
         </v-dialog>

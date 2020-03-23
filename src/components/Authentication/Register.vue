@@ -8,7 +8,9 @@
       dismissible="dismissible"
       transition="scale-transition"
       type="error"
-    >{{ err }}</v-alert>
+    >
+      {{ err }}
+    </v-alert>
     <v-alert
       v-for="info in alerts.infos"
       :key="info"
@@ -17,7 +19,9 @@
       dismissible="dismissible"
       transition="scale-transition"
       type="info"
-    >{{ info }}</v-alert>
+    >
+      {{ info }}
+    </v-alert>
     <v-container>
       <v-form
         ref="form"
@@ -65,7 +69,9 @@
           class="ml-0"
           type="submit"
           color="primary"
-        >Register</v-btn>
+        >
+          Register
+        </v-btn>
       </v-form>
     </v-container><template v-if="oauthProviders && oauthProviders.length">
       <v-divider />
@@ -92,10 +98,10 @@ export default {
     },
   },
   data() {
-    const nonEmptyRules = [v => !!v || 'Item is required'];
+    const nonEmptyRules = [(v) => !!v || 'Item is required'];
     const retypeMustMatchPasswordRules = [
       ...nonEmptyRules,
-      v => v === this.password || 'Passwords must match',
+      (v) => v === this.password || 'Passwords must match',
     ];
     return {
       login: '',
