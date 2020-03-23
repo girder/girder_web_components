@@ -105,7 +105,9 @@ export default {
 
 <style lang="scss" scoped>
 .file-tile {
-  transition: width 0.8s ease-in-out 1s, height 0.8s ease-in-out 1s,
+  transition:
+    width 0.8s ease-in-out 1s,
+    height 0.8s ease-in-out 1s,
     background-color 0.5s ease-in-out;
   width: 100%;
 
