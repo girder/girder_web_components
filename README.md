@@ -23,18 +23,7 @@ yarn add -D sass sass-loader@^7.3.1 vue-cli-plugin-vuetify vuetify-loader
 ```
 
 > **Note:** If you are building with custom webpack (without vue-cli-service),
-> add the following to your module rules in webpack.config.js:
->
-> ```javascript
-> {
->   test: /\.(sass|scss)$/,
->   use: [
->       "style-loader",
->       "css-loader",
->       "sass-loader",
->   ],
-> },
-> ```
+> you should follow Vuetify's [Webpack install instructions](https://vuetifyjs.com/en/getting-started/quick-start/#webpack-install)
 
 ### Initialization
 
