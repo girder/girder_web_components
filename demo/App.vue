@@ -222,18 +222,20 @@
                 @dragover.prevent=""
                 @drop="drop"
               >
-                <v-card-title> Drop Zone </v-card-title>
+                <v-card-title>Drop Zone</v-card-title>
                 <v-card-text>
-                  <p v-if="!(dropped.length)"> Drag a row here to see results </p>
+                  <p v-if="!(dropped.length)">
+                    Drag a row here to see results
+                  </p>
                   <ul
-                    v-for="drop in dropped"
+                    v-for="{ item } in dropped"
                     v-else
-                    :key="drop.item._id"
+                    :key="item._id"
                     class="header"
                   >
-                    <li>type: {{ drop.item._modelType }}</li>
-                    <li>name: {{ drop.item.name }} </li>
-                    <li>size: {{ drop.item.size }}</li>
+                    <li>type: {{ item._modelType }}</li>
+                    <li>name: {{ item.name }} </li>
+                    <li>size: {{ item.size }}</li>
                   </ul>
                 </v-card-text>
               </v-card>
