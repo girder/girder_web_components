@@ -181,7 +181,15 @@ describe('Breadcrumb', () => {
       rootLocationDisabled: false,
     });
     await flushPromises();
-    expect(wrapper.vm.breadcrumb.length).toBe(4);
+
+    const crumbs = wrapper.vm.breadcrumb.map((r) => [r.type, r._id]);
+    expect(crumbs).toEqual([
+      ['root', undefined],
+      ['collections', undefined],
+      ['collection', 'rootid2'],
+      ['folder', 'parent_fake_folderId'],
+      ['folder', 'fake_folderId'],
+    ]);
   });
 
   it('Test user root w/o authentication', async () => {
