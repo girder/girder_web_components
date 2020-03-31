@@ -185,6 +185,7 @@ const fileUploader = {
       preUpload = async () => {},
       postUpload = async () => {},
       uploadCls = Upload,
+      uploadClsArgs = {},
     }) {
       this.uploading = true;
       this.indeterminate = true;
@@ -210,6 +211,7 @@ const fileUploader = {
             $rest: this.girderRest,
             parent: dest,
             progress,
+            ...uploadClsArgs,
           });
           promiseChain = promiseChain
             .then(() => file.upload.beforeUpload())
