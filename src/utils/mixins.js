@@ -164,6 +164,7 @@ const fileUploader = {
         },
         upload: null,
         result: null,
+        uploadClsParams: {},
       }));
     },
 
@@ -210,6 +211,7 @@ const fileUploader = {
             $rest: this.girderRest,
             parent: dest,
             progress,
+            params: file.uploadClsParams,
           });
           promiseChain = promiseChain
             .then(() => file.upload.beforeUpload())
