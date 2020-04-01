@@ -121,21 +121,16 @@ export default {
       :status-list="typeAndStatusList.statuses"
       :job-type-list="typeAndStatusList.types"
     />
-    <job-table
-      :jobs="jobs"
-      :options.sync="options"
-      :more-pages="morePages"
-      @job-click="(e, job) => $emit('job-click', e, job)"
+    <slot
+      v-bind="{ jobs, options, morePages }"
+      name="jobTable"
     >
-      <template
-        v-if="$scopedSlots.jobwidget"
-        #jobwidget="props"
-      >
-        <slot
-          v-bind="props"
-          name="jobwidget"
-        />
-      </template>
-    </job-table>
+      <job-table
+        :jobs="jobs"
+        :options.sync="options"
+        :more-pages="morePages"
+        @job-click="(e, job) => $emit('job-click', e, job)"
+      />
+    </slot>
   </v-card>
 </template>
