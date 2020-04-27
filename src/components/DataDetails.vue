@@ -322,7 +322,7 @@ export default {
     },
     urlForAction(action) {
       return action.url(this.girderRest.apiRoot, this.value);
-    }
+    },
   },
 };
 </script>
