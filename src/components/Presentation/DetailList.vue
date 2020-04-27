@@ -9,6 +9,8 @@
     <template v-for="(val, i) in rows">
       <v-list-item
         :key="`${i}-li`"
+        :href="val.url"
+        :target="val.target"
         class="allow-select"
         v-on="clickable ? {click: () => $emit('click', val)} : {}"
       >

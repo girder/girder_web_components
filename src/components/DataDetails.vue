@@ -82,16 +82,7 @@
           </v-icon>
         </v-list-item-icon>
         <v-list-item-content :class="`${props.datum.color}--text`">
-          <a
-            v-if="props.datum.url"
-            :href="urlForAction(props.datum)"
-            @click.prevent
-          >
-            {{ props.datum.name }}
-          </a>
-          <span v-else>
-            {{ props.datum.name }}
-          </span>
+          {{ props.datum.name }}
         </v-list-item-content>
       </template>
     </girder-detail-list>
@@ -112,15 +103,11 @@ function generateUrl(baseurl, modelType, id, query = '') {
   return `${baseurl}/${modelType}/${idpart}download${query}`;
 }
 
-function download(url) {
-  window.open(url, '_blank');
-}
-
 /**
  * @type {Array<{
  *  value: String,
  *  name: String,
- *  transform: Function
+ *  transform?: Function
  * }>}
  */
 export const DefaultInfoKeys = [
@@ -151,8 +138,9 @@ export const DefaultInfoKeys = [
  *  name: String,
  *  icon: String,
  *  color: String,
- *  url?: Function,
- *  handler: Function,
+ *  urlfunc?: Function,
+ *  target?: String,
+ *  handler?: Function,
  * }>}
  */
 export const DefaultActionKeys = [
@@ -161,38 +149,32 @@ export const DefaultActionKeys = [
     name: 'View Item',
     iconKey: 'view',
     color: 'primary',
-    url(apiRoot, items) {
+    urlfunc(apiRoot, items) {
       return generateUrl(apiRoot, items[0]._modelType, items[0]._id, '?contentDisposition=inline');
     },
-    handler(girderRest, items) {
-      download(this.url(girderRest.apiRoot, items));
-    },
+    target: '_blank',
   },
   {
     for: ['item'],
     name: 'Download',
     iconKey: 'download',
     color: 'secondary',
-    url(apiRoot, items) {
+    urlfunc(apiRoot, items) {
       return generateUrl(apiRoot, items[0]._modelType, items[0]._id);
     },
-    handler(girderRest, items) {
-      download(this.url(girderRest.apiRoot, items));
-    },
+    target: '_blank',
   },
   {
     for: ['folder', 'multi'],
     name: 'Download (zip)',
     iconKey: 'download',
     color: 'secondary',
-    url(apiRoot, items) {
+    urlfunc(apiRoot, items) {
       const lists = { item: [], folder: [] };
       items.forEach((item) => lists[item._modelType].push(item._id));
       return generateUrl(apiRoot, 'resource', null, `?resources=${JSON.stringify(lists)}`);
     },
-    handler(girderRest, items) {
-      download(this.url(girderRest.apiRoot, items));
-    },
+    target: '_blank',
   },
   {
     for: ['item', 'folder', 'multi'],
@@ -313,16 +295,21 @@ export default {
         return [];
       }
       const actionType = this.datum ? this.datum._modelType : 'multi';
-      return this.actionKeys.filter((k) => k.for.includes(actionType));
+      const enabledActions = this.actionKeys.filter((k) => k.for.includes(actionType));
+      return enabledActions.map((a) => {
+        if (a.urlfunc) {
+          a.url = a.urlfunc(this.girderRest.apiRoot, this.value);
+        }
+        return a;
+      });
     },
   },
   methods: {
     async handleAction(action) {
-      await action.handler(this.girderRest, this.value);
+      if (action.handler) {
+        await action.handler(this.girderRest, this.value);
+      }
       this.$emit('action', action);
-    },
-    urlForAction(action) {
-      return action.url(this.girderRest.apiRoot, this.value);
     },
   },
 };
