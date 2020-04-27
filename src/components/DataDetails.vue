@@ -151,6 +151,7 @@ export const DefaultInfoKeys = [
  *  name: String,
  *  icon: String,
  *  color: String,
+ *  url?: Function,
  *  handler: Function,
  * }>}
  */
