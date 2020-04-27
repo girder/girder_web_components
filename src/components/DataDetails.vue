@@ -82,7 +82,16 @@
           </v-icon>
         </v-list-item-icon>
         <v-list-item-content :class="`${props.datum.color}--text`">
-          {{ props.datum.name }}
+          <a
+            v-if="props.datum.url"
+            :href="urlForAction(props.datum)"
+            @click.prevent
+          >
+            {{ props.datum.name }}
+          </a>
+          <span v-else>
+            {{ props.datum.name }}
+          </span>
         </v-list-item-content>
       </template>
     </girder-detail-list>
@@ -95,12 +104,15 @@ import GirderMarkdown from './Markdown.vue';
 import GirderUpsertFolder from './UpsertFolder.vue';
 import { dateFormatter, sizeFormatter, usernameFormatter } from '../utils/mixins';
 
-function download(baseurl, modelType, id, query = '') {
+function generateUrl(baseurl, modelType, id, query = '') {
   if (['resource', 'folder', 'item', 'file'].indexOf(modelType) < 0) {
     throw new Error(`${modelType} is not downloadable`);
   }
   const idpart = id ? `${id}/` : '';
-  const url = `${baseurl}/${modelType}/${idpart}download${query}`;
+  return `${baseurl}/${modelType}/${idpart}download${query}`;
+}
+
+function download(url) {
   window.open(url, '_blank');
 }
 
@@ -148,9 +160,11 @@ export const DefaultActionKeys = [
     name: 'View Item',
     iconKey: 'view',
     color: 'primary',
-    handler() {
-      const { value: items } = this;
-      download(this.girderRest.apiRoot, items[0]._modelType, items[0]._id, '?contentDisposition=inline');
+    url(apiRoot, items) {
+      return generateUrl(apiRoot, items[0]._modelType, items[0]._id, '?contentDisposition=inline');
+    },
+    handler(girderRest, items) {
+      download(this.url(girderRest.apiRoot, items));
     },
   },
   {
@@ -158,9 +172,11 @@ export const DefaultActionKeys = [
     name: 'Download',
     iconKey: 'download',
     color: 'secondary',
-    handler() {
-      const { value: items } = this;
-      download(this.girderRest.apiRoot, items[0]._modelType, items[0]._id);
+    url(apiRoot, items) {
+      return generateUrl(apiRoot, items[0]._modelType, items[0]._id);
+    },
+    handler(girderRest, items) {
+      download(this.url(girderRest.apiRoot, items));
     },
   },
   {
@@ -168,11 +184,13 @@ export const DefaultActionKeys = [
     name: 'Download (zip)',
     iconKey: 'download',
     color: 'secondary',
-    handler() {
-      const { value: items } = this;
+    url(apiRoot, items) {
       const lists = { item: [], folder: [] };
       items.forEach((item) => lists[item._modelType].push(item._id));
-      download(this.girderRest.apiRoot, 'resource', null, `?resources=${JSON.stringify(lists)}`);
+      return generateUrl(apiRoot, 'resource', null, `?resources=${JSON.stringify(lists)}`);
+    },
+    handler(girderRest, items) {
+      download(this.url(girderRest.apiRoot, items));
     },
   },
   {
@@ -180,11 +198,10 @@ export const DefaultActionKeys = [
     name: 'Delete',
     iconKey: 'delete',
     color: 'error',
-    async handler() {
-      const { value: items } = this;
+    async handler(girderRest, items) {
       const lists = { item: [], folder: [] };
       items.forEach((item) => lists[item._modelType].push(item._id));
-      await this.girderRest.delete('resource', {
+      await girderRest.delete('resource', {
         params: { resources: JSON.stringify(lists), progress: true },
       });
     },
@@ -300,9 +317,12 @@ export default {
   },
   methods: {
     async handleAction(action) {
-      await action.handler.apply(this);
+      await action.handler(this.girderRest, this.value);
       this.$emit('action', action);
     },
+    urlForAction(action) {
+      return action.url(this.girderRest.apiRoot, this.value);
+    }
   },
 };
 </script>
