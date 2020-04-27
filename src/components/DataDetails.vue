@@ -70,6 +70,7 @@
       :clickable="true"
       :rows="actions"
       title="Actions"
+      :href="hrefForAction"
       @click="handleAction"
     >
       <template #row="props">
@@ -95,13 +96,12 @@ import GirderMarkdown from './Markdown.vue';
 import GirderUpsertFolder from './UpsertFolder.vue';
 import { dateFormatter, sizeFormatter, usernameFormatter } from '../utils/mixins';
 
-function download(baseurl, modelType, id, query = '') {
+function generateUrl(apiRoot, modelType, id, query = '') {
   if (['resource', 'folder', 'item', 'file'].indexOf(modelType) < 0) {
     throw new Error(`${modelType} is not downloadable`);
   }
   const idpart = id ? `${id}/` : '';
-  const url = `${baseurl}/${modelType}/${idpart}download${query}`;
-  window.open(url, '_blank');
+  return `${apiRoot}/${modelType}/${idpart}download${query}`;
 }
 
 /**
@@ -148,9 +148,8 @@ export const DefaultActionKeys = [
     name: 'View Item',
     iconKey: 'view',
     color: 'primary',
-    handler() {
-      const { value: items } = this;
-      download(this.girderRest.apiRoot, items[0]._modelType, items[0]._id, '?contentDisposition=inline');
+    href(apiRoot, items) {
+      return generateUrl(apiRoot, items[0]._modelType, items[0]._id, '?contentDisposition=inline');
     },
   },
   {
@@ -158,9 +157,8 @@ export const DefaultActionKeys = [
     name: 'Download',
     iconKey: 'download',
     color: 'secondary',
-    handler() {
-      const { value: items } = this;
-      download(this.girderRest.apiRoot, items[0]._modelType, items[0]._id);
+    href(apiRoot, items) {
+      return generateUrl(apiRoot, items[0]._modelType, items[0]._id);
     },
   },
   {
@@ -168,11 +166,10 @@ export const DefaultActionKeys = [
     name: 'Download (zip)',
     iconKey: 'download',
     color: 'secondary',
-    handler() {
-      const { value: items } = this;
+    href(apiRoot, items) {
       const lists = { item: [], folder: [] };
       items.forEach((item) => lists[item._modelType].push(item._id));
-      download(this.girderRest.apiRoot, 'resource', null, `?resources=${JSON.stringify(lists)}`);
+      return generateUrl(apiRoot, 'resource', null, `?resources=${JSON.stringify(lists)}`);
     },
   },
   {
@@ -300,8 +297,13 @@ export default {
   },
   methods: {
     async handleAction(action) {
-      await action.handler.apply(this);
+      if (action.handler) {
+        await action.handler.apply(this);
+      }
       this.$emit('action', action);
+    },
+    hrefForAction(action) {
+      return (action.href) ? action.href(this.girderRest.apiRoot, this.value) : undefined;
     },
   },
 };
