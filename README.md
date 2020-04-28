@@ -211,6 +211,14 @@ the Girder API server running).
 When running against your own instance of the Girder API server,
 make sure to set [CORS](https://girder.readthedocs.io/en/stable/security.html#cors-cross-origin-resource-sharing) accordingly.
 
+### Displaying authenticated media from Girder on a page
+
+If your app injects media dynamically into the page using `img` or `video` elements that load from Girder, there are several requirements.
+
+* You must use the `authenticateWithCredentials` option in the GirderRest constructor.
+* You must modify [Girder's CORS allowed origin settings](https://girder.readthedocs.io/en/stable/security.html?highlight=cors#cors-cross-origin-resource-sharing) to match your app's origin exactly.  You can use a comma-separated list to match multiple origins, for example `*, http://localhost:8080, https://myapp.domain.com`
+* To interact with the loaded element data from a canvas or JS, you may need to add the [crossOrigin attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/crossOrigin) to the media element.
+
 ### Deploy and Publish
 
 The demo app is automatically deployed to https://gwc.girder.org
