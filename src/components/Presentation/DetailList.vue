@@ -10,7 +10,8 @@
       <v-list-item
         :key="`${i}-li`"
         class="allow-select"
-        :href="(href) ? href(val) : undefined"
+        :href="val.href"
+        :target="val.target"
         v-on="clickable ? {click: () => $emit('click', val)} : {}"
       >
         <slot
@@ -47,10 +48,6 @@ export default {
     clickable: {
       type: Boolean,
       default: false,
-    },
-    href: {
-      type: Function,
-      default: undefined,
     },
   },
 };

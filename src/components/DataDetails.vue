@@ -70,7 +70,6 @@
       :clickable="true"
       :rows="actions"
       title="Actions"
-      :href="hrefForAction"
       @click="handleAction"
     >
       <template #row="props">
@@ -139,6 +138,7 @@ export const DefaultInfoKeys = [
  *  name: String,
  *  icon: String,
  *  color: String,
+ *  target?: String,
  *  handler: Function,
  * }>}
  */
@@ -148,29 +148,32 @@ export const DefaultActionKeys = [
     name: 'View Item',
     iconKey: 'view',
     color: 'primary',
-    href(apiRoot, items) {
+    generateHref(apiRoot, items) {
       return generateUrl(apiRoot, items[0]._modelType, items[0]._id, '?contentDisposition=inline');
     },
+    target: '_blank',
   },
   {
     for: ['item'],
     name: 'Download',
     iconKey: 'download',
     color: 'secondary',
-    href(apiRoot, items) {
+    generateHref(apiRoot, items) {
       return generateUrl(apiRoot, items[0]._modelType, items[0]._id);
     },
+    target: '_blank',
   },
   {
     for: ['folder', 'multi'],
     name: 'Download (zip)',
     iconKey: 'download',
     color: 'secondary',
-    href(apiRoot, items) {
+    generateHref(apiRoot, items) {
       const lists = { item: [], folder: [] };
       items.forEach((item) => lists[item._modelType].push(item._id));
       return generateUrl(apiRoot, 'resource', null, `?resources=${JSON.stringify(lists)}`);
     },
+    target: '_blank',
   },
   {
     for: ['item', 'folder', 'multi'],
@@ -292,7 +295,14 @@ export default {
         return [];
       }
       const actionType = this.datum ? this.datum._modelType : 'multi';
-      return this.actionKeys.filter((k) => k.for.includes(actionType));
+      return this.actionKeys
+        .filter((k) => k.for.includes(actionType))
+        .map((a) => {
+          if (a.generateHref) {
+            a.href = a.generateHref(this.girderRest.apiRoot, this.value);
+          }
+          return a;
+        });
     },
   },
   methods: {
@@ -301,9 +311,6 @@ export default {
         await action.handler.apply(this);
       }
       this.$emit('action', action);
-    },
-    hrefForAction(action) {
-      return (action.href) ? action.href(this.girderRest.apiRoot, this.value) : undefined;
     },
   },
 };
