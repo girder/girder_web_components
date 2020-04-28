@@ -10,6 +10,8 @@
       <v-list-item
         :key="`${i}-li`"
         class="allow-select"
+        :href="val.href"
+        :target="val.target"
         v-on="clickable ? {click: () => $emit('click', val)} : {}"
       >
         <slot

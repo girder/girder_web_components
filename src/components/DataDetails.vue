@@ -95,13 +95,12 @@ import GirderMarkdown from './Markdown.vue';
 import GirderUpsertFolder from './UpsertFolder.vue';
 import { dateFormatter, sizeFormatter, usernameFormatter } from '../utils/mixins';
 
-function download(baseurl, modelType, id, query = '') {
+function generateUrl(apiRoot, modelType, id, query = '') {
   if (['resource', 'folder', 'item', 'file'].indexOf(modelType) < 0) {
     throw new Error(`${modelType} is not downloadable`);
   }
   const idpart = id ? `${id}/` : '';
-  const url = `${baseurl}/${modelType}/${idpart}download${query}`;
-  window.open(url, '_blank');
+  return `${apiRoot}/${modelType}/${idpart}download${query}`;
 }
 
 /**
@@ -139,6 +138,7 @@ export const DefaultInfoKeys = [
  *  name: String,
  *  icon: String,
  *  color: String,
+ *  target?: String,
  *  handler: Function,
  * }>}
  */
@@ -148,32 +148,32 @@ export const DefaultActionKeys = [
     name: 'View Item',
     iconKey: 'view',
     color: 'primary',
-    handler() {
-      const { value: items } = this;
-      download(this.girderRest.apiRoot, items[0]._modelType, items[0]._id, '?contentDisposition=inline');
+    generateHref(apiRoot, items) {
+      return generateUrl(apiRoot, items[0]._modelType, items[0]._id, '?contentDisposition=inline');
     },
+    target: '_blank',
   },
   {
     for: ['item'],
     name: 'Download',
     iconKey: 'download',
     color: 'secondary',
-    handler() {
-      const { value: items } = this;
-      download(this.girderRest.apiRoot, items[0]._modelType, items[0]._id);
+    generateHref(apiRoot, items) {
+      return generateUrl(apiRoot, items[0]._modelType, items[0]._id);
     },
+    target: '_blank',
   },
   {
     for: ['folder', 'multi'],
     name: 'Download (zip)',
     iconKey: 'download',
     color: 'secondary',
-    handler() {
-      const { value: items } = this;
+    generateHref(apiRoot, items) {
       const lists = { item: [], folder: [] };
       items.forEach((item) => lists[item._modelType].push(item._id));
-      download(this.girderRest.apiRoot, 'resource', null, `?resources=${JSON.stringify(lists)}`);
+      return generateUrl(apiRoot, 'resource', null, `?resources=${JSON.stringify(lists)}`);
     },
+    target: '_blank',
   },
   {
     for: ['item', 'folder', 'multi'],
@@ -295,12 +295,21 @@ export default {
         return [];
       }
       const actionType = this.datum ? this.datum._modelType : 'multi';
-      return this.actionKeys.filter((k) => k.for.includes(actionType));
+      return this.actionKeys
+        .filter((k) => k.for.includes(actionType))
+        .map((a) => {
+          if (a.generateHref) {
+            a.href = a.generateHref(this.girderRest.apiRoot, this.value);
+          }
+          return a;
+        });
     },
   },
   methods: {
     async handleAction(action) {
-      await action.handler.apply(this);
+      if (action.handler) {
+        await action.handler.apply(this);
+      }
       this.$emit('action', action);
     },
   },
