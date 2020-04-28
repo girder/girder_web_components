@@ -211,7 +211,7 @@ the Girder API server running).
 When running against your own instance of the Girder API server,
 make sure to set [CORS](https://girder.readthedocs.io/en/stable/security.html#cors-cross-origin-resource-sharing) accordingly.
 
-### Displaying authenticated media from Girder on a page
+### Displaying private media from Girder on a page
 
 If your app injects media dynamically into the page using `img` or `video` elements that load from Girder, there are several requirements.
 
