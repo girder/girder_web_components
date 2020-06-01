@@ -190,7 +190,7 @@ const fileUploader = {
       this.uploading = true;
       this.indeterminate = true;
       this.errorMessage = null;
-      await preUpload();
+      const hookResult = await preUpload();
       this.indeterminate = false;
       const promiseList = this.files.map((file) => {
         let promiseChain = Promise.resolve();
@@ -209,7 +209,7 @@ const fileUploader = {
           // eslint-disable-next-line new-cap
           file.upload = new uploadCls(file.file, {
             $rest: this.girderRest,
-            parent: dest,
+            parent: (hookResult && hookResult.dest) ? hookResult.dest : dest,
             progress,
             params: file.uploadClsParams,
           });
