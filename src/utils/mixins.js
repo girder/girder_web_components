@@ -223,6 +223,7 @@ const fileUploader = {
             delete file.upload;
             file.status = 'done';
             file.progress.current = file.file.size;
+            result.file = file.file;
             return result;
           })
           .catch(async (error) => {
