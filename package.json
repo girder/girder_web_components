@@ -1,6 +1,6 @@
 {
   "name": "@girder/components",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "scripts": {
     "serve": "vue-cli-service serve demo/main.js",
     "build": "vue-cli-service build --target lib --name girder src/index.js",
