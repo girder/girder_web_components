@@ -57,8 +57,7 @@
     },
     "extends": [
       "plugin:vue/recommended",
-      "@vue/airbnb",
-      "plugin:vue/essential"
+      "@vue/airbnb"
     ],
     "rules": {
       "no-param-reassign": [
