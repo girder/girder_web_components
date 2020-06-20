@@ -38,7 +38,7 @@
     "axios-mock-adapter": "^1.18.1",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^26.0.1",
-    "eslint": "^7.3.0",
+    "eslint": "7.2.0",
     "eslint-plugin-import": "^2.21.2",
     "eslint-plugin-vue": "^6.1.2",
     "sass": "^1.26.8",

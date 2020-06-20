@@ -61,7 +61,6 @@ async function authenticateRestClient(girderRest, mock) {
   return girderRest;
 }
 
-
 export {
   flushPromises,
   girderVue,

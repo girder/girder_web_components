@@ -169,7 +169,6 @@ export default {
   </v-data-table>
 </template>
 
-
 <style lang="scss">
 .girder-data-table {
   cursor: default;
