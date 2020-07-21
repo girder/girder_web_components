@@ -118,7 +118,7 @@ export default {
   width: 100%;
 
   &.status-uploading {
-    background-color: #fef4c9;
+    background-color: var(--v-highlight-base);
   }
 
   &.status-done {
