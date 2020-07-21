@@ -37,7 +37,6 @@
         </v-btn>
         <v-btn
           v-if="!hideStartButton"
-          text="text"
           color="primary"
           @click="startUpload"
         >
