@@ -59,7 +59,6 @@ function getMockSearchResult(users = 1, folders = 1, items = 1) {
   };
 }
 
-
 describe('Search', () => {
   const girderRest = new RestClient();
   const mock = new MockAdapter(girderRest);
