@@ -44,7 +44,7 @@
         />
       </v-list>
     </v-navigation-drawer>
-    <v-content>
+    <v-main>
       <v-container>
         <v-col
           xl="8"
@@ -289,7 +289,7 @@
           </v-card>
         </v-col>
       </v-container>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 
