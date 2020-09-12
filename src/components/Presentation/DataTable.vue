@@ -58,7 +58,7 @@ export default {
       }
     },
     getRowClass(item) {
-      const rowSelectable = (!this.selectable && getLocationType(item) === 'folder')
+      const rowSelectable = (!this.selectable && item.__type__ === 'folder')
         || isRootLocation(item)
         || getLocationType(item) === 'user';
       return { 'select-cursor': rowSelectable, 'not-public': item.notPublic };
@@ -91,7 +91,6 @@ export default {
     class="girder-data-table"
     show-select="show-select"
     hide-default-header="hide-default-header"
-    item-key="_id"
     @input="$emit('input', $event)"
     @update:options="$emit('update:options', $event)"
   >
@@ -136,8 +135,10 @@ export default {
           >
             <v-icon
               :color="props.isSelected ? 'accent' : ''"
-              class="pr-2"
-            >{{ $vuetify.icons.values[props.item.icon] }}</v-icon>
+              class="mr-1"
+            >
+              {{ $vuetify.icons.values[props.item.__icon__] }}
+            </v-icon>
             {{ props.item.name }}
             <slot
               v-bind="props"

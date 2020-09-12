@@ -7,11 +7,6 @@ const GirderTokenLength = 64;
 export const OauthTokenPrefix = '#girderToken=';
 export const OauthTokenSuffix = '__';
 
-// Girder's custom headers
-const GirderToken = 'Girder-Token';
-const GirderOtp = 'Girder-OTP';
-const GirderAuthorization = 'Girder-Authorization';
-
 function setCookieFromAuth(auth) {
   cookies.set('girderToken', auth.token, { expires: new Date(auth.expires) });
 }
@@ -75,38 +70,23 @@ export default class RestClient extends Vue {
     this.interceptors.request.use((config) => ({
       ...config,
       baseURL: this.apiRoot,
-      headers: {
-        [GirderToken]: this.token,
-        ...config.headers,
-      },
     }));
   }
 
-  async login(username, password, otp = null) {
+  async login(username, password) {
     try {
       await this.logout();
     } catch (err) {
       // noop
     }
 
-    let auth;
-    const headers = {
-      [GirderToken]: null,
+    const auth = {
+      username,
+      password,
     };
-    if (this.useGirderAuthorizationHeader) {
-      headers[GirderAuthorization] = `Basic ${window.btoa(`${username}:${password}`)}`;
-    } else {
-      auth = {
-        username,
-        password,
-      };
-    }
-    if (otp) {
-      headers[GirderOtp] = otp;
-    }
 
     const resp = await this.get('user/authentication', {
-      headers, auth, withCredentials: this.authenticateWithCredentials,
+      auth, withCredentials: this.authenticateWithCredentials,
     });
     this.token = resp.data.authToken.token;
     this.user = resp.data.user;
@@ -137,12 +117,8 @@ export default class RestClient extends Vue {
   }
 
   async fetchUser() {
-    const resp = await this.get('user/me');
-    this.user = resp.data;
-    if (this.user === null) {
-      this.token = null;
-    }
-    return this.user;
+    // TODO stub
+    return null;
   }
 
   async register(login, email, firstName, lastName, password, admin = false) {
