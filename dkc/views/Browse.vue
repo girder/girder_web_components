@@ -15,5 +15,8 @@ export default {
 </script>
 
 <template>
-  <data-browser :folder.sync="folder" />
+  <data-browser
+    :folder.sync="folder"
+    :selectable="true"
+  />
 </template>

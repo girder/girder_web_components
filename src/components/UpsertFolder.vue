@@ -1,21 +1,14 @@
 <script>
-import { stringify } from 'qs';
-import GirderBreadcrumb from './Breadcrumb.vue';
 import GirderMarkdownEditor from './MarkdownEditor.vue';
-import { createLocationValidator } from '../utils';
-
-const GIRDER_FOLDER_ENDPOINT = 'folder';
 
 export default {
   components: {
-    GirderBreadcrumb,
     GirderMarkdownEditor,
   },
   props: {
-    location: {
+    folder: {
       type: Object,
-      required: true,
-      validator: createLocationValidator(false),
+      default: null,
     },
     edit: {
       type: Boolean,
@@ -38,66 +31,37 @@ export default {
       error: '',
     };
   },
-  computed: {
-    append() {
-      return this.edit ? [] : [this.name || 'New Folder'];
-    },
-  },
-  mounted() {
-    if (this.edit) {
-      this.loadFolder(this.location._id);
-    }
-  },
   methods: {
     async upsert() {
       this.error = '';
       try {
         await this.preUpsert();
+        let savedFolder;
         if (this.edit) {
-          await this.girderRest.put(
-            `${GIRDER_FOLDER_ENDPOINT}/${this.location._id}`,
-            stringify({
-              name: this.name,
-              description: this.description,
-            }),
-          );
+          savedFolder = (await this.girderRest.put(`folders/${this.folder.id}`, {
+            name: this.name,
+            description: this.description,
+          })).data;
         } else {
-          await this.girderRest.post(
-            GIRDER_FOLDER_ENDPOINT,
-            stringify({
-              parentType: this.location._modelType,
-              parentId: this.location._id,
-              name: this.name,
-              description: this.description,
-              reuseExisting: false,
-            }),
-          );
+          savedFolder = (await this.girderRest.post('/folders', {
+            parent: this.folder ? this.folder.id : null,
+            name: this.name,
+            description: this.description,
+          })).data;
         }
         await this.postUpsert();
         this.name = '';
         this.description = '';
-        this.$emit('done');
+        this.$emit('done', savedFolder);
       } catch (error) {
         this.$emit('error', { type: 'upsert', error });
         this.setError(error);
       }
     },
-    async loadFolder(id) {
-      this.error = '';
-      try {
-        const { data } = await this.girderRest.get(`${GIRDER_FOLDER_ENDPOINT}/${id}`);
-        this.name = data.name;
-        this.description = data.description;
-      } catch (error) {
-        this.$emit('error', { type: 'load', error });
-        this.setError(error);
-      }
-    },
     setError(err) {
       if (err.response) {
-        const { data = {} } = err.response;
-        const { type = 'unknown', message, field = 'unknown' } = data;
-        this.error = `${type} error on ${field}: ${message || err.message}`;
+        // TODO handle new error schema
+        this.error = 'An error occurred, please check the console for details.';
       } else {
         this.error = `Unknown error: ${err.message}`;
       }
@@ -127,11 +91,6 @@ export default {
             v-model="name"
             autofocus="autofocus"
             label="Folder Name"
-          />
-          <girder-breadcrumb
-            v-bind="{ location, append }"
-            class="mb-3"
-            readonly="readonly"
           />
           <girder-markdown-editor
             v-model="description"

@@ -5,15 +5,15 @@ import App from './App.vue';
 import router from './router';
 
 Vue.use(Girder);
-const restClient = new RestClient({
+const girderRest = new RestClient({
   apiRoot: process.env.VUE_APP_API_ROOT,
 });
 
-restClient.fetchUser().then(() => {
+girderRest.fetchUser().then(() => {
   new Vue({
     vuetify,
     router,
     render: (h) => h(App),
-    provide: { restClient },
+    provide: { girderRest },
   }).$mount('#app');
 });

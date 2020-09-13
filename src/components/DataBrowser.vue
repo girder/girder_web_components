@@ -2,14 +2,16 @@
 import { sizeFormatter } from '../utils/mixins';
 import GirderDataTable from './Presentation/DataTable.vue';
 import GirderBreadcrumb from './Breadcrumb.vue';
+import GirderUpsertFolder from './UpsertFolder.vue';
 
 export default {
   components: {
     GirderBreadcrumb,
     GirderDataTable,
+    GirderUpsertFolder,
   },
   mixins: [sizeFormatter],
-  inject: ['restClient'],
+  inject: ['girderRest'],
   props: {
     draggable: {
       type: Boolean,
@@ -44,16 +46,14 @@ export default {
         page: 1,
       },
       internalRefreshCounter: 0,
+      serverItemsLength: 0,
       rows: [],
       loading: false,
+      newFolderDialog: false,
       lazyValue: this.value || [], // selected items
     };
   },
   computed: {
-    serverItemsLength() {
-      // TODO this needs to tell us how many items are on the server side, for pagination
-      return this.rows.length;
-    },
     internalValue: {
       get() {
         return this.lazyValue;
@@ -71,7 +71,7 @@ export default {
         return this.fetchPaginatedRows();
       },
       watch() {
-        return [this.internalRefreshCounter, this.folder, this.restClient.user];
+        return [this.internalRefreshCounter, this.folder, this.girderRest.user];
       },
     },
   },
@@ -108,23 +108,33 @@ export default {
       this.breadcrumbs = this.breadcrumbs.slice(0, index + 1);
       this.$emit('update:folder', this.breadcrumbs[this.breadcrumbs.length - 1]);
     },
+    newFolderCreated() {
+      this.internalRefreshCounter += 1;
+      this.newFolderDialog = false;
+    },
     async fetchPaginatedRows() {
+      this.loading = true;
       let folders = [];
       let files = [];
       if (this.folder) {
         // TODO pagination
-        folders = (await this.restClient.get('/folders', {
+        const { results, count } = (await this.girderRest.get('/folders', {
           params: {
             parent: this.folder.id,
           },
-        })).data.results;
+        })).data;
+        this.serverItemsLength = count;
+        folders = results;
         // TODO fetch files too, maybe only if folders doesn't fill the page
       } else {
-        folders = (await this.restClient.get('/folders', {
+        // TODO pagination
+        const { results, count } = (await this.girderRest.get('/folders', {
           params: {
             parent: 'null',
           },
-        })).data.results;
+        })).data;
+        this.serverItemsLength = count;
+        folders = results;
       }
       folders = folders.map((f) => ({
         ...f,
@@ -136,6 +146,8 @@ export default {
         __type__: 'file',
         __icon__: 'file',
       }));
+
+      this.loading = false;
       return [...folders, ...files];
     },
   },
@@ -196,14 +208,43 @@ export default {
               </slot>
               <v-spacer />
               <slot
-                v-bind="{ folder, navigateToChildFolder }"
+                v-bind="{ folder }"
                 name="headerwidget"
-              />
+              >
+                <v-dialog
+                  v-model="newFolderDialog"
+                  max-width="800px"
+                >
+                  <template #activator="{ on }">
+                    <v-btn
+                      class="ma-0"
+                      text="text"
+                      small="small"
+                      v-on="on"
+                    >
+                      <v-icon
+                        class="mdi-24px mr-1"
+                        left="left"
+                        color="accent"
+                      >
+                        $vuetify.icons.folderNew
+                      </v-icon>
+                      <span class="hidden-xs-only">New Folder</span>
+                    </v-btn>
+                  </template>
+                  <girder-upsert-folder
+                    :folder="folder"
+                    @dismiss="newFolderDialog = false"
+                    @done="newFolderCreated"
+                  />
+                </v-dialog>
+              </slot>
             </v-row>
           </th>
         </tr>
       </thead>
-    </template><template #row-widget="props">
+    </template>
+    <template #row-widget="props">
       <slot
         v-bind="props"
         name="row-widget"
