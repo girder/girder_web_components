@@ -6,7 +6,7 @@
     "serve:dkc": "vue-cli-service serve dkc/main.js",
     "build": "vue-cli-service build --target lib --name girder src/index.js",
     "build:demo": "vue-cli-service build --dest _site/ demo/main.js",
-    "build:dkc": "vue-cli-service build dkc/main.js",
+    "build:dkc": "vue-cli-service build --dest dist/dkc/ dkc/main.js",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint --max-warnings=0 '*.js' src/ tests/ demo/ dkc/",
     "lint:style": "stylelint 'src/**/*.vue' 'demo/**/*.vue' 'dkc/**/*.vue'"

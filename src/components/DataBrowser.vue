@@ -100,6 +100,9 @@ export default {
       this.breadcrumbs.push(folder);
       this.$emit('update:folder', folder);
     },
+    navigateToParentFolder() {
+      this.breadcrumbClick({ index: this.breadcrumbs.length - 2 });
+    },
     refresh() {
       this.selected = [];
       this.internalRefreshCounter += 1;
