@@ -121,14 +121,20 @@ export default {
       let files = [];
       if (this.folder) {
         // TODO pagination
-        const { results, count } = (await this.girderRest.get('/folders', {
+        const { results: folderResults, count: folderCount } = (await this.girderRest.get('/folders', {
           params: {
             parent: this.folder.id,
           },
         })).data;
-        this.serverItemsLength = count;
-        folders = results;
-        // TODO fetch files too, maybe only if folders doesn't fill the page
+        folders = folderResults;
+
+        const { results: fileResults, count: fileCount } = (await this.girderRest.get('/files', {
+          params: {
+            folder: this.folder.id,
+          },
+        })).data;
+        files = fileResults;
+        this.serverItemsLength = folderCount + fileCount;
       } else {
         // TODO pagination
         const { results, count } = (await this.girderRest.get('/folders', {
