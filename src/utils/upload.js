@@ -1,4 +1,3 @@
-import axios from 'axios';
 import UploadBase from './UploadBase';
 
 
@@ -27,11 +26,7 @@ export default class Upload extends UploadBase {
     fd.append('blob', this.file);
     fd.append('name', this.file.name);
     fd.append('folder', this.parent.id);
-    // problem 1: host (we can fix this with another env var, but somewhat annoying)
-    // problem 2: CSRF token required. Even if just a cookie was allowed, then we are in cors land and the default cors settings don't work
-    // problem 3: we can't get human-readable output from this endpoint even if we request it. Always comes back HTML
-    return (await axios.post('http://localhost:8000/admin/core/file/add/', fd, {
-      withCredentials: true,
+    return (await this.$rest.post('files', fd, {
       onUploadProgress: (e) => this.progress({
         indeterminate: !e.lengthComputable,
         current: e.loaded,
@@ -39,7 +34,6 @@ export default class Upload extends UploadBase {
       }),
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Accept': 'application/json',
       },
     })).data;
   }

@@ -71,7 +71,7 @@ export const DefaultActionKeys = [
     async handler() {
       // TODO we should really prompt the user for confirmation...
       const [item] = this.value; // just handles 1 item for now
-      await this.girderRest.delete(`${item.__type__}s/${item.id}`)
+      await this.girderRest.delete(`${item.__type__}s/${item.id}`);
     },
   },
 ];

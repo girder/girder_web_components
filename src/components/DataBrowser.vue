@@ -107,8 +107,12 @@ export default {
       this.breadcrumbClick({ index: this.breadcrumbs.length - 2 });
     },
     refresh() {
-      this.selected = [];
+      this.internalValue = [];
       this.internalRefreshCounter += 1;
+    },
+    uploadDone() {
+      this.uploaderDialog = false;
+      this.refresh();
     },
     breadcrumbClick({ index }) {
       this.breadcrumbs = this.breadcrumbs.slice(0, index + 1);
@@ -247,7 +251,7 @@ export default {
                   </template>
                   <girder-upload
                     :dest="folder"
-                    :post-upload="refresh"
+                    :post-upload="uploadDone"
                     :max-show="100"
                   />
                 </v-dialog>
