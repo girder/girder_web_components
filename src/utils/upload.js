@@ -25,6 +25,7 @@ export default class Upload extends UploadBase {
     const fd = new FormData();
     fd.append('blob', this.file);
     fd.append('name', this.file.name);
+    fd.append('content_type', this.file.type);
     fd.append('folder', this.parent.id);
     return (await this.$rest.post('files', fd, {
       onUploadProgress: (e) => this.progress({
