@@ -2,12 +2,14 @@
 import { sizeFormatter } from '../utils/mixins';
 import GirderDataTable from './Presentation/DataTable.vue';
 import GirderBreadcrumb from './Breadcrumb.vue';
+import GirderUpload from './Upload.vue';
 import GirderUpsertFolder from './UpsertFolder.vue';
 
 export default {
   components: {
     GirderBreadcrumb,
     GirderDataTable,
+    GirderUpload,
     GirderUpsertFolder,
   },
   mixins: [sizeFormatter],
@@ -50,6 +52,7 @@ export default {
       rows: [],
       loading: false,
       newFolderDialog: false,
+      uploaderDialog: false,
       lazyValue: this.value || [], // selected items
     };
   },
@@ -220,6 +223,34 @@ export default {
                 v-bind="{ folder }"
                 name="headerwidget"
               >
+                <v-dialog
+                  v-if="!!folder"
+                  v-model="uploaderDialog"
+                  max-width="800px"
+                >
+                  <template #activator="{ on }">
+                    <v-btn
+                      class="ma-0"
+                      text="text"
+                      small="small"
+                      v-on="on"
+                    >
+                      <v-icon
+                        class="mdi-24px mr-1"
+                        left="left"
+                        color="accent"
+                      >
+                        $vuetify.icons.fileNew
+                      </v-icon>
+                      <span class="hidden-xs-only">Upload</span>
+                    </v-btn>
+                  </template>
+                  <girder-upload
+                    :dest="folder"
+                    :post-upload="refresh"
+                    :max-show="100"
+                  />
+                </v-dialog>
                 <v-dialog
                   v-model="newFolderDialog"
                   max-width="800px"
