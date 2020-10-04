@@ -31,6 +31,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    initialBreadcrumbs: {
+      type: Array,
+      default: () => [],
+    },
     initialItemsPerPage: {
       type: Number,
       default: 50,
@@ -42,7 +46,7 @@ export default {
   },
   data() {
     return {
-      breadcrumbs: [],
+      breadcrumbs: this.initialBreadcrumbs,
       options: {
         itemsPerPage: this.initialItemsPerPage,
         page: 1,
