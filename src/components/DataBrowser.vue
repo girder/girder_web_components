@@ -52,7 +52,8 @@ export default {
         page: 1,
       },
       internalRefreshCounter: 0,
-      serverItemsLength: 0,
+      serverFoldersLength: -1,
+      serverFilesLength: -1,
       rows: [],
       loading: false,
       newFolderDialog: false,
@@ -61,6 +62,9 @@ export default {
     };
   },
   computed: {
+    serverItemsLength() {
+      return this.serverFoldersLength + this.serverFilesLength;
+    },
     internalValue: {
       get() {
         return this.lazyValue;
@@ -87,6 +91,8 @@ export default {
       // force reset options when location changes.
       this.options.page = 1;
       this.internalValue = [];
+      this.serverFoldersLength = -1;
+      this.serverFilesLength = -1;
     },
     value(val) {
       this.lazyValue = val;
@@ -116,6 +122,7 @@ export default {
     },
     uploadDone() {
       this.uploaderDialog = false;
+      this.serverFilesLength = -1;
       this.refresh();
     },
     breadcrumbClick({ index }) {
@@ -124,36 +131,56 @@ export default {
     },
     newFolderCreated() {
       this.internalRefreshCounter += 1;
+      this.serverFoldersLength = -1;
       this.newFolderDialog = false;
     },
     async fetchPaginatedRows() {
       this.loading = true;
       let folders = [];
       let files = [];
-      if (this.folder) {
-        // TODO pagination
-        const { results: folderResults, count: folderCount } = (await this.girderRest.get('/folders', {
-          params: {
-            parent: this.folder.id,
-          },
-        })).data;
-        folders = folderResults;
+      const { itemsPerPage, page } = this.options;
 
-        const { results: fileResults, count: fileCount } = (await this.girderRest.get('/files', {
-          params: {
-            folder: this.folder.id,
-          },
-        })).data;
-        files = fileResults;
-        this.serverItemsLength = folderCount + fileCount;
+      if (this.folder) {
+        const folderOffset = (page - 1) * itemsPerPage;
+        if (this.serverFoldersLength === -1 || folderOffset < this.serverFoldersLength - 1) {
+          const { results: folderResults, count: folderCount } = (await this.girderRest.get('/folders', {
+            params: {
+              parent: this.folder.id,
+              limit: itemsPerPage,
+              offset: folderOffset,
+            },
+          })).data;
+          folders = folderResults;
+          this.serverFoldersLength = folderCount;
+        }
+
+        if (this.serverFilesLength === -1 || folders.length < itemsPerPage) {
+          const numFolderPages = Math.ceil(this.serverFoldersLength / itemsPerPage);
+          const numFilePages = Math.max(0, page - 1 - numFolderPages);
+          const numFilesOnFirstPage = (numFolderPages * itemsPerPage) - this.serverFoldersLength;
+          const fileOffset = page === numFolderPages ? 0 : numFilePages * itemsPerPage + numFilesOnFirstPage;
+          const { results: fileResults, count: fileCount } = (await this.girderRest.get('/files', {
+            params: {
+              folder: this.folder.id,
+              limit: Math.max(1, itemsPerPage - folders.length),
+              offset: fileOffset,
+            },
+          })).data;
+          if (folders.length < itemsPerPage) {
+            files = fileResults;
+          }
+          this.serverFilesLength = fileCount;
+        }
       } else {
-        // TODO pagination
         const { results, count } = (await this.girderRest.get('/folders', {
           params: {
             parent: 'null',
+            limit: itemsPerPage,
+            offset: (page - 1) * itemsPerPage,
           },
         })).data;
-        this.serverItemsLength = count;
+        this.serverFilesLength = 0;
+        this.serverFoldersLength = count;
         folders = results;
       }
       folders = folders.map((f) => ({
