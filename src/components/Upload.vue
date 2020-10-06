@@ -44,7 +44,10 @@
         </v-btn>
       </v-card-actions>
       <v-col>
-        <slot name="dropzone">
+        <slot
+          name="dropzone"
+          v-bind="{ files, dropzoneMessage, multiple, accept, inputFilesChanged }"
+        >
           <dropzone
             v-if="!files.length"
             :message="dropzoneMessage"
