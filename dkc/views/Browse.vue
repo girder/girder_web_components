@@ -48,11 +48,39 @@ export default {
   },
   watch: {
     folder(val) {
-      if (val === null) {
+      // This is triggered by events from the underlying component.
+      if (val === null && this.folderId !== null) {
         this.$router.push('/folders');
-      } else {
-        const route = val ? `/folders/${val.id}` : '/folders';
-        this.$router.push(route);
+      } else if (val !== null && this.folderId !== `${val.id}`) {
+        this.$router.push(`/folders/${val.id}`);
+      }
+    },
+    async folderId(val) {
+      // This is triggered by route changes.
+      if (val === null && this.folder) {
+        this.folder = null;
+        this.$refs.browser.breadcrumbs = [];
+      } else if (val !== null && (this.folder === null || `${this.folder.id}` !== val)) {
+        // First look in the breadcrumbs and see if the folder is already in there.
+        // If it is, we don't need to hit the server.
+        const bcs = this.$refs.browser.breadcrumbs;
+        for (let i = 0; i < bcs.length; i += 1) {
+          const bc = bcs[i];
+          if (`${bc.id}` === val) {
+            this.folder = bc;
+            bcs.splice(i + 1);
+            break;
+          }
+        }
+        if (this.folder === null || `${this.folder.id}` !== val) {
+          // This means it wasn't found in the breadcrumbs. Must fetch it.
+          const [folderReq, breadcrumbReq] = await Promise.all([
+            this.girderRest.get(`folders/${val}`),
+            this.girderRest.get(`folders/${val}/path`),
+          ]);
+          this.folder = folderReq.data;
+          this.$refs.browser.breadcrumbs = breadcrumbReq.data;
+        }
       }
     },
   },
