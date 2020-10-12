@@ -63,7 +63,7 @@ export const DefaultActionKeys = [
     target: '_blank',
   },
   {
-    for: ['file', 'folder'/*, TODO batch delete 'multi'*/],
+    for: ['file', 'folder'/* , TODO batch delete 'multi' */],
     id: 'delete',
     name: 'Delete',
     iconKey: 'delete',
@@ -155,7 +155,7 @@ export default {
           .map((k) => `${typeCounts[k]} ${k}(s) selected`);
         const sizeMessage = `Total size: ${this.formatSize(typeCounts.size)}`;
         return [...countMessages, sizeMessage];
-      }*/
+      } */
       return [];
     },
     actions() {

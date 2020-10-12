@@ -26,7 +26,9 @@ export default {
   >
     <template v-slot:item="{ item }">
       <v-breadcrumbs-item :disabled="item.disabled">
-        <template v-if="item.disabled">{{ item.object.name }}</template>
+        <template v-if="item.disabled">
+          {{ item.object.name }}
+        </template>
         <a
           v-else
           @click="$emit('breadcrumb-click', item)"

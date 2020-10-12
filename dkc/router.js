@@ -7,12 +7,12 @@ Vue.use(VueRouter);
 export default new VueRouter({
   routes: [{
     path: '/',
-    redirect: '/folders'
+    redirect: '/folders',
   },
   {
     path: '/folders',
     component: Browse,
-    props: { folderId: null }
+    props: { folderId: null },
   },
   {
     path: '/folders/:folderId',

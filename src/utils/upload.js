@@ -1,6 +1,5 @@
 import UploadBase from './UploadBase';
 
-
 export default class Upload extends UploadBase {
   /**
    * Represents an upload of a single file to the server.

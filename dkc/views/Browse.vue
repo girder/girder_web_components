@@ -18,19 +18,6 @@ export default {
     folder: null,
     initialized: false,
   }),
-  async created() {
-    if (this.folderId === null) {
-      this.initialized = true;
-    } else {
-      const [folderReq, breadcrumbReq] = await Promise.all([
-        this.girderRest.get(`folders/${this.folderId}`),
-        this.girderRest.get(`folders/${this.folderId}/path`),
-      ]);
-      this.folder = folderReq.data;
-      this.fetchedBreadcrumbs = breadcrumbReq.data;
-      this.initialized = true;
-    }
-  },
   computed: {
     detailsList() {
       if (this.$refs.browser && this.selected.length) {
@@ -44,7 +31,7 @@ export default {
     selected() {
       // Made an alias for this since I'm not sure if this is the best way to get hold of it
       return this.$refs.browser.internalValue;
-    }
+    },
   },
   watch: {
     folder(val) {
@@ -84,6 +71,19 @@ export default {
       }
     },
   },
+  async created() {
+    if (this.folderId === null) {
+      this.initialized = true;
+    } else {
+      const [folderReq, breadcrumbReq] = await Promise.all([
+        this.girderRest.get(`folders/${this.folderId}`),
+        this.girderRest.get(`folders/${this.folderId}/path`),
+      ]);
+      this.folder = folderReq.data;
+      this.fetchedBreadcrumbs = breadcrumbReq.data;
+      this.initialized = true;
+    }
+  },
   methods: {
     handleAction(action) {
       if (action.id === 'delete') {
@@ -94,7 +94,7 @@ export default {
           this.$refs.browser.refresh();
         }
       }
-    }
+    },
   },
 };
 </script>

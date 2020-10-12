@@ -158,7 +158,8 @@ export default {
           const numFolderPages = Math.ceil(this.serverFoldersLength / itemsPerPage);
           const numFilePages = Math.max(0, page - 1 - numFolderPages);
           const numFilesOnFirstPage = (numFolderPages * itemsPerPage) - this.serverFoldersLength;
-          const fileOffset = page === numFolderPages ? 0 : numFilePages * itemsPerPage + numFilesOnFirstPage;
+          const fileOffset = page === numFolderPages
+            ? 0 : numFilePages * itemsPerPage + numFilesOnFirstPage;
           const { results: fileResults, count: fileCount } = (await this.girderRest.get('/files', {
             params: {
               folder: this.folder.id,
@@ -249,8 +250,8 @@ export default {
                 name="breadcrumb"
               >
                 <girder-breadcrumb
-                  @breadcrumb-click="breadcrumbClick"
                   :breadcrumbs="breadcrumbs"
+                  @breadcrumb-click="breadcrumbClick"
                 />
               </slot>
               <v-spacer />
