@@ -1,4 +1,5 @@
 <script>
+import md from 'markdown-it';
 import { DataBrowser, DataDetails } from '@/components';
 
 export default {
@@ -17,6 +18,8 @@ export default {
     fetchedBreadcrumbs: [],
     folder: null,
     initialized: false,
+    showTermsOfUse: false,
+    termsOfUse: null,
   }),
   computed: {
     detailsList() {
@@ -32,14 +35,30 @@ export default {
       // Made an alias for this since I'm not sure if this is the best way to get hold of it
       return this.$refs.browser.internalValue;
     },
+    termsOfUseHtml() {
+      if (this.termsOfUse) {
+        return md({
+          linkify: true,
+        }).render(this.termsOfUse.text);
+      }
+      return '';
+    }
   },
   watch: {
-    folder(val) {
+    async folder(val) {
       // This is triggered by events from the underlying component.
       if (val === null && this.folderId !== null) {
         this.$router.push('/folders');
       } else if (val !== null && this.folderId !== `${val.id}`) {
         this.$router.push(`/folders/${val.id}`);
+      }
+
+      if (this.folder && this.folder.parent === null) {
+        try {
+          await this.ensureTermsOfUseAgreement();
+        } catch (e) {
+          this.$router.push('/');
+        }
       }
     },
     async folderId(val) {
@@ -95,12 +114,75 @@ export default {
         }
       }
     },
+    async ensureTermsOfUseAgreement() {
+      const resp = await this.girderRest.get(`folders/${this.folder.id}/terms/agreement`);
+      if (resp.status === 204) {
+        return;
+      } else if (resp.status === 200) {
+        const { text, checksum } = resp.data;
+        this.showTermsOfUse = true;
+        return new Promise((accept, decline) => {
+          this.termsOfUse = {
+            text,
+            checksum,
+            accept,
+            decline,
+          };
+        });
+      }
+    },
+    async acceptTermsOfUse() {
+      if (this.girderRest.user) {
+        await this.girderRest.post(
+          `folders/${this.folder.id}/terms/agreement/${this.termsOfUse.checksum}`
+        );
+        // TODO we should catch the out-of-date error and guide the user to refresh.
+      }
+      this.showTermsOfUse = false;
+      this.termsOfUse.accept();
+    },
+    declineTermsOfUse() {
+      this.showTermsOfUse = false;
+      this.termsOfUse.decline();
+    },
   },
 };
 </script>
 
 <template>
   <v-row>
+    <v-dialog
+      v-model="showTermsOfUse"
+      max-width="700px"
+      persistent
+    >
+      <v-card>
+        <v-card-title>
+          Terms of Use
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="py-2">
+          <div v-html="termsOfUseHtml"></div>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="error"
+            text
+            @click="declineTermsOfUse"
+          >
+            Decline
+          </v-btn>
+          <v-btn
+            color="primary"
+            @click="acceptTermsOfUse"
+          >
+            Accept
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-col
       lg="8"
       sm="12"
