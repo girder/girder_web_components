@@ -43,6 +43,10 @@ export default {
       type: Array,
       default: () => ([10, 25, 50, 100]),
     },
+    showHomeLink: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -115,6 +119,10 @@ export default {
     },
     navigateToParentFolder() {
       this.breadcrumbClick({ index: this.breadcrumbs.length - 2 });
+    },
+    navigateHome() {
+      this.breadcrumbs = [];
+      this.$emit('update:folder', null);
     },
     refresh() {
       this.internalValue = [];
@@ -240,7 +248,7 @@ export default {
             />
           </th>
           <th
-            class="pl-3"
+            class="pl-0 pr-1"
             colspan="10"
             width="99%"
           >
@@ -249,6 +257,15 @@ export default {
                 v-bind="{ folder }"
                 name="breadcrumb"
               >
+                <v-btn
+                  v-if="showHomeLink"
+                  @click="navigateHome"
+                  class="mr-1"
+                  icon
+                  color="primary"
+                >
+                  <v-icon>mdi-home-circle</v-icon>
+                </v-btn>
                 <girder-breadcrumb
                   :breadcrumbs="breadcrumbs"
                   @breadcrumb-click="breadcrumbClick"
@@ -266,19 +283,12 @@ export default {
                 >
                   <template #activator="{ on }">
                     <v-btn
-                      class="ma-0"
-                      text="text"
-                      small="small"
                       v-on="on"
+                      icon
                     >
-                      <v-icon
-                        class="mdi-24px mr-1"
-                        left="left"
-                        color="accent"
-                      >
-                        $vuetify.icons.fileNew
+                      <v-icon color="accent">
+                        $vuetify.icons.fileUpload
                       </v-icon>
-                      <span class="hidden-xs-only">Upload</span>
                     </v-btn>
                   </template>
                   <girder-upload
@@ -293,19 +303,13 @@ export default {
                 >
                   <template #activator="{ on }">
                     <v-btn
-                      class="ma-0"
-                      text="text"
-                      small="small"
+                      class="ml-1"
+                      icon
                       v-on="on"
                     >
-                      <v-icon
-                        class="mdi-24px mr-1"
-                        left="left"
-                        color="accent"
-                      >
+                      <v-icon color="accent">
                         $vuetify.icons.folderNew
                       </v-icon>
-                      <span class="hidden-xs-only">New Folder</span>
                     </v-btn>
                   </template>
                   <girder-upsert-folder
