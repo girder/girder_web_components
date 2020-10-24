@@ -32,8 +32,7 @@ export default {
       return [];
     },
     selected() {
-      // Made an alias for this since I'm not sure if this is the best way to get hold of it
-      return this.$refs.browser.internalValue;
+      return this.$refs.browser.selected;
     },
     termsOfUseHtml() {
       if (this.termsOfUse) {
