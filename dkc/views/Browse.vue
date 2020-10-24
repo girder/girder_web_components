@@ -20,19 +20,17 @@ export default {
     initialized: false,
     showTermsOfUse: false,
     termsOfUse: null,
+    selected: [],
   }),
   computed: {
     detailsList() {
-      if (this.$refs.browser && this.selected.length) {
+      if (this.selected.length) {
         return this.selected;
       }
       if (this.folder) {
         return [this.folder];
       }
       return [];
-    },
-    selected() {
-      return this.$refs.browser.selected;
     },
     termsOfUseHtml() {
       if (this.termsOfUse) {
@@ -190,6 +188,7 @@ export default {
         v-if="initialized"
         ref="browser"
         :folder.sync="folder"
+        v-model="selected"
         :selectable="true"
         :initial-breadcrumbs="fetchedBreadcrumbs"
       />
