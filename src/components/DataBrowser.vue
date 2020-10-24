@@ -55,7 +55,6 @@ export default {
         itemsPerPage: this.initialItemsPerPage,
         page: 1,
       },
-      internalRefreshCounter: 0,
       serverFoldersLength: -1,
       serverFilesLength: -1,
       rows: [],
@@ -69,7 +68,7 @@ export default {
     serverItemsLength() {
       return this.serverFoldersLength + this.serverFilesLength;
     },
-    internalValue: {
+    selected: {
       get() {
         return this.lazyValue;
       },
@@ -79,31 +78,26 @@ export default {
       },
     },
   },
-  asyncComputed: {
-    rows: {
-      default: [],
-      async get() {
-        return this.fetchPaginatedRows();
-      },
-      watch() {
-        return [this.internalRefreshCounter, this.folder, this.girderRest.user];
-      },
-    },
-  },
   watch: {
     folder() {
       // force reset options when location changes.
       this.options.page = 1;
-      this.internalValue = [];
       this.serverFoldersLength = -1;
       this.serverFilesLength = -1;
+      this.refresh();
     },
     value(val) {
       this.lazyValue = val;
     },
-    options() {
-      this.internalRefreshCounter += 1;
+    ['options.page']() {
+      this.refresh();
     },
+    ['options.itemsPerPage']() {
+      this.refresh();
+    }
+  },
+  created() {
+    this.fetchPaginatedRows();
   },
   methods: {
     rowClick(row) {
@@ -125,8 +119,8 @@ export default {
       this.$emit('update:folder', null);
     },
     refresh() {
-      this.internalValue = [];
-      this.internalRefreshCounter += 1;
+      this.selected = [];
+      this.fetchPaginatedRows();
     },
     uploadDone() {
       this.uploaderDialog = false;
@@ -138,9 +132,9 @@ export default {
       this.$emit('update:folder', this.breadcrumbs[this.breadcrumbs.length - 1]);
     },
     newFolderCreated() {
-      this.internalRefreshCounter += 1;
       this.serverFoldersLength = -1;
       this.newFolderDialog = false;
+      this.refresh();
     },
     async fetchPaginatedRows() {
       this.loading = true;
@@ -204,7 +198,7 @@ export default {
       }));
 
       this.loading = false;
-      return [...folders, ...files];
+      this.rows = [...folders, ...files];
     },
   },
 };
@@ -212,7 +206,7 @@ export default {
 
 <template>
   <girder-data-table
-    v-model="internalValue"
+    v-model="selected"
     :draggable="draggable"
     :rows="rows"
     :options.sync="options"
@@ -240,7 +234,7 @@ export default {
           >
             <v-checkbox
               :input-value="props.everyItem"
-              :indeterminate="internalValue.length > 0 && !props.everyItem"
+              :indeterminate="selected.length > 0 && !props.everyItem"
               class="pr-2"
               color="accent"
               hide-details="hide-details"
