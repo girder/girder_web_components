@@ -249,9 +249,9 @@ const fileUploader = {
       // shallow copy into queue
       const fileQueue = this.files.slice().reverse();
 
-      /* Default to 5 workers */
-      const workerPool = [0, 1, 2, 3, 4];
-      await Promise.all(workerPool.map(async (workerId) => {
+      const WORKER_POOL_SIZE = 5;
+      const workerPool = [...new Array(WORKER_POOL_SIZE)];
+      await Promise.all(workerPool.map(async () => {
         let file = fileQueue.pop();
         while (file !== undefined) {
           // eslint-disable-next-line no-await-in-loop
@@ -260,7 +260,6 @@ const fileUploader = {
           }));
           file = fileQueue.pop();
         }
-        return workerId;
       }));
 
       const results = await Promise.all(promiseList);
