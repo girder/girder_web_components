@@ -247,18 +247,17 @@ const fileUploader = {
       this.indeterminate = false;
       const promiseList = [];
       // shallow copy into queue
-      const fileQueue = this.files.slice().reverse();
-
+      const fileQueue = this.files.slice();
       const WORKER_POOL_SIZE = 5;
       const workerPool = [...new Array(WORKER_POOL_SIZE)];
       await Promise.all(workerPool.map(async () => {
-        let file = fileQueue.pop();
+        let file = fileQueue.shift();
         while (file !== undefined) {
           // eslint-disable-next-line no-await-in-loop
           promiseList.push(await this.uploadFile({
             file, hookResult, dest, uploadCls,
           }));
-          file = fileQueue.pop();
+          file = fileQueue.shift();
         }
       }));
 
