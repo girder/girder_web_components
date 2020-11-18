@@ -178,6 +178,59 @@ const fileUploader = {
       this.files = files;
     },
 
+    uploadFile({
+      file,
+      hookResult,
+      dest,
+      uploadCls,
+    }) {
+      let promiseChain = Promise.resolve();
+      if (file.status === 'done') {
+        // We are resuming, skip already completed files
+        return promiseChain.then(() => file.result);
+      }
+      const progress = (event) => {
+        this.$set(file, 'progress', event);
+      };
+      file.status = 'uploading';
+      file.progress.indeterminate = true;
+      if (file.upload) {
+        promiseChain = promiseChain.then(() => file.upload.resume());
+      } else {
+        // eslint-disable-next-line new-cap
+        file.upload = new uploadCls(file.file, {
+          $rest: this.girderRest,
+          parent: (hookResult && hookResult.dest) ? hookResult.dest : dest,
+          progress,
+          params: file.uploadClsParams,
+        });
+        promiseChain = promiseChain
+          .then(() => file.upload.beforeUpload())
+          .then(() => file.upload.start());
+      }
+      return promiseChain
+        .then(async (result) => {
+          await file.upload.afterUpload();
+          delete file.upload;
+          file.status = 'done';
+          file.progress.current = file.file.size;
+          result.file = file.file;
+          return result;
+        })
+        .catch(async (error) => {
+          await file.upload.onError(error);
+          if (error.response) {
+            this.errorMessage = error.response.data.message || 'An error occurred during upload.';
+          } else {
+            this.errorMessage = 'Connection failed.';
+          }
+          file.status = 'error';
+          this.uploading = false;
+          this.$emit('error', { error, file });
+          throw error;
+        });
+    },
+
     /**
      * Begin uploading the current list of files.
      */
@@ -192,53 +245,24 @@ const fileUploader = {
       this.errorMessage = null;
       const hookResult = await preUpload();
       this.indeterminate = false;
-      const promiseList = this.files.map((file) => {
-        let promiseChain = Promise.resolve();
-        if (file.status === 'done') {
-          // We are resuming, skip already completed files
-          return promiseChain.then(() => file.result);
+      const promiseList = [];
+      // shallow copy into queue
+      const fileQueue = this.files.slice().reverse();
+
+      /* Default to 5 workers */
+      const workerPool = [0, 1, 2, 3, 4];
+      await Promise.all(workerPool.map(async (workerId) => {
+        let file = fileQueue.pop();
+        while (file !== undefined) {
+          // eslint-disable-next-line no-await-in-loop
+          promiseList.push(await this.uploadFile({
+            file, hookResult, dest, uploadCls,
+          }));
+          file = fileQueue.pop();
         }
-        const progress = (event) => {
-          this.$set(file, 'progress', event);
-        };
-        file.status = 'uploading';
-        file.progress.indeterminate = true;
-        if (file.upload) {
-          promiseChain = promiseChain.then(() => file.upload.resume());
-        } else {
-          // eslint-disable-next-line new-cap
-          file.upload = new uploadCls(file.file, {
-            $rest: this.girderRest,
-            parent: (hookResult && hookResult.dest) ? hookResult.dest : dest,
-            progress,
-            params: file.uploadClsParams,
-          });
-          promiseChain = promiseChain
-            .then(() => file.upload.beforeUpload())
-            .then(() => file.upload.start());
-        }
-        return promiseChain
-          .then(async (result) => {
-            await file.upload.afterUpload();
-            delete file.upload;
-            file.status = 'done';
-            file.progress.current = file.file.size;
-            result.file = file.file;
-            return result;
-          })
-          .catch(async (error) => {
-            await file.upload.onError(error);
-            if (error.response) {
-              this.errorMessage = error.response.data.message || 'An error occurred during upload.';
-            } else {
-              this.errorMessage = 'Connection failed.';
-            }
-            file.status = 'error';
-            this.uploading = false;
-            this.$emit('error', { error, file });
-            throw error;
-          });
-      });
+        return workerId;
+      }));
+
       const results = await Promise.all(promiseList);
       this.indeterminate = true;
       await postUpload({ results });
