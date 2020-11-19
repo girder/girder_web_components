@@ -245,23 +245,22 @@ const fileUploader = {
       this.errorMessage = null;
       const hookResult = await preUpload();
       this.indeterminate = false;
-      const promiseList = [];
-      // shallow copy into queue
-      const fileQueue = this.files.slice();
+      const results = [];
+      let i = 0;
       const WORKER_POOL_SIZE = 5;
       const workerPool = [...new Array(WORKER_POOL_SIZE)];
       await Promise.all(workerPool.map(async () => {
-        let file = fileQueue.shift();
-        while (file !== undefined) {
+        while (i < this.files.length) {
+          // must increment i before `await`, but after subscript operator
+          // eslint-disable-next-line no-plusplus
+          const file = this.files[i++];
           // eslint-disable-next-line no-await-in-loop
-          promiseList.push(await this.uploadFile({
+          results.push(await this.uploadFile({
             file, hookResult, dest, uploadCls,
           }));
-          file = fileQueue.shift();
         }
       }));
 
-      const results = await Promise.all(promiseList);
       this.indeterminate = true;
       await postUpload({ results });
       this.indeterminate = false;
