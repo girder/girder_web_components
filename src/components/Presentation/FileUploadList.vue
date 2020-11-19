@@ -2,6 +2,7 @@
   <v-list
     v-show="value.length"
     dense="dense"
+    class="files-list"
   >
     <div
       v-for="(file, i) in shownFiles"
@@ -110,6 +111,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.files-list {
+  max-width: 100%;
+}
+
 .file-tile {
   transition:
     width 0.8s ease-in-out 1s,
