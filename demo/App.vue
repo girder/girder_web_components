@@ -126,6 +126,7 @@
           <v-card>
             <girder-upload
               :dest="uploadDest"
+              :max-show="20"
               :post-upload="postUpload"
             />
           </v-card><a id="search" />
