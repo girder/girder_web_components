@@ -6,6 +6,7 @@
     @dragleave="dropzoneClass = null"
     @drop="dropzoneClass = null"
   >
+    <div class="dropzone-overlay" />
     <v-row class="flex-column align-center justify-center fill-height dropzone-message">
       <v-icon size="50px">
         $vuetify.icons.fileUpload
@@ -104,5 +105,49 @@ $img: linear-gradient(
   to {
     background-position: 30px 60px;
   }
+}
+
+$overlayDark: linear-gradient(
+  var(--v-dropzone-lighten3),
+  var(--v-dropzone-lighten3)
+);
+
+$overlayLight: linear-gradient(
+  var(--v-dropzone-darken4),
+  var(--v-dropzone-darken4)
+);
+
+.dropzone-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 7px solid transparent;
+  background:
+    $overlayLight top left,
+    $overlayLight top left,
+    $overlayLight bottom left,
+    $overlayLight bottom left,
+    $overlayLight top right,
+    $overlayLight top right,
+    $overlayLight bottom right,
+    $overlayLight bottom right;
+  background-size: 5px 24px, 24px 5px;
+  background-repeat: no-repeat;
+}
+
+.theme--dark .dropzone-overlay {
+  background:
+    $overlayDark top left,
+    $overlayDark top left,
+    $overlayDark bottom left,
+    $overlayDark bottom left,
+    $overlayDark top right,
+    $overlayDark top right,
+    $overlayDark bottom right,
+    $overlayDark bottom right;
+  background-size: 5px 24px, 24px 5px;
+  background-repeat: no-repeat;
 }
 </style>
