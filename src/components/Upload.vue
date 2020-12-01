@@ -48,13 +48,15 @@
           name="dropzone"
           v-bind="{ files, dropzoneMessage, multiple, accept, inputFilesChanged }"
         >
-          <dropzone
-            v-if="!files.length"
-            :message="dropzoneMessage"
-            :multiple="multiple"
-            :accept="accept"
-            @change="inputFilesChanged"
-          />
+          <v-slide-y-reverse-transition hide-on-leave>
+            <dropzone
+              v-if="!files.length"
+              :message="dropzoneMessage"
+              :multiple="multiple"
+              :accept="accept"
+              @change="inputFilesChanged"
+            />
+          </v-slide-y-reverse-transition>
         </slot>
       </v-col>
       <div v-if="errorMessage">
@@ -91,10 +93,13 @@
         v-bind="{ files, setFiles, maxShow }"
         name="files"
       >
-        <file-upload-list
-          v-bind="{ value: files, maxShow }"
-          @input="setFiles"
-        />
+        <v-slide-y-transition hide-on-leave>
+          <file-upload-list
+            v-if="files.length"
+            v-bind="{ value: files, maxShow }"
+            @input="setFiles"
+          />
+        </v-slide-y-transition>
       </slot>
     </v-row>
   </v-card>
