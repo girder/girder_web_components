@@ -4,7 +4,7 @@
     flat="flat"
   >
     <v-row
-      class="flex-column fill-height"
+      class="flex-column flex-nowrap fill-height"
       no-gutters="no-gutters"
     >
       <slot name="header">
@@ -96,6 +96,7 @@
           <file-upload-list
             v-if="files.length"
             v-bind="{ value: files, maxShow }"
+            :style="{overflow: 'scroll'}"
             @input="setFiles"
           />
         </v-slide-y-transition>
