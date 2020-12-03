@@ -43,22 +43,21 @@
           {{ startButtonText }}
         </v-btn>
       </v-card-actions>
-      <v-col>
-        <slot
-          name="dropzone"
-          v-bind="{ files, dropzoneMessage, multiple, accept, inputFilesChanged }"
-        >
-          <v-slide-y-reverse-transition hide-on-leave>
+      <v-slide-y-reverse-transition hide-on-leave>
+        <v-col v-if="!files.length">
+          <slot
+            name="dropzone"
+            v-bind="{ files, dropzoneMessage, multiple, accept, inputFilesChanged }"
+          >
             <dropzone
-              v-if="!files.length"
               :message="dropzoneMessage"
               :multiple="multiple"
               :accept="accept"
               @change="inputFilesChanged"
             />
-          </v-slide-y-reverse-transition>
-        </slot>
-      </v-col>
+          </slot>
+        </v-col>
+      </v-slide-y-reverse-transition>
       <div v-if="errorMessage">
         <v-alert
           :value="true"
