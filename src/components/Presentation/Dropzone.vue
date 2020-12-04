@@ -7,7 +7,10 @@
     @drop="dropzoneClass = null"
   >
     <div class="dropzone-overlay" />
-    <v-row class="flex-column align-center justify-center fill-height dropzone-message">
+    <v-row
+      no-gutters
+      class="flex-column align-center justify-center fill-height dropzone-message"
+    >
       <v-icon size="50px">
         $vuetify.icons.fileUpload
       </v-icon>
