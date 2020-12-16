@@ -1,44 +1,21 @@
+import S3FFClient from 'django-s3-file-field';
 import UploadBase from './UploadBase';
 
 export default class Upload extends UploadBase {
-  /**
-   * Represents an upload of a single file to the server.
-   * @param {File | Blob} file the file to upload
-   * @param {Object} opts upload options.
-   * @param {Object} opts.$rest an axios instance used for communicating with Girder.
-   * @param {Object} opts.parent upload destination. Must have ``id`` property.
-   * @param {Function} opts.progress A progress callback for the upload. It can take an Object
-   *   argument with either ``"indeterminate": true``, or numeric ``current`` and ``size`` fields.
-   */
-  constructor(file, {
-    $rest,
-    parent,
-    progress = () => null,
-  } = {}) {
-    super(file, {
-      $rest, parent, progress,
-    });
+  constructor(file, opts) {
+    super(file, opts);
+    this.s3FFClient = new S3FFClient(`${opts.$rest.apiRoot}/s3-upload`);
   }
 
   async start() {
-    const fd = new FormData();
-    fd.append('blob', this.file);
-    fd.append('name', this.file.name);
-    fd.append('content_type', this.file.type);
-    fd.append('folder', this.parent.id);
-    return (await this.$rest.post('files', fd, {
-      onUploadProgress: (e) => this.progress({
-        indeterminate: !e.lengthComputable,
-        current: e.loaded,
-        size: e.total,
-      }),
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })).data;
-  }
+    // TODO progress
+    const { value } = await this.s3FFClient.uploadFile(this.file, 'core.File.blob');
 
-  async resume() {
-    return this.start();
+    return (await this.$rest.post('files', {
+      name: this.file.name,
+      content_type: this.file.type,
+      blob: value,
+      folder: this.parent.id,
+    })).data;
   }
 }

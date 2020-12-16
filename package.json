@@ -21,6 +21,7 @@
   "dependencies": {
     "@mdi/font": "^5.3.45",
     "axios": "^0.19.2",
+    "django-s3-file-field": "^0.0.19",
     "js-cookie": "^2.2.0",
     "markdown-it": "^11.0.0",
     "moment": "^2.27.0",
