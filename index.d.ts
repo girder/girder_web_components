@@ -101,6 +101,26 @@ declare module '@girder/components' {
       type?: string;
     }
 
+    namespace mixins {
+      const accessLevelChecker: Record<string, unknown>;
+      const dateFormatter: Record<string, unknown>;
+      const fileUploader: Record<string, unknown>;
+      const jobFormatter: Record<string, unknown>;
+      const progressReporter: Record<string, unknown>;
+      const sizeFormatter: Record<string, unknown>;
+      const usernameFormatter: Record<string, unknown>;
+  
+      export {
+        accessLevelChecker,
+        dateFormatter,
+        fileUploader,
+        jobFormatter,
+        progressReporter,
+        sizeFormatter,
+        usernameFormatter,
+      };
+    }
+
     class NotificationBus extends Vue {
       constructor(gr: RestClient, args?: {
         EventSource?: EventSource,
@@ -135,6 +155,7 @@ declare module '@girder/components' {
     const vuetifyConfig: Config;
 
     export {
+      mixins,
       NotificationBus,
       Upload,
       createLocationValidator,
@@ -142,26 +163,6 @@ declare module '@girder/components' {
       getSingularLocationTypeName,
       isRootLocation,
       vuetifyConfig,
-    };
-  }
-
-  namespace mixins {
-    const accessLevelChecker: Record<string, unknown>;
-    const dateFormatter: Record<string, unknown>;
-    const fileUploader: Record<string, unknown>;
-    const jobFormatter: Record<string, unknown>;
-    const progressReporter: Record<string, unknown>;
-    const sizeFormatter: Record<string, unknown>;
-    const usernameFormatter: Record<string, unknown>;
-
-    export {
-      accessLevelChecker,
-      dateFormatter,
-      fileUploader,
-      jobFormatter,
-      progressReporter,
-      sizeFormatter,
-      usernameFormatter,
     };
   }
 
