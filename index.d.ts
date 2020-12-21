@@ -179,7 +179,6 @@ declare module '@girder/components' {
   export {
     RestClient,
     components,
-    mixins,
     snippets,
     utils
   };
