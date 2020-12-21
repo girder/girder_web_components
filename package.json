@@ -9,7 +9,9 @@
     "build:demo": "vue-cli-service build --dest _site/ demo/main.js",
     "lint:style": "stylelint 'src/**/*.vue' 'demo/**/*.vue'"
   },
-  "main": "dist/girder.umd.min.js",
+  "browser": "dist/girder.umd.min.js",
+  "module": "src/index.js",
+  "main": "src/index.js",
   "files": [
     "/dist/",
     "/src/",

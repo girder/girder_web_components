@@ -1,4 +1,4 @@
-declare module '@girder/components/src' {
+declare module '@girder/components' {
   import { AxiosInstance, AxiosResponse } from 'axios';
   import Vue, { Component } from 'vue';
 
@@ -135,12 +135,3 @@ declare module '@girder/components/src' {
   export { RestClient, components, utils };
   export default plugin;
 }
-
-
-  DebounceCounter,
-  vuetifyConfig,
-  Upload,
-  createLocationValidator,
-  getLocationType,
-  isRootLocation,
-  getSingularLocationTypeName,
