@@ -99,7 +99,7 @@
               label="oauth"
             />
           </v-row><template v-if="loggedOut">
-            <girder-auth
+            <girder-authentication
               :key="girderRest.token"
               :force-otp="false"
               :register="authRegister"
@@ -294,38 +294,18 @@
 </template>
 
 <script>
-import {
-  AccessControl as GirderAccessControl,
-  Authentication as GirderAuth,
-  Breadcrumb as GirderBreadcrumb,
-  DataDetails as GirderDataDetails,
-  Search as GirderSearch,
-  Upload as GirderUpload,
-  UpsertFolder as GirderUpsertFolder,
-} from '@/components';
-import { FileManager as GirderFileManager } from '@/components/Snippet';
-import { JobList as GirderJobList } from '@/components/Job';
-
+import Vue from 'vue';
 import Headline from './Headline.vue';
 import NavLink from './NavLink.vue';
 
-export default {
+export default Vue.extend({
   name: 'App',
-  inject: ['girderRest'],
 
   components: {
     Headline,
     NavLink,
-    GirderAccessControl,
-    GirderAuth,
-    GirderBreadcrumb,
-    GirderDataDetails,
-    GirderFileManager,
-    GirderJobList,
-    GirderSearch,
-    GirderUpload,
-    GirderUpsertFolder,
   },
+  inject: ['girderRest'],
 
   data() {
     return {
@@ -419,7 +399,7 @@ export default {
       this.droppedStrings = event.dataTransfer.getData('application/x-girder-items');
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

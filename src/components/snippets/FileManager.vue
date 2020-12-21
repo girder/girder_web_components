@@ -2,17 +2,17 @@
 import Vue from 'vue';
 
 import {
-  Upload as GirderUpload,
-  UpsertFolder as GirderUpsertFolder,
-  DataBrowser as GirderDataBrowser,
-  Breadcrumb as GirderBreadcrumb,
-  AccessControl as GirderAccessControl,
-} from '../components';
+  GirderUpload,
+  GirderUpsertFolder,
+  GirderDataBrowser,
+  GirderBreadcrumb,
+  GirderAccessControl,
+} from '..';
 import {
   getLocationType,
   isRootLocation,
   createLocationValidator,
-} from '../utils';
+} from '../../utils';
 
 export default Vue.extend({
   components: {
@@ -22,6 +22,8 @@ export default Vue.extend({
     GirderUpsertFolder,
     GirderDataBrowser,
   },
+
+  inject: ['girderRest'],
 
   props: {
     value: {
@@ -94,8 +96,6 @@ export default Vue.extend({
       default: () => ([10, 25, 50]),
     },
   },
-
-  inject: ['girderRest'],
 
   data() {
     return {

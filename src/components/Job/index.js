@@ -1,11 +1,13 @@
-import FilterForm from './FilterForm.vue';
-import JobList from './JobList.vue';
-import JobProgress from './JobProgress.vue';
-import JobTable from './JobTable.vue';
+import GirderFilterForm from './FilterForm.vue';
+import GirderJobList from './JobList.vue';
+import GirderJobProgress from './JobProgress.vue';
+import GirderJobTable from './JobTable.vue';
 
 export {
-  FilterForm,
-  JobList,
-  JobProgress,
-  JobTable,
+  GirderFilterForm,
+  GirderJobList,
+  GirderJobProgress,
+  GirderJobTable,
 };
+
+export default GirderJobList;
