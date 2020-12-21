@@ -8,9 +8,11 @@ import {
   isRootLocation,
   getSingularLocationTypeName,
 } from './locationHelpers';
+import NotificationBus from './notifications';
 
 export {
   mixins,
+  NotificationBus,
   DebounceCounter,
   vuetifyConfig,
   Upload,
