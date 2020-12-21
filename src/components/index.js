@@ -5,7 +5,7 @@ import Authentication from './Authentication';
 import Breadcrumb from './Breadcrumb.vue';
 import DataBrowser from './DataBrowser.vue';
 import DataDetails from './DataDetails.vue';
-import job from './Job';
+import { JobList } from './Job';
 import Markdown from './Markdown.vue';
 import MarkdownEditor from './MarkdownEditor.vue';
 import Search from './Search.vue';
@@ -18,7 +18,7 @@ export {
   Breadcrumb,
   DataBrowser,
   DataDetails,
-  job,
+  JobList,
   Markdown,
   MarkdownEditor,
   Search,

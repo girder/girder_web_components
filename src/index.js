@@ -3,6 +3,7 @@ import Vuetify from 'vuetify/lib';
 import * as components from './components';
 import * as constants from './constants';
 import RestClient from './rest';
+import * as snippets from './snippets';
 import * as utils from './utils';
 
 /**
@@ -22,6 +23,7 @@ export {
   components,
   constants,
   RestClient,
+  snippets,
   utils,
   vuetify,
 };

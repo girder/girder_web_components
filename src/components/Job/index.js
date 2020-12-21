@@ -9,5 +9,3 @@ export {
   JobProgress,
   JobTable,
 };
-
-export default JobList;

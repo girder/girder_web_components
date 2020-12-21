@@ -1,6 +1,8 @@
 declare module '@girder/components' {
   import { AxiosInstance, AxiosResponse } from 'axios';
-  import Vue, { Component } from 'vue';
+  import Vue from 'vue/types';
+  import { VueConstructor } from 'vue/types/umd';
+  import { Config } from 'vuetify/types';
 
   type GirderModelType = 'item' | 'folder' | 'file' | 'user';
 
@@ -56,82 +58,128 @@ declare module '@girder/components' {
     patch: AxiosInstance['patch'];
   }
 
-  const AccessControl: Component;
-  const Authentication: Component;
-  const Breadcrumb: Component;
-  const DataBrowser: Component;
-  const DataDetails: Component;
-  const Markdown: Component;
-  const MarkdownEditor: Component;
-  const Search: Component;
-  const Upload: Component;
-  const UpsertFolder: Component;
+  namespace components {
+    const AccessControl: VueConstructor;
+    const Authentication: VueConstructor;
+    const Breadcrumb: VueConstructor;
+    const DataBrowser: VueConstructor;
+    const DataDetails: VueConstructor;
+    const JobList: VueConstructor;
+    const Markdown: VueConstructor;
+    const MarkdownEditor: VueConstructor;
+    const Search: VueConstructor;
+    const Upload: VueConstructor;
+    const UpsertFolder: VueConstructor;
 
-  const components = {
-    AccessControl,
-    Authentication,
-    Breadcrumb,
-    DataBrowser,
-    DataDetails,
-    Markdown,
-    MarkdownEditor,
-    Search,
-    Upload,
-    UpsertFolder,
-  };
-
-  interface Location {
-    _modelType?: GirderModelType;
-    _id?: string;
-    type?: string;
-  }
-  
-  function createLocationValidator(allowRoot: boolean): (location: Location) => boolean { }
-  function getLocationType(location: Location): string { }
-  function getSingularLocationTypeName(location: Location): 'collection' | 'user' | '' { }
-  function isRootLocation(location: Location): boolean { }
-
-  class NotificationBus extends Vue {
-    constructor(gr: RestClient, args?: {
-      EventSource?: EventSource,
-      listenToRestClient?: boolean,
-      pollingInterval?: number[],
-      since?: Date,
-      useEventSource?: Boolean,
-      withCredentials?: Boolean,
-    });
-    connect: () => void;
-    disconnect: () => void;
-    connected: boolean;
+    export {
+      AccessControl,
+      Authentication,
+      Breadcrumb,
+      DataBrowser,
+      DataDetails,
+      JobList,
+      Markdown,
+      MarkdownEditor,
+      Search,
+      Upload,
+      UpsertFolder,
+    };
   }
 
-  class Upload extends Vue {
-    constructor(file: File, args?: {
-      $rest: AxiosInstance,
-      parent: Location,
-      progress?: () => null,
-      params?: Record<string, unknown>,
-      chunkLen?: number,
-    });
-    async start(): Promise<unknown>;
-    async resume(): Promise<unknown>;
+  namespace snippets {
+    const FileManager: VueConstructor;
+
+    export {
+      FileManager,
+    };
   }
 
-  const utils = {
-    createLocationValidator,
-    getLocationType,
-    getSingularLocationTypeName,
-    isRootLocation,
-    NotificationBus,
-    Upload,
-  };
+  namespace utils {
+    interface Location {
+      _modelType?: GirderModelType;
+      _id?: string;
+      type?: string;
+    }
 
-  interface GirderPlugin {
-    install: Vue.PluginFunction<void>;
+    class NotificationBus extends Vue {
+      constructor(gr: RestClient, args?: {
+        EventSource?: EventSource,
+        listenToRestClient?: boolean,
+        pollingInterval?: number[],
+        since?: Date,
+        useEventSource?: Boolean,
+        withCredentials?: Boolean,
+      });
+      connect: () => void;
+      disconnect: () => void;
+      connected: boolean;
+    }
+
+    class Upload extends Vue {
+      constructor(file: File, args?: {
+        $rest: AxiosInstance,
+        parent: Location,
+        progress?: () => null,
+        params?: Record<string, unknown>,
+        chunkLen?: number,
+      });
+      start(): Promise<unknown>;
+      resume(): Promise<unknown>;
+    }
+
+    function createLocationValidator(allowRoot: boolean): (location: Location) => boolean;
+    function getLocationType(location: Location): string;
+    function getSingularLocationTypeName(location: Location): 'collection' | 'user' | '';
+    function isRootLocation(location: Location): boolean;
+
+    const vuetifyConfig: Config;
+
+    export {
+      NotificationBus,
+      Upload,
+      createLocationValidator,
+      getLocationType,
+      getSingularLocationTypeName,
+      isRootLocation,
+      vuetifyConfig,
+    };
   }
 
-  const plugin: GirderPlugin;
+  namespace mixins {
+    const accessLevelChecker: Record<string, unknown>;
+    const dateFormatter: Record<string, unknown>;
+    const fileUploader: Record<string, unknown>;
+    const jobFormatter: Record<string, unknown>;
+    const progressReporter: Record<string, unknown>;
+    const sizeFormatter: Record<string, unknown>;
+    const usernameFormatter: Record<string, unknown>;
 
-  export { RestClient, components, utils };
+    export {
+      accessLevelChecker,
+      dateFormatter,
+      fileUploader,
+      jobFormatter,
+      progressReporter,
+      sizeFormatter,
+      usernameFormatter,
+    };
+  }
+
+  namespace plugin {
+    function install(): Vue.PluginFunction<void>;
+
+    export {
+      install
+    };
+  }
+
   export default plugin;
+
+  export {
+    RestClient,
+    components,
+    mixins,
+    snippets,
+    utils
+  };
 }

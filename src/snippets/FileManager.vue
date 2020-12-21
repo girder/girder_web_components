@@ -1,18 +1,20 @@
 <script>
+import Vue from 'vue';
+
 import {
   Upload as GirderUpload,
   UpsertFolder as GirderUpsertFolder,
   DataBrowser as GirderDataBrowser,
   Breadcrumb as GirderBreadcrumb,
   AccessControl as GirderAccessControl,
-} from '..';
+} from '../components';
 import {
   getLocationType,
   isRootLocation,
   createLocationValidator,
-} from '../../utils';
+} from '../utils';
 
-export default {
+export default Vue.extend({
   components: {
     GirderAccessControl,
     GirderBreadcrumb,
@@ -187,7 +189,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <template>
