@@ -82,7 +82,7 @@ For instance:
 
 ```javascript
 import { GirderUplaod } from '@girder/components'; // Good
-import { Upload } from '@girder/componnets/src/components/Upload.vue'; // Unsafe -- may move in the future
+import { Upload } from '@girder/components/src/components/Upload.vue'; // Unsafe -- may move in the future
 ```
 
 Since Girder web components uses Vuetify, your application must provide
