@@ -1,12 +1,11 @@
 import Vue from 'vue';
 import GirderPlugin, {
-  NotificationBus, RestClient, registerComponents, vuetify,
+  NotificationBus, RestClient, vuetify,
 } from '@/';
 
 import App from './App.vue';
 
 Vue.use(GirderPlugin);
-registerComponents();
 
 const girderRest = new RestClient({
   apiRoot: process.env.VUE_APP_API_ROOT,

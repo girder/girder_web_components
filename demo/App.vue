@@ -295,17 +295,38 @@
 
 <script>
 import Vue from 'vue';
+import {
+  GirderAccessControl,
+  GirderAuthentication,
+  GirderBreadcrumb,
+  GirderDataDetails,
+  GirderSearch,
+  GirderUpload,
+  GirderUpsertFolder,
+  GirderFileManager,
+  GirderJobList,
+} from '@/';
+
 import Headline from './Headline.vue';
 import NavLink from './NavLink.vue';
 
 export default Vue.extend({
   name: 'App',
+  inject: ['girderRest'],
 
   components: {
     Headline,
     NavLink,
+    GirderAccessControl,
+    GirderAuthentication,
+    GirderBreadcrumb,
+    GirderDataDetails,
+    GirderFileManager,
+    GirderJobList,
+    GirderSearch,
+    GirderUpload,
+    GirderUpsertFolder,
   },
-  inject: ['girderRest'],
 
   data() {
     return {
