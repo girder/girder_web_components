@@ -1,13 +1,12 @@
 <script>
 import Vue from 'vue';
 
-import {
-  GirderUpload,
-  GirderUpsertFolder,
-  GirderDataBrowser,
-  GirderBreadcrumb,
-  GirderAccessControl,
-} from '..';
+import GirderUpload from '../Upload.vue';
+import GirderUpsertFolder from '../UpsertFolder.vue';
+import GirderDataBrowser from '../DataBrowser.vue';
+import GirderBreadcrumb from '../Breadcrumb.vue';
+import GirderAccessControl from '../AccessControl.vue';
+
 import {
   getLocationType,
   isRootLocation,

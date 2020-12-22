@@ -81,7 +81,7 @@
             />
           </v-row><a id="auth" />
           <headline
-            title="girder-auth"
+            title="girder-authentication"
             link="src/components/Authentication/Authentication.vue"
             description="allows users to authenticate with girder"
           />

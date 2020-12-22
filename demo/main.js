@@ -1,7 +1,6 @@
 import Vue from 'vue';
-import Vuetify from 'vuetify/lib';
 import GirderPlugin, {
-  NotificationBus, RestClient, vuetifyConfig, registerComponents,
+  NotificationBus, RestClient, registerComponents, vuetify,
 } from '@/';
 
 import App from './App.vue';
@@ -16,8 +15,6 @@ const girderRest = new RestClient({
 const notificationBus = new NotificationBus(girderRest, {
   useEventSource: true,
 });
-
-const vuetify = new Vuetify(vuetifyConfig);
 
 girderRest.fetchUser().then((user) => {
   if (user) {

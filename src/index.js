@@ -14,5 +14,5 @@ export default function install(Vue) {
 export * from './components';
 export * from './constants';
 export { default as RestClient } from './rest';
-export * from './snippets';
+export * from './components/snippets';
 export * from './utils';
