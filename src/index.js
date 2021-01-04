@@ -1,3 +1,4 @@
+import '@mdi/font/css/materialdesignicons.min.css';
 import VueAsyncComputed from 'vue-async-computed';
 import Vuetify from 'vuetify/lib';
 

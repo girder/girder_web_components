@@ -221,6 +221,8 @@ yarn lint:style
 yarn test:unit
 ```
 
+> **Note**: sideEffects config for tree shaking is [informed by this issue](https://github.com/vuejs/vue-loader/issues/1435)
+
 ### Use an external Girder API
 
 To build the demo app against an external Girder API, set the

@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import '@mdi/font/css/materialdesignicons.min.css';
 
 import GirderAccessControl from './AccessControl.vue';
 import GirderBreadcrumb from './Breadcrumb.vue';
