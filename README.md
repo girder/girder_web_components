@@ -32,7 +32,7 @@ Encapsulating the configuration in another file (typically `src/plugins/girder.j
 ```javascript
 /* src/plugins/girder.js */
 import Vue from 'vue';
-import Girder, { RestClient } from '@girder/components/src';
+import Girder, { RestClient } from '@girder/components';
 
 // Install the Vue plugin that lets us use the components
 Vue.use(Girder);
@@ -58,7 +58,7 @@ Reference the configuration from your application initialization (typically `src
 ```javascript
 /* src/main.js */
 import GirderProvider from '@/plugins/girder';
-import { vuetify } from '@girder/components/src';
+import { vuetify } from '@girder/components';
 
 // ...
 
@@ -73,12 +73,16 @@ new Vue({
 
 ### Using Components
 
-Components should be imported by name from `@girder/components/src/components`, as this location will be stable across releases.
+All components are prefixed `Girder`.
+
+#### A-la-carte (recommended)
+
+To use components individually, they should be imported by name from `@girder/components`, as this location will be stable across releases.
 For instance:
 
 ```javascript
-import { Upload as GirderUpload } from '@girder/components/src/components';  // Good
-import GirderUpload from '@girder/components/src/components/Upload.vue'; // Unsafe -- may move in future
+import { GirderUplaod } from '@girder/components'; // Good
+import { Upload } from '@girder/components/src/components/Upload.vue'; // Unsafe -- may move in the future
 ```
 
 Since Girder web components uses Vuetify, your application must provide
@@ -99,7 +103,7 @@ For example, to create a login / registration widget in `src/App.vue`:
 </template>
 
 <script>
-import { Authentication as GirderAuthentication } from '@girder/components/src/components';
+import { GirderAuthentication } from '@girder/components';
 
 export default {
   components: {
@@ -118,6 +122,25 @@ export default {
 </script>
 ```
 
+#### Global registration
+
+You can register all components with the global scope and avoid individual imports.
+
+[See documentation for a list of component names.](https://gwc.girder.org/)
+
+```javascript
+import GirderProvider from '@/plugins/girder'; // same as above
+import { vuetify, registerComponents } from '@girder/components';
+
+// register all components globally, named `girder-{name}`
+registerComponents();
+
+new Vue({
+  provide: GirderProvider,
+  vuetify,
+}).$mount('#app');
+```
+
 See [the demo app](demo/App.vue) for a more comprehensive example.
 
 ## Advanced Usage
@@ -131,7 +154,7 @@ Additional Vuetify configuration should inherit from Girder web components' own 
 
 ```javascript
 import { merge } from 'lodash';
-import { vuetifyConfig as girderVuetifyConfig } from '@girder/components/src/utils';
+import { vuetifyConfig as girderVuetifyConfig } from '@girder/components';
 
 const appVuetifyConfig = merge(girderVuetifyConfig, {
   icons: {
@@ -146,6 +169,8 @@ const appVuetifyConfig = merge(girderVuetifyConfig, {
 
 ```javascript
 import Vuetify from 'vuetify/lib';
+import GirderProvider from '@/plugins/girder'; // same as above
+
 new Vue({
   provide: GirderProvider,
   vuetify: new Vuetify(appVuetifyConfig),
@@ -157,7 +182,7 @@ new Vue({
 
 ### Other installation methods
 
-It's not necessary to install Girder web components yourself, you can import the prebuilt bundle
+It's not necessary to install Girder web components yourself, you can import the pre-built bundle
 into your page by including the following tags:
 
 ```html
@@ -166,8 +191,8 @@ into your page by including the following tags:
 <link rel="stylesheet" href="https://unpkg.com/@girder/components/dist/girder.css">
 ```
 
-This will expose all the library's components under the global variable `girder`, e.g.
-`girder.components.Upload`.
+This will expose all the library's components and utilities under the global variable `girder`, e.g.
+`girder.RestClient` and `girder.GirderUpload`.
 
 > **Note:** If importing this library's UMD bundle via a ``<script>`` tag, the incantation for
 > installing the Vue plugin is slightly different:
@@ -190,6 +215,7 @@ yarn build
 
 # Lint and fix source code
 yarn lint
+yarn lint:style
 
 # Run unit tests
 yarn test:unit
@@ -221,6 +247,10 @@ If your app injects media dynamically into the page using `img` or `video` eleme
 
 ### Deploy and Publish
 
-The demo app is automatically deployed to https://gwc.girder.org
+The demo app is automatically deployed to [gwc.girder.org](https://gwc.girder.org).
 
 Any contributor can request an update to the published npmjs version by changing the version string in `package.json` and opening a pull request.  Our CI runner will detect the change and publish on merge.  Version update PRs should generally happen independently of feature PRs.
+
+### Type Definitions
+
+TypeScript type defs are maintained at `index.d.ts`. Please remember to update this file if your change impacts the public api.

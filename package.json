@@ -1,6 +1,6 @@
 {
   "name": "@girder/components",
-  "version": "2.2.10",
+  "version": "2.3.0",
   "scripts": {
     "serve": "vue-cli-service serve demo/main.js",
     "build": "vue-cli-service build --target lib --name girder src/index.js",
@@ -9,12 +9,18 @@
     "build:demo": "vue-cli-service build --dest _site/ demo/main.js",
     "lint:style": "stylelint 'src/**/*.vue' 'demo/**/*.vue'"
   },
-  "main": "dist/girder.umd.min.js",
+  "browser": "dist/girder.umd.min.js",
+  "module": "src/index.js",
+  "main": "src/index.js",
   "files": [
     "/dist/",
     "/src/",
+    "/index.d.ts",
     "/babel.config.js",
     "/vue.config.js"
+  ],
+  "sideEffects": [
+    "*.css"
   ],
   "dependencies": {
     "@mdi/font": "^5.3.45",
@@ -23,7 +29,7 @@
     "markdown-it": "^11.0.0",
     "moment": "^2.27.0",
     "qs": "^6.9.4",
-    "vue": "^2.6.10",
+    "vue": "^2.6.12",
     "vue-async-computed": "^3.4.1",
     "vuetify": "^2.3.1"
   },
@@ -46,7 +52,7 @@
     "stylelint": "^13.6.1",
     "stylelint-config-standard": "^20.0.0",
     "vue-cli-plugin-vuetify": "~2.0.5",
-    "vue-template-compiler": "^2.6.10",
+    "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.5.0"
   },
   "eslintConfig": {

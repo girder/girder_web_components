@@ -1,12 +1,12 @@
 import { stringify } from 'qs';
 
-import S3Upload from './s3';
+import S3UploadManager from './s3';
 import UploadBase from './UploadBase';
 
 const UPLOAD_CHUNK_SIZE = 1024 * 1024 * 64;
-const uploadBehaviors = { s3: S3Upload };
+const uploadBehaviors = { s3: S3UploadManager };
 
-export default class Upload extends UploadBase {
+export default class UploadManager extends UploadBase {
   /**
    * Represents an upload of a single file to the server.
    * @param {File | Blob} file the file to upload

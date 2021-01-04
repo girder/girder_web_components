@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { stringify } from 'qs';
 
-export default class S3Upload {
+export default class S3UploadManager {
   constructor(base) {
     Object.assign(this, base, { etags: {}, offset: 0, partNumber: 1 });
   }

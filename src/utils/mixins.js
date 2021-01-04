@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { AccessType } from '../constants';
 import * as jobstatus from '../components/Job/status';
-import Upload from './upload';
+import UploadManager from './upload';
 
 /**
  * for components that need to show a locale-formatted date
@@ -238,7 +238,7 @@ const fileUploader = {
       dest,
       preUpload = async () => {},
       postUpload = async () => {},
-      uploadCls = Upload,
+      uploadCls = UploadManager,
     }) {
       this.uploading = true;
       this.indeterminate = true;

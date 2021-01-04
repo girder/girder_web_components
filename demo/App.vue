@@ -81,7 +81,7 @@
             />
           </v-row><a id="auth" />
           <headline
-            title="girder-auth"
+            title="girder-authentication"
             link="src/components/Authentication/Authentication.vue"
             description="allows users to authenticate with girder"
           />
@@ -99,7 +99,7 @@
               label="oauth"
             />
           </v-row><template v-if="loggedOut">
-            <girder-auth
+            <girder-authentication
               :key="girderRest.token"
               :force-otp="false"
               :register="authRegister"
@@ -294,22 +294,23 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import {
-  AccessControl as GirderAccessControl,
-  Authentication as GirderAuth,
-  Breadcrumb as GirderBreadcrumb,
-  DataDetails as GirderDataDetails,
-  Search as GirderSearch,
-  Upload as GirderUpload,
-  UpsertFolder as GirderUpsertFolder,
-} from '@/components';
-import { FileManager as GirderFileManager } from '@/components/Snippet';
-import { JobList as GirderJobList } from '@/components/Job';
+  GirderAccessControl,
+  GirderAuthentication,
+  GirderBreadcrumb,
+  GirderDataDetails,
+  GirderSearch,
+  GirderUpload,
+  GirderUpsertFolder,
+  GirderFileManager,
+  GirderJobList,
+} from '@/';
 
 import Headline from './Headline.vue';
 import NavLink from './NavLink.vue';
 
-export default {
+export default Vue.extend({
   name: 'App',
   inject: ['girderRest'],
 
@@ -317,7 +318,7 @@ export default {
     Headline,
     NavLink,
     GirderAccessControl,
-    GirderAuth,
+    GirderAuthentication,
     GirderBreadcrumb,
     GirderDataDetails,
     GirderFileManager,
@@ -419,7 +420,7 @@ export default {
       this.droppedStrings = event.dataTransfer.getData('application/x-girder-items');
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
