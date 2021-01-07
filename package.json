@@ -22,10 +22,6 @@
   "sideEffects": [
     "*.css"
   ],
-  "peerDependencies": {
-    "vue": "^2.6.12",
-    "vuetify": "^2.3.1"
-  },
   "dependencies": {
     "@mdi/font": "^5.3.45",
     "axios": "^0.19.2",
@@ -55,7 +51,9 @@
     "stylelint-config-standard": "^20.0.0",
     "vue-cli-plugin-vuetify": "~2.0.5",
     "vue-template-compiler": "^2.6.12",
-    "vuetify-loader": "^1.5.0"
+    "vue": "^2.6.12",
+    "vuetify-loader": "^1.5.0",
+    "vuetify": "^2.3.1"
   },
   "eslintConfig": {
     "root": true,
