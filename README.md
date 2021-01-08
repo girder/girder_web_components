@@ -5,25 +5,33 @@ It works with [data.kitware.com](https://data.kitware.com/).
 
 ## Usage Quickstart
 
+**This library only supports Vue 2.**
+
 ### Installation
 
+[Vue CLI](https://cli.vuejs.org/) is required for building applications with Girder web components.  You will also need to install [Vue CLI Plugin Vuetify](https://next.vuetifyjs.com/en/getting-started/installation/#vue-cli-install).
+
+First, install Vuetify if you aren't already using it.
+
+``` bash
+vue add vuetify
+```
+
+For new projects, the `default` preset is good.  For established projects, choose `advanced` and reject pre-made templates for a less invasive install.  All other options are up to you.
+
+> **Note** the cli plugin install may modify package.json, vue.config.js, index.html, and several others.  Mostly, it just reorders your existing configuration, but be sure to review the changes carefully.
+
 ```bash
-npm install @girder/components
-# or
+# Install GWC
 yarn add @girder/components
-```
-
-[VueCLI](https://cli.vuejs.org/) is required for building applications with Girder web components.
-However, a few additional packages must still be manually installed:
-
-```bash
-npm install -D sass sass-loader@^7.3.1 vue-cli-plugin-vuetify vuetify-loader
 # or
-yarn add -D sass sass-loader@^7.3.1 vue-cli-plugin-vuetify vuetify-loader
+npm install @girder/components
+
+# Install additional dev dependencies
+yarn add -D sass sass-loader@^7.3.1
 ```
 
-> **Note:** If you are building with custom webpack (without vue-cli-service),
-> you should follow Vuetify's [Webpack install instructions](https://vuetifyjs.com/en/getting-started/quick-start/#webpack-install)
+> **Note:** If you are building with custom webpack (without vue-cli-service), you should follow Vuetify's [Webpack install instructions](https://vuetifyjs.com/en/getting-started/quick-start/#webpack-install)
 
 ### Initialization
 
