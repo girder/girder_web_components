@@ -2,10 +2,14 @@
 
 export default {
   name: 'App',
-  inject: ['oauthClient'],
+  inject: ['oauthClient', 'girderRest'],
   methods: {
     login() {
       this.oauthClient.redirectToLogin();
+    },
+    logout() {
+      this.girderRest.user = null;
+      this.oauthClient.logout();
     },
   },
 };
@@ -18,6 +22,12 @@ export default {
       <v-toolbar-title>Kitware Data</v-toolbar-title>
       <v-spacer />
       <v-btn
+        v-if="girderRest.user"
+        text
+        @click="logout"
+      >{{ girderRest.user.username }}</v-btn>
+      <v-btn
+        v-else
         text
         @click="login"
       >Login</v-btn>

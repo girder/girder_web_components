@@ -30,7 +30,12 @@ export default class RestClient extends Vue {
   }
 
   async fetchUser() {
-    // TODO stub
-    return null;
+    const resp = await this.get('users/me');
+    if (resp.status === 204) {
+      this.user = null;
+    } else {
+      this.user = resp.data;
+    }
+    return this.user;
   }
 }
