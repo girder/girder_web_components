@@ -21,6 +21,7 @@
   "dependencies": {
     "@girder/oauth-client": "^0.7.2",
     "@mdi/font": "^5.3.45",
+    "@sentry/vue": "^5.29.2",
     "axios": "^0.19.2",
     "django-s3-file-field": "^0.0.19",
     "markdown-it": "^11.0.0",

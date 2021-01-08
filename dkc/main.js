@@ -1,6 +1,7 @@
 import RestClient from '@/rest';
 import Vue from 'vue';
 import OauthClient from '@girder/oauth-client';
+import * as Sentry from '@sentry/vue';
 import Girder, { vuetify } from '@';
 import App from './App.vue';
 import router from './router';
@@ -15,6 +16,11 @@ const oauthClient = new OauthClient(
 
 const girderRest = new RestClient({
   apiRoot: process.env.VUE_APP_API_ROOT,
+});
+
+Sentry.init({
+  Vue,
+  dsn: process.env.VUE_APP_SENTRY_DSN,
 });
 
 oauthClient.maybeRestoreLogin().then(async () => {
