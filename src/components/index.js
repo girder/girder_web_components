@@ -1,7 +1,6 @@
 import '@mdi/font/css/materialdesignicons.min.css';
 
 import AccessControl from './AccessControl.vue';
-import Authentication from './Authentication';
 import Breadcrumb from './Breadcrumb.vue';
 import DataBrowser from './DataBrowser.vue';
 import DataDetails from './DataDetails.vue';
@@ -14,7 +13,6 @@ import UpsertFolder from './UpsertFolder.vue';
 
 export {
   AccessControl,
-  Authentication,
   Breadcrumb,
   DataBrowser,
   DataDetails,
