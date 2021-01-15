@@ -124,6 +124,7 @@ export default {
     },
     uploadDone() {
       this.uploaderDialog = false;
+      this.serverFoldersLength = -1;
       this.serverFilesLength = -1;
       this.refresh();
     },
@@ -133,6 +134,7 @@ export default {
     },
     newFolderCreated() {
       this.serverFoldersLength = -1;
+      this.serverFilesLength = -1;
       this.newFolderDialog = false;
       this.refresh();
     },
