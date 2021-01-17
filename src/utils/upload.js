@@ -7,7 +7,7 @@ export default class Upload extends UploadBase {
     this.s3FFClient = new S3FFClient(`${opts.$rest.apiRoot}/s3-upload`, (e) => {
       if (e.state === 'sending') {
         this.progress({
-          current: e.loaded,
+          current: e.uploaded,
           size: e.total,
         });
       } else {
