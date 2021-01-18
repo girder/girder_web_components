@@ -82,7 +82,7 @@ declare module '@girder/components' {
   /* Presentation */
   const GirderDataTable: VueConstructor;
   const GirderDetailList: VueConstructor;
-  const GirderDropZone: VueConstructor;
+  const GirderDropzone: VueConstructor;
   const GirderFileUploadList: VueConstructor;
   /* Jobs */
   const GirderFilterForm: VueConstructor;
@@ -175,7 +175,7 @@ declare module '@girder/components' {
     // Presentation
     GirderDataTable,
     GirderDetailList,
-    GirderDropZone,
+    GirderDropzone,
     GirderFileUploadList,
     // Job
     GirderFilterForm,
