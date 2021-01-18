@@ -273,7 +273,7 @@ export default {
                 name="headerwidget"
               >
                 <v-dialog
-                  v-if="!!folder"
+                  v-if="!!folder && girderRest.user"
                   v-model="uploaderDialog"
                   max-width="800px"
                 >
@@ -294,6 +294,7 @@ export default {
                   />
                 </v-dialog>
                 <v-dialog
+                  v-if="girderRest.user"
                   v-model="newFolderDialog"
                   max-width="800px"
                 >
