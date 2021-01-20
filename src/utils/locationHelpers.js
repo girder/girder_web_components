@@ -9,29 +9,3 @@ export function isRootLocation(location) {
   }
   return false;
 }
-
-export function getSingularLocationTypeName(location) {
-  const locationType = getLocationType(location);
-  switch (locationType) {
-    case 'collections':
-      return 'collection';
-    case 'users':
-      return 'user';
-    default:
-      return '';
-  }
-}
-
-export function createLocationValidator(allowRoot) {
-  return (location) => {
-    if (!location) {
-      return false;
-    }
-    if (isRootLocation(location)) {
-      return allowRoot;
-    // eslint-disable-next-line no-else-return
-    } else {
-      return !!location._id;
-    }
-  };
-}

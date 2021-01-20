@@ -63,6 +63,14 @@ export const DefaultActionKeys = [
     target: '_blank',
   },
   {
+    for: ['folder'],
+    id: 'permissions',
+    name: 'Permissions',
+    iconKey: 'lock',
+    color: 'warning',
+    condition: ([folder]) => !folder.parent && folder.access.admin,
+  },
+  {
     for: ['file', 'folder'/* , TODO batch delete 'multi' */],
     id: 'delete',
     name: 'Delete',
@@ -164,7 +172,7 @@ export default {
       }
       const actionType = this.datum ? this.datum.__type__ : 'multi';
       return this.actionKeys
-        .filter((k) => k.for.includes(actionType))
+        .filter((k) => k.for.includes(actionType) && (!k.condition || k.condition(this.value)))
         .map((a) => {
           if (a.generateHref) {
             a.href = a.generateHref(this.girderRest.apiRoot, this.value);

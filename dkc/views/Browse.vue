@@ -1,9 +1,10 @@
 <script>
 import md from 'markdown-it';
-import { DataBrowser, DataDetails } from '@/components';
+import { AccessControl, DataBrowser, DataDetails } from '@/components';
 
 export default {
   components: {
+    AccessControl,
     DataBrowser,
     DataDetails,
   },
@@ -19,6 +20,7 @@ export default {
     folder: null,
     initialized: false,
     showTermsOfUse: false,
+    showPermissions: false,
     termsOfUse: null,
     selected: [],
   }),
@@ -101,7 +103,7 @@ export default {
     }
   },
   methods: {
-    handleAction(action) {
+    async handleAction(action) {
       if (action.id === 'delete') {
         if (this.selected.length === 0) {
           // User just deleted the current folder. Go up one level.
@@ -109,6 +111,8 @@ export default {
         } else {
           this.$refs.browser.refresh();
         }
+      } else if (action.id === 'permissions') {
+        this.showPermissions = true;
       }
     },
     async ensureTermsOfUseAgreement() {
@@ -148,6 +152,15 @@ export default {
 
 <template>
   <v-row>
+    <v-dialog
+      v-model="showPermissions"
+      max-width="700px"
+    >
+      <access-control
+        :folder="this.selected.length ? this.selected[0] : this.folder"
+        @close="showPermissions = false"
+      />
+    </v-dialog>
     <v-dialog
       v-model="showTermsOfUse"
       max-width="700px"
