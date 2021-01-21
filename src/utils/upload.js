@@ -25,7 +25,7 @@ export default class Upload extends UploadBase {
 
     return (await this.$rest.post('files', {
       name: this.file.name,
-      content_type: this.file.type,
+      content_type: this.file.type || 'application/octet-stream',
       blob: value,
       folder: this.parent.id,
     })).data;
