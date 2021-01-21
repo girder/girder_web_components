@@ -4,7 +4,7 @@ export default {
   props: {
     folder: {
       type: Object,
-      required: true,
+      required: false,
     },
   },
   data() {
@@ -39,7 +39,9 @@ export default {
   },
   watch: {
     folder(val) {
-      this.getAccessControlData();
+      if (val) {
+        this.getAccessControlData();
+      }
     },
   },
   created() {

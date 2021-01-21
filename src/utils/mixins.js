@@ -32,7 +32,8 @@ const sizeFormatter = {
         val /= base;
       }
 
-      return `${val.toFixed(2)}  ${['', 'K', 'M', 'G', 'T'][i]}${unit}`;
+      const prec = val >= 100 ? 1 : 2;
+      return `${val.toFixed(prec)}  ${['', 'K', 'M', 'G', 'T'][i]}${unit}`;
     },
   },
 };
@@ -183,8 +184,8 @@ const fileUploader = {
      */
     async start({
       dest,
-      preUpload = async () => {},
-      postUpload = async () => {},
+      preUpload = async () => { },
+      postUpload = async () => { },
       uploadCls = Upload,
     }) {
       this.uploading = true;

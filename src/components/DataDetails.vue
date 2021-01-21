@@ -13,6 +13,13 @@ import { dateFormatter, sizeFormatter } from '../utils/mixins';
  */
 export const DefaultInfoKeys = [
   {
+    name: '',
+    value: 'public',
+    transform(pub) {
+      return pub ? 'Public (anyone can view)' : 'Private (access is required to view)';
+    },
+  },
+  {
     value: 'size',
     name: 'Size: ',
     transform: sizeFormatter.methods.formatSize,

@@ -258,7 +258,7 @@ export default {
                   @click="navigateHome"
                   class="mr-1"
                   icon
-                  color="primary"
+                  color="accent"
                 >
                   <v-icon>mdi-home-circle</v-icon>
                 </v-btn>

@@ -1,7 +1,8 @@
 <script>
-import { getLocationType, isRootLocation } from '../../utils/locationHelpers';
+import { sizeFormatter } from '@/utils/mixins';
 
 export default {
+  mixins: [ sizeFormatter ],
   props: {
     draggable: {
       type: Boolean,
@@ -40,8 +41,6 @@ export default {
     return { lastCheckBoxIdx: null };
   },
   methods: {
-    getLocationType,
-    isRootLocation,
     handleRowSelect({ shiftKey }, props) {
       if (this.selectable) {
         props.isSelected = !props.isSelected;
@@ -58,14 +57,7 @@ export default {
       }
     },
     getRowClass(item) {
-      const rowSelectable = (!this.selectable && item.__type__ === 'folder')
-        || isRootLocation(item)
-        || getLocationType(item) === 'user';
-      return { 'select-cursor': rowSelectable, 'not-public': item.notPublic };
-    },
-    getItemClass(item) {
-      const itemSelectable = getLocationType(item) !== 'item';
-      return { 'select-cursor': itemSelectable };
+      return { 'public': item.public, 'private': !item.public };
     },
     emitDrag(eventname, event, items) {
       const modelListString = JSON.stringify(items.map(({ item }) => ({
@@ -106,7 +98,7 @@ export default {
         :draggable="draggable"
         :active="props.isSelected"
         :class="getRowClass(props.item)"
-        class="itemRow"
+        class="item-row"
         @click="handleRowSelect($event, props)"
         @drag="emitDrag('drag', $event, [props])"
         @dragstart="emitDrag('dragstart', $event, [props])"
@@ -129,8 +121,7 @@ export default {
           @contextmenu="$emit('row-right-click', props.item, $event)"
         >
           <span
-            :class="getItemClass(props.item)"
-            class="text-container nobreak"
+            class="text-container nobreak select-cursor"
             @click.stop="$emit('rowclick', props.item)"
           >
             <v-icon
@@ -147,7 +138,7 @@ export default {
           </span>
         </td>
         <td class="text-right nobreak">
-          {{ props.item.humanSize }}
+          {{ formatSize(props.item.size) }}
         </td>
       </tr>
     </template>
@@ -206,8 +197,8 @@ export default {
 
     &.theme--light {
       tr {
-        &.itemRow[active],
-        &.itemRow:hover {
+        &.item-row[active],
+        &.item-row:hover {
           // $light-blue.lighten-5
           background: #e1f5fe !important;
         }

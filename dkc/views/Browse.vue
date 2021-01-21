@@ -159,6 +159,7 @@ export default {
       <access-control
         :folder="this.selected.length ? this.selected[0] : this.folder"
         @close="showPermissions = false"
+        @model-access-changed="() => { $refs.browser.refresh() }"
       />
     </v-dialog>
     <v-dialog
