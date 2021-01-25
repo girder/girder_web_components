@@ -1,12 +1,13 @@
 <script>
 import md from 'markdown-it';
-import { AccessControl, DataBrowser, DataDetails } from '@/components';
+import { AccessControl, DataBrowser, DataDetails, UpsertFolder } from '@/components';
 
 export default {
   components: {
     AccessControl,
     DataBrowser,
     DataDetails,
+    UpsertFolder,
   },
   inject: ['girderRest'],
   props: {
@@ -19,6 +20,7 @@ export default {
     fetchedBreadcrumbs: [],
     folder: null,
     initialized: false,
+    showEditFolder: false,
     showTermsOfUse: false,
     showPermissions: false,
     termsOfUse: null,
@@ -33,6 +35,9 @@ export default {
         return [this.folder];
       }
       return [];
+    },
+    selectedResource() {
+      return this.selected.length ? this.selected[0] : this.folder
     },
     termsOfUseHtml() {
       if (this.termsOfUse) {
@@ -109,8 +114,10 @@ export default {
           // User just deleted the current folder. Go up one level.
           this.$refs.browser.navigateToParentFolder();
         } else {
-          this.$refs.browser.refresh();
+          this.$refs.browser.reload();
         }
+      } else if (action.id === 'edit') {
+        this.showEditFolder = true;
       } else if (action.id === 'permissions') {
         this.showPermissions = true;
       }
@@ -153,13 +160,25 @@ export default {
 <template>
   <v-row>
     <v-dialog
+      max-width="800px"
+      v-model="showEditFolder"
+    >
+      <upsert-folder
+        ref="editFolder"
+        :edit="true"
+        :folder="selectedResource"
+        @dismiss="showEditFolder = false"
+        @done="() => { showEditFolder = false; $refs.browser.reload() }"
+      />
+    </v-dialog>
+    <v-dialog
       v-model="showPermissions"
       max-width="700px"
     >
       <access-control
-        :folder="this.selected.length ? this.selected[0] : this.folder"
+        :folder="selectedResource"
         @close="showPermissions = false"
-        @model-access-changed="() => { $refs.browser.refresh() }"
+        @model-access-changed="() => { $refs.browser.reload() }"
       />
     </v-dialog>
     <v-dialog

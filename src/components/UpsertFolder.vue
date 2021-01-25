@@ -26,11 +26,17 @@ export default {
   inject: ['girderRest'],
   data() {
     return {
-      name: '',
-      description: '',
+      name: this.folder ? this.folder.name : '',
+      description: this.folder ? this.folder.description : '',
       error: '',
       nameErrors: [],
     };
+  },
+  watch: {
+    folder() {
+      this.name = this.folder ? this.folder.name : '';
+      this.description = this.folder ? this.folder.description : '';
+    },
   },
   methods: {
     async upsert() {
@@ -93,7 +99,6 @@ export default {
         </slot>
         <v-card-text>
           <v-text-field
-            ref="folderName"
             v-model="name"
             autofocus="autofocus"
             label="Folder Name"

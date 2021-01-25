@@ -71,6 +71,14 @@ export const DefaultActionKeys = [
   },
   {
     for: ['folder'],
+    id: 'edit',
+    name: 'Edit',
+    iconKey: 'edit',
+    color: 'primary',
+    condition: ([folder]) => folder.access.write,
+  },
+  {
+    for: ['folder'],
     id: 'permissions',
     name: 'Permissions',
     iconKey: 'lock',
@@ -89,6 +97,7 @@ export const DefaultActionKeys = [
         await this.girderRest.delete(`${item.__type__}s/${item.id}`);
       }
     },
+    condition: ([obj]) => obj.access.admin,
   },
 ];
 

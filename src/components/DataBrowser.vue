@@ -82,9 +82,7 @@ export default {
     folder() {
       // force reset options when location changes.
       this.options.page = 1;
-      this.serverFoldersLength = -1;
-      this.serverFilesLength = -1;
-      this.refresh();
+      this.reload();
     },
     value(val) {
       this.lazyValue = val;
@@ -122,21 +120,23 @@ export default {
       this.selected = [];
       this.fetchPaginatedRows();
     },
-    uploadDone() {
-      this.uploaderDialog = false;
+    reload() {
+      // Like refresh(), but loads from the beginning rather than current page offset
       this.serverFoldersLength = -1;
       this.serverFilesLength = -1;
       this.refresh();
+    },
+    uploadDone() {
+      this.uploaderDialog = false;
+      this.reload();
     },
     breadcrumbClick({ index }) {
       this.breadcrumbs = this.breadcrumbs.slice(0, index + 1);
       this.$emit('update:folder', this.breadcrumbs[this.breadcrumbs.length - 1]);
     },
     newFolderCreated() {
-      this.serverFoldersLength = -1;
-      this.serverFilesLength = -1;
       this.newFolderDialog = false;
-      this.refresh();
+      this.reload();
     },
     async fetchPaginatedRows() {
       this.loading = true;
