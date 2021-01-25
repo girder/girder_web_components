@@ -29,11 +29,13 @@ export default {
       name: '',
       description: '',
       error: '',
+      nameErrors: [],
     };
   },
   methods: {
     async upsert() {
       this.error = '';
+      this.nameErrors = [];
       try {
         await this.preUpsert();
         let savedFolder;
@@ -60,10 +62,14 @@ export default {
     },
     setError(err) {
       if (err.response) {
-        // TODO handle new error schema
-        this.error = 'An error occurred, please check the console for details.';
+        const data = err.response.data;
+        this.nameErrors = data.name || [];
+        if (data.__all__) {
+          this.error = data.__all__[0];
+        }
       } else {
-        this.error = `Unknown error: ${err.message}`;
+        this.error = 'An error occurred, please check the console for details.';
+        console.error(err);
       }
     },
   },
@@ -91,6 +97,7 @@ export default {
             v-model="name"
             autofocus="autofocus"
             label="Folder Name"
+            :error-messages="nameErrors"
           />
           <girder-markdown-editor
             v-model="description"
