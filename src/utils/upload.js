@@ -23,11 +23,26 @@ export default class Upload extends UploadBase {
   async start() {
     const { value } = await this.s3FFClient.uploadFile(this.file, 'core.File.blob');
 
-    return (await this.$rest.post('files', {
-      name: this.file.name,
-      content_type: this.file.type || 'application/octet-stream',
-      blob: value,
-      folder: this.parent.id,
-    })).data;
+    try {
+      return (await this.$rest.post('files', {
+        name: this.file.name,
+        content_type: this.file.type || 'application/octet-stream',
+        blob: value,
+        folder: this.parent.id,
+      })).data;
+    } catch (ex) {
+      if (ex.response) {
+        const data = ex.response.data;
+        // Are there any other categories of validation errors besides __all__?
+        if (data.__all__) {
+          throw new Error(data.__all__[0]);
+        } else {
+          console.error(ex);
+          throw new Error('An unexpected error occured. See console for details.');
+        }
+      } else {
+        throw new Error('Could not connect to the server.');
+      }
+    }
   }
 }

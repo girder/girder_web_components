@@ -229,11 +229,7 @@ const fileUploader = {
           })
           .catch(async (error) => {
             await file.upload.onError(error);
-            if (error.response) {
-              this.errorMessage = error.response.data.message || 'An error occurred during upload.';
-            } else {
-              this.errorMessage = 'Connection failed.';
-            }
+            this.errorMessage = error.message || 'An error occurred during upload.';
             file.status = 'error';
             this.uploading = false;
             this.$emit('error', { error, file });
