@@ -14,6 +14,7 @@ export default {
       loading: false,
       addUsername: '',
       addGroupname: '',
+      errors: [],
     };
   },
   computed: {
@@ -61,9 +62,11 @@ export default {
       const index = this.acl.indexOf(resource);
       if (index !== -1) {
         this.acl.splice(index, 1);
+        this.errors.splice(index, 1);
       }
     },
     async save() {
+      this.errors = [];
       const promises = [this.girderRest.put(`folders/${this.folder.id}/permissions`, this.acl)];
 
       if (this.public_ !== this.folder.public) {
@@ -72,7 +75,18 @@ export default {
         }));
       }
 
-      await Promise.all(promises);
+      try {
+        await Promise.all(promises);
+      } catch (ex) {
+        if (ex.response) {
+          this.errors = ex.response.data.map((el) => {
+            if (el.non_field_errors?.length) {
+              return el.non_field_errors[0];
+            }
+          });
+        }
+        return;
+      }
 
       this.$emit('model-access-changed', { acl: this.acl, public: this.public_ });
       this.$emit('close');
@@ -142,36 +156,49 @@ export default {
           two-line="two-line"
         >
           <transition-group name="height2">
-            <v-list-item
-              v-for="resource of acl"
-              :key="`${resource.model}::${resource.id}`"
+            <div
+              v-for="(resource, i) in acl"
+              :key="`${resource.model}::${resource.name}`"
             >
-              <v-list-item-action class="mr-3">
-                <v-icon>{{ $vuetify.icons.values[resource.model] }}</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>{{ resource.name }}</v-list-item-title>
-              </v-list-item-content>
-              <v-list-item-action class="mr-5">
-                <v-select
-                  v-model="resource.permission"
-                  :items="permissions"
-                  class="level-select"
-                  light
-                  solo
-                  hide-details
-                  dense
-                />
-              </v-list-item-action>
-              <v-list-item-action class="mr-5">
-                <v-btn
-                  icon="icon"
-                  @click="remove(resource)"
-                >
-                  <v-icon>mdi-minus-circle</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </v-list-item>
+              <v-list-item>
+                <v-list-item-action class="mr-3">
+                  <v-icon :color="errors[i] ? 'error' : undefined">
+                    {{ $vuetify.icons.values[resource.model] }}
+                  </v-icon>
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title :class="errors[i] ? 'error--text' : undefined">
+                    {{ resource.name }}
+                  </v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action class="mr-5">
+                  <v-select
+                    v-model="resource.permission"
+                    :items="permissions"
+                    class="level-select"
+                    light
+                    solo
+                    hide-details
+                    dense
+                  />
+                </v-list-item-action>
+                <v-list-item-action class="mr-5">
+                  <v-btn
+                    icon="icon"
+                    @click="remove(resource)"
+                  >
+                    <v-icon>mdi-minus-circle</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+
+              </v-list-item>
+              <v-alert
+                v-if="errors[i]"
+                class="error"
+              >
+                {{ errors[i] }}
+              </v-alert>
+            </div>
           </transition-group>
         </v-list>
         <div

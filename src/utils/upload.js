@@ -33,8 +33,10 @@ export default class Upload extends UploadBase {
     } catch (ex) {
       if (ex.response) {
         const data = ex.response.data;
-        // Are there any other categories of validation errors besides __all__?
-        if (data.__all__) {
+        // Are there any other categories of validation errors besides __all__ or name?
+        if (data.name) {
+          throw new Error(data.name[0]);
+        } else if (data.__all__) {
           throw new Error(data.__all__[0]);
         } else {
           console.error(ex);
