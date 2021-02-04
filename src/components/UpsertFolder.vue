@@ -70,8 +70,8 @@ export default {
       if (err.response) {
         const data = err.response.data;
         this.nameErrors = data.name || [];
-        if (data.__all__) {
-          this.error = data.__all__[0];
+        if (data.non_field_errors) {
+          this.error = data.non_field_errors[0];
         }
       } else {
         this.error = 'An error occurred, please check the console for details.';

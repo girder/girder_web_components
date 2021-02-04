@@ -24,13 +24,7 @@ Sentry.init({
 });
 
 oauthClient.maybeRestoreLogin().then(async () => {
-  girderRest.interceptors.request.use((config) => ({
-    ...config,
-    headers: {
-      ...config.headers,
-      ...oauthClient.authHeaders,
-    },
-  }));
+  Object.assign(girderRest.defaults.headers.common, oauthClient.authHeaders);
   await girderRest.fetchUser();
   new Vue({
     vuetify,

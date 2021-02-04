@@ -1,22 +1,29 @@
-import S3FFClient, { ProgressState } from 'django-s3-file-field';
+import S3FFClient, { S3FileFieldProgressState } from 'django-s3-file-field';
 import UploadBase from './UploadBase';
 
 export default class Upload extends UploadBase {
   constructor(file, opts) {
     super(file, opts);
-    this.s3FFClient = new S3FFClient(`${opts.$rest.apiRoot}/s3-upload`, (e) => {
-      if (e.state === ProgressState.Sending) {
-        this.progress({
-          current: e.uploaded,
-          size: e.total,
-        });
-      } else {
-        this.progress({
-          indeterminate: true,
-          current: e.state === ProgressState.Initializing ? 0 : file.size,
-          size: file.size,
-        });
-      }
+
+    this.s3FFClient = new S3FFClient({
+      baseUrl: `${opts.$rest.apiRoot}/s3-upload`,
+      apiConfig: {
+        headers: opts.$rest.defaults.headers.common,
+      },
+      onProgress: (e) => {
+        if (e.state === S3FileFieldProgressState.Sending) {
+          this.progress({
+            current: e.uploaded,
+            size: e.total,
+          });
+        } else {
+          this.progress({
+            indeterminate: true,
+            current: e.state === S3FileFieldProgressState.Initializing ? 0 : file.size,
+            size: file.size,
+          });
+        }
+      },
     });
   }
 

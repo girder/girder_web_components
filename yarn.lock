@@ -2585,10 +2585,10 @@ axios@^0.19.2:
   dependencies:
     follow-redirects "1.5.10"
 
-axios@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.20.0.tgz#057ba30f04884694993a8cd07fa394cff11c50bd"
-  integrity sha512-ANA4rr2BDcmmAQLOKft2fufrtuvlqR+cXNNinUmvfeSNCOF98PZL+7M/v1zIdGo7OLjEA9J2gXJL+j4zGsl0bA==
+axios@^0.21.1:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
+  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
   dependencies:
     follow-redirects "^1.10.0"
 
@@ -4343,12 +4343,12 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-django-s3-file-field@^0.0.19:
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/django-s3-file-field/-/django-s3-file-field-0.0.19.tgz#04de04c0eabcb50315bb345cebcdaead95003a36"
-  integrity sha512-9TAbDhFyYeEMQbUZY8tgeq/tmr3KcAXdte+vE+3kloF6usddzJPyxZgaK9tN44R4cAQACdWCvjANSe7y4Y/pzg==
+django-s3-file-field@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/django-s3-file-field/-/django-s3-file-field-0.1.1.tgz#c9a9bc7d7b33e4e6a5401954e5c83e170265bfe0"
+  integrity sha512-qn3e//n3wj3tXku1FEFGswTZFCy1199Ky/rrP+rBAJQddfYMnsD7JQ2U5e10jpldXO25FCI+aQIG4RUVXNwV2w==
   dependencies:
-    axios "^0.20.0"
+    axios "^0.21.1"
 
 dns-equal@^1.0.0:
   version "1.0.0"
