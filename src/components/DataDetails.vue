@@ -65,7 +65,7 @@ export const DefaultActionKeys = [
     id: 'download',
     name: 'Download',
     iconKey: 'download',
-    color: 'secondary',
+    color: 'primary',
     generateHref: (apiRoot, [file]) => `${apiRoot}/files/${file.id}/download`,
     target: '_blank',
   },
@@ -75,6 +75,13 @@ export const DefaultActionKeys = [
     name: 'Edit',
     iconKey: 'edit',
     color: 'primary',
+    condition: ([folder]) => folder.access.write,
+  },
+  {
+    for: ['folder'],
+    id: 'authorize_upload',
+    name: 'Create Upload Link',
+    icon: 'mdi-file-lock',
     condition: ([folder]) => folder.access.write,
   },
   {
@@ -97,7 +104,7 @@ export const DefaultActionKeys = [
         await this.girderRest.delete(`${item.__type__}s/${item.id}`);
       }
     },
-    condition: ([obj]) => obj.access.admin,
+    condition: ([obj]) => obj.access ? obj.access.admin : true, // TODO we don't have "access" for files
   },
 ];
 

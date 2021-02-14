@@ -27,6 +27,19 @@ export default class Upload extends UploadBase {
     });
   }
 
+  handleFileCreationError(response) {
+    const data = response.data;
+    if (data.name) {
+      throw new Error(data.name[0]);
+    } else if (data.size) {
+      throw new Error(data.size[0]);
+    } else if (data.__all__) {
+      throw new Error(data.__all__[0]);
+    } else {
+      throw new Error('An unexpected error occured. See console for details.');
+    }
+  }
+
   async start() {
     let fileModel;
     let blobValue;
@@ -35,22 +48,13 @@ export default class Upload extends UploadBase {
       fileModel = (await this.$rest.post('files', {
         name: this.file.name,
         content_type: this.file.type || 'application/octet-stream',
-        size: file.size,
+        size: this.file.size,
         folder: this.parent.id,
+        ...this.fileParams,
       })).data;
     } catch (ex) {
       if (ex.response) {
-        const data = ex.response.data;
-        if (data.name) {
-          throw new Error(data.name[0]);
-        } else if (data.size) {
-          throw new Error(data.size[0]);
-        } else if (data.__all__) {
-          throw new Error(data.__all__[0]);
-        } else {
-          console.error(ex);
-          throw new Error('An unexpected error occured. See console for details.');
-        }
+        this.handleFileCreationError(ex.response);
       } else {
         throw new Error('Could not connect to the server.');
       }

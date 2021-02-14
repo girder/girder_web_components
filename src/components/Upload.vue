@@ -7,7 +7,10 @@
       class="flex-column fill-height"
       no-gutters="no-gutters"
     >
-      <slot name="header">
+      <slot
+        name="header"
+        v-bind="{statusMessage, dest, files}"
+      >
         <v-card-title primary-title="primary-title">
           <div>
             <div

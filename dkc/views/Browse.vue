@@ -32,7 +32,11 @@ export default {
         return this.selected;
       }
       if (this.folder) {
-        return [this.folder];
+        return [{
+          ...this.folder,
+          __type__: 'folder',
+          __icon__: 'folder',
+        }];
       }
       return [];
     },
