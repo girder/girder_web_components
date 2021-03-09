@@ -16,6 +16,14 @@ export default class Upload extends UploadBase {
             current: e.uploaded,
             size: e.total,
           });
+        } else if (e.state === S3FileFieldProgressState.Retrying) {
+          this.progress({
+            indeterminate: true,
+            message: 'Request failed, retrying...',
+            color: 'warning',
+            current: 0,
+            size: file.size,
+          });
         } else {
           this.progress({
             indeterminate: true,

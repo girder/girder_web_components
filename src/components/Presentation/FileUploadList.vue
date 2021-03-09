@@ -24,7 +24,7 @@
             :rotate="-90"
             :value="progressPercent({...file.progress, total: file.progress.size })"
             :indeterminate="file.progress.indeterminate"
-            color="primary"
+            :color="file.progress.color || 'primary'"
           />
           <v-icon
             v-if="file.status === 'done'"
@@ -46,6 +46,7 @@
           <v-list-item-subtitle>
             <span v-if="file.progress.current">{{ formatSize(file.progress.current ) }} /</span>
             <span>{{ formatSize(file.file.size) }}</span>
+            <span v-if="file.progress.message">{{ ` - ${file.progress.message}` }}</span>
           </v-list-item-subtitle>
         </v-list-item-content>
         <slot
