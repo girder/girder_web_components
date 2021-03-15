@@ -3,10 +3,12 @@ import Vue from 'vue/types';
 import { Config } from 'vuetify/types';
 import { AxiosInstance, AxiosResponse } from 'axios';
 
+import './status';
+
 declare module '@girder/components' {
   type GirderModelType = 'item' | 'folder' | 'file' | 'user' | 'collection';
 
-  export interface GirderModelBase {
+  interface GirderModelBase {
     name: string;
     _id: string;
     _modelType: GirderModelType;
@@ -18,14 +20,14 @@ declare module '@girder/components' {
     [key: string]: any;
   }
 
-  export interface GirderModel extends GirderModelBase {
+  interface GirderModel extends GirderModelBase {
     baseParentType: GirderModelType;
     creatorId: string;
     description: string;
     parentCollection?: string;
   }
 
-  export interface GirderJob extends GirderModelBase {
+  interface GirderJob extends GirderModelBase {
     _accessLevel: number;
     status: number;
     args: any[];
@@ -88,11 +90,9 @@ declare module '@girder/components' {
 
   /* Components */
   const GirderAccessControl: VueConstructor;
-  const GirderAuthentication: VueConstructor;
   const GirderBreadcrumb: VueConstructor;
   const GirderDataBrowser: VueConstructor;
   const GirderDataDetails: VueConstructor;
-  const GirderJobList: VueConstructor;
   const GirderMarkdown: VueConstructor;
   const GirderMarkdownEditor: VueConstructor;
   const GirderSearch: VueConstructor;
@@ -169,48 +169,5 @@ declare module '@girder/components' {
 
   const vuetifyConfig: Config;
 
-  export {
-    mixins,
-    NotificationBus,
-    UploadManager,
-    createLocationValidator,
-    getLocationType,
-    getSingularLocationTypeName,
-    isRootLocation,
-    vuetifyConfig,
-    RestClient,
-    // Components
-    GirderAccessControl,
-    GirderAuthentication,
-    GirderBreadcrumb,
-    GirderDataBrowser,
-    GirderDataDetails,
-    GirderJobList,
-    GirderMarkdown,
-    GirderMarkdownEditor,
-    GirderSearch,
-    GirderUpload,
-    GirderUpsertFolder,
-    // Snippets
-    GirderFileManager,
-    // Presentation
-    GirderDataTable,
-    GirderDetailList,
-    GirderDropzone,
-    GirderFileUploadList,
-    // Job
-    GirderFilterForm,
-    GirderJobList,
-    GirderJobProgress,
-    GirderJobTable,
-    // Authentication
-    GirderAuthentication,
-    GirderLogin,
-    GirderOAuth,
-    GirderRegister,
-  };
-    
-  function install(): Vue.PluginFunction<void>;
-
-  export default install;
+  export default function install(): Vue.PluginFunction<void>;
 }
