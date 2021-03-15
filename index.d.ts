@@ -1,10 +1,9 @@
 import { VueConstructor } from 'vue/types/umd';
+import Vue from 'vue/types';
+import { Config } from 'vuetify/types';
+import { AxiosInstance, AxiosResponse } from 'axios';
 
 declare module '@girder/components' {
-  import Vue from 'vue/types';
-  import { Config } from 'vuetify/types';
-  import { AxiosInstance, AxiosResponse } from 'axios';
-
   type GirderModelType = 'item' | 'folder' | 'file' | 'user';
 
   export interface GirderModel {
