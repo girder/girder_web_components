@@ -4,15 +4,37 @@ import { Config } from 'vuetify/types';
 import { AxiosInstance, AxiosResponse } from 'axios';
 
 declare module '@girder/components' {
-  type GirderModelType = 'item' | 'folder' | 'file' | 'user';
+  type GirderModelType = 'item' | 'folder' | 'file' | 'user' | 'collection';
 
-  export interface GirderModel {
+  export interface GirderModelBase {
     name: string;
     _id: string;
     _modelType: GirderModelType;
+    created: string;
+    updated: string;
+    public: boolean;
+    parentId?: string | null;
+    meta: { [key: string]: any };
+    [key: string]: any;
+  }
+
+  export interface GirderModel extends GirderModelBase {
+    baseParentType: GirderModelType;
+    creatorId: string;
+    description: string;
     parentCollection?: string;
-    parentId?: string;
-    meta: unknown;
+  }
+
+  export interface GirderJob extends GirderModelBase {
+    _accessLevel: number;
+    status: number;
+    args: any[];
+    asynchronous: boolean;
+    celeryTaskId: string;
+    handler: string;
+    interval: number;
+    jobInfoSpec: any;
+    kwargs: any;
   }
 
   interface GirderRestClientParams {
