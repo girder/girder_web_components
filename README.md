@@ -89,7 +89,7 @@ To use components individually, they should be imported by name from `@girder/co
 For instance:
 
 ```javascript
-import { GirderUplaod } from '@girder/components/src'; // Good
+import { GirderUpload } from '@girder/components/src'; // Good
 import { Upload } from '@girder/components/src/components/Upload.vue'; // Unsafe -- may move in the future
 ```
 
