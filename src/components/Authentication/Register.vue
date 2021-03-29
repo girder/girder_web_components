@@ -1,28 +1,28 @@
 <template>
   <div class="register-widget">
-    <v-alert
-      v-for="err in alerts.errors"
-      :key="err"
-      :value="true"
-      class="mt-0"
-      dismissible="dismissible"
-      transition="scale-transition"
-      type="error"
-    >
-      {{ err }}
-    </v-alert>
-    <v-alert
-      v-for="info in alerts.infos"
-      :key="info"
-      :value="true"
-      class="mt-0"
-      dismissible="dismissible"
-      transition="scale-transition"
-      type="info"
-    >
-      {{ info }}
-    </v-alert>
     <v-container>
+      <v-alert
+        v-for="err in alerts.errors"
+        :key="err"
+        :value="true"
+        class="mt-0"
+        dismissible="dismissible"
+        transition="scale-transition"
+        type="error"
+      >
+        {{ err }}
+      </v-alert>
+      <v-alert
+        v-for="info in alerts.infos"
+        :key="info"
+        :value="true"
+        class="mt-0"
+        dismissible="dismissible"
+        transition="scale-transition"
+        type="info"
+      >
+        {{ info }}
+      </v-alert>
       <v-form
         ref="form"
         @submit.prevent="register"

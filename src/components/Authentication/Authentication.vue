@@ -35,11 +35,12 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import GirderLogin from './Login.vue';
 import GirderRegistration from './Register.vue';
 import { OauthTokenPrefix, OauthTokenSuffix } from '../../rest';
 
-export default {
+export default Vue.extend({
   inject: ['girderRest'],
   components: {
     GirderLogin,
@@ -101,5 +102,5 @@ export default {
       }
     },
   },
-};
+});
 </script>

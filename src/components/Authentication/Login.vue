@@ -1,17 +1,34 @@
 <template>
   <div class="login-widget">
-    <v-alert
-      v-for="err in alerts.errors"
-      :key="err"
-      :value="!!err"
-      class="mt-0"
-      dismissible="dismissible"
-      transition="scale-transition"
-      type="error"
-    >
-      {{ err }}
-    </v-alert>
     <v-container>
+      <v-alert
+        :value="!!alerts.error"
+        class="mt-0"
+        dismissible="dismissible"
+        transition="scale-transition"
+        type="error"
+      >
+        {{ alerts.error }}
+        <v-btn
+          v-if="requiresEmailVerification"
+          small
+          outlined
+          class="ml-3"
+          @click="sendVerification"
+        >
+          Resend verification email
+        </v-btn>
+      </v-alert>
+      <v-alert
+        v-if="alerts.success"
+        :value="true"
+        class="mt-0"
+        dismissible="dismissible"
+        transition="scale-transition"
+        type="success"
+      >
+        {{ alerts.success }}
+      </v-alert>
       <v-form
         ref="login"
         @submit.prevent="login"
@@ -127,19 +144,33 @@ export default {
       otp: null,
       inProgress: false,
       alerts: {
-        errors: [],
+        error: '',
+        success: '',
       },
+      requiresEmailVerification: false,
       nonEmptyRules,
       otpRules,
       otpFormVisible: false,
     };
   },
   methods: {
+    async sendVerification() {
+      await this.girderRest.post('user/verification', null, {
+        params: {
+          login: this.username,
+        },
+      });
+      this.alerts.error = '';
+      this.alerts.success = 'Verification email sent';
+      this.requiresEmailVerification = false;
+    },
     async login() {
       if (!this.$refs.login.validate()) {
         return;
       }
-      this.alerts.errors = [];
+      this.alerts.error = '';
+      this.alerts.success = '';
+      this.requiresEmailVerification = false;
       this.inProgress = true;
       try {
         await this.girderRest.login(this.username, this.password, this.otp);
@@ -148,16 +179,19 @@ export default {
         this.otpFormVisible = false;
       } catch (err) {
         if (!err.response || err.response.status !== 401) {
-          this.alerts.errors.push('Unknown error.');
+          this.alerts.error = 'Unknown error.';
           throw err;
         } else {
-          const { message } = err.response.data;
+          const { message, extra } = err.response.data;
           if (message && message.indexOf(OTP_MAGIC_SUBSTRING) >= 0) {
             this.otp = null;
             this.otpFormVisible = true;
             this.$refs.login.resetValidation();
           } else {
-            this.alerts.errors.push(message || 'Unauthorized.');
+            this.alerts.error = message || 'Unauthorized.';
+            if (extra === 'emailVerification') {
+              this.requiresEmailVerification = true;
+            }
           }
         }
       } finally {
