@@ -5,7 +5,7 @@ import { AxiosInstance, AxiosResponse } from 'axios';
 
 import './status';
 
-declare module '@girder/components' {
+declare module '@girder/components/src' {
   type GirderModelType = 'item' | 'folder' | 'file' | 'user' | 'collection';
 
   interface GirderModelBase {
@@ -45,7 +45,7 @@ declare module '@girder/components' {
     axios?: AxiosInstance;
     authenticateWithCredentials?: boolean;
     userGirderAuthorizationHeader?: boolean;
-    setLocalCokie?: boolean;
+    setLocalCookie?: boolean;
   }
 
   class RestClient extends Vue {
@@ -67,6 +67,11 @@ declare module '@girder/components' {
     ): Promise<AxiosResponse>;
 
     apiRoot: string;
+    setLocalCookie: boolean;
+    authenticateWithCredentials: boolean;
+    useGirderAuthorizationHeader: boolean;
+    user: GirderModel;
+    token: string | null;
 
     // inherited from Axios
     defaults: AxiosInstance['defaults'];
