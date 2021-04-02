@@ -40,7 +40,7 @@ Encapsulating the configuration in another file (typically `src/plugins/girder.j
 ```javascript
 /* src/plugins/girder.js */
 import Vue from 'vue';
-import Girder, { RestClient } from '@girder/components';
+import Girder, { RestClient } from '@girder/components/src';
 
 // Install the Vue plugin that lets us use the components
 Vue.use(Girder);
@@ -66,7 +66,7 @@ Reference the configuration from your application initialization (typically `src
 ```javascript
 /* src/main.js */
 import GirderProvider from '@/plugins/girder';
-import { vuetify } from '@girder/components';
+import { vuetify } from '@girder/components/src';
 
 // ...
 
@@ -85,11 +85,11 @@ All components are prefixed `Girder`.
 
 #### A-la-carte (recommended)
 
-To use components individually, they should be imported by name from `@girder/components`, as this location will be stable across releases.
+To use components individually, they should be imported by name from `@girder/components/src`, as this location will be stable across releases.
 For instance:
 
 ```javascript
-import { GirderUplaod } from '@girder/components'; // Good
+import { GirderUpload } from '@girder/components/src'; // Good
 import { Upload } from '@girder/components/src/components/Upload.vue'; // Unsafe -- may move in the future
 ```
 
@@ -111,7 +111,7 @@ For example, to create a login / registration widget in `src/App.vue`:
 </template>
 
 <script>
-import { GirderAuthentication } from '@girder/components';
+import { GirderAuthentication } from '@girder/components/src';
 
 export default {
   components: {
@@ -138,7 +138,7 @@ You can register all components with the global scope and avoid individual impor
 
 ```javascript
 import GirderProvider from '@/plugins/girder'; // same as above
-import { vuetify, registerComponents } from '@girder/components';
+import { vuetify, registerComponents } from '@girder/components/src';
 
 // register all components globally, named `girder-{name}`
 registerComponents();
@@ -162,7 +162,7 @@ Additional Vuetify configuration should inherit from Girder web components' own 
 
 ```javascript
 import { merge } from 'lodash';
-import { vuetifyConfig as girderVuetifyConfig } from '@girder/components';
+import { vuetifyConfig as girderVuetifyConfig } from '@girder/components/src';
 
 const appVuetifyConfig = merge(girderVuetifyConfig, {
   icons: {
