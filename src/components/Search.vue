@@ -158,7 +158,7 @@ export default {
 <template>
   <v-row
     class="align-center girder-searchbar"
-    no-gutters="no-gutters"
+    no-gutters
   >
     <v-icon
       v-if="!hideSearchIcon"
@@ -171,7 +171,7 @@ export default {
       :open-on-click="false"
       :value="searchText"
       :nudge-bottom="6"
-      offset-y="offset-y"
+      offset-y
       content-class="girder-searchbar-menu"
       transition="slide-y-transition"
     >
@@ -179,10 +179,11 @@ export default {
         <v-text-field
           v-model="searchText"
           :placeholder="placeholder"
-          light="light"
-          solo="solo"
-          hide-details="hide-details"
-          clearable="clearable"
+          :name="`girder-search-${Math.random()}`"
+          solo
+          hide-details
+          clearable
+          auto
           v-on="on"
         />
       </template>
@@ -259,8 +260,8 @@ export default {
       v-if="!hideOptionsMenu"
       v-model="searchOptionsMenu"
       :close-on-content-click="false"
-      offset-y="offset-y"
-      left="left"
+      offset-y
+      left
       content-class="girder-search-arrow-menu"
     >
       <template #activator="{ on }">
@@ -300,7 +301,7 @@ export default {
               :label="searchType.name"
               :value="searchType.value"
               class="mt-1"
-              hide-details="hide-details"
+              hide-details
             />
           </v-col>
         </v-card-actions>
