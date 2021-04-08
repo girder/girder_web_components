@@ -1,4 +1,5 @@
 <script>
+import Vue from 'vue';
 import { DebounceCounter } from '../utils';
 import { usernameFormatter } from '../utils/mixins';
 
@@ -30,7 +31,7 @@ export const SearchTypeOptions = [
 ];
 const DefaultSearchTypes = SearchTypeOptions.map((t) => t.value);
 
-export default {
+export default Vue.extend({
   mixins: [usernameFormatter],
   props: {
     hideSearchIcon: {
@@ -152,7 +153,7 @@ export default {
       this.$emit('select', result);
     },
   },
-};
+});
 </script>
 
 <template>
