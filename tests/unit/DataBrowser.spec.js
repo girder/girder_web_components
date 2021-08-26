@@ -234,7 +234,7 @@ describe('DataBrowser', () => {
 
     await flushPromises();
     expect(wrapper.vm.rows.length).toBe(1);
-    expect(wrapper.vm.rows[0]._modelType).toBe('collections');
+    expect(wrapper.vm.rows[0].type).toBe('collections');
 
     const girderRest_ = new RestClient();
     const mock_ = new MockAdapter(girderRest_);
@@ -254,8 +254,8 @@ describe('DataBrowser', () => {
 
     await flushPromises();
     expect(wrapper.vm.rows.length).toBe(2);
-    expect(wrapper.vm.rows[0]._modelType).toBe('collections');
-    expect(wrapper.vm.rows[1]._modelType).toBe('users');
+    expect(wrapper.vm.rows[0].type).toBe('collections');
+    expect(wrapper.vm.rows[1].type).toBe('users');
   });
 
   it('users locations', async () => {
