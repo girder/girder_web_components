@@ -271,11 +271,11 @@ export default {
     },
     generateRootRows() {
       const rows = [
-        { _modelType: 'collections', name: 'Collections', icon: 'collection' },
+        { type: 'collections', name: 'Collections', icon: 'collection' },
       ];
       // Show "Users" if user is logged in
       if (this.girderRest.user) {
-        rows.push({ _modelType: 'users', name: 'Users', icon: 'user' });
+        rows.push({ type: 'users', name: 'Users', icon: 'user' });
       }
       return rows;
     },
