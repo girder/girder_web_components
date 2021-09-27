@@ -201,6 +201,7 @@ export default Vue.extend({
       :root-location-disabled="rootLocationDisabled"
       :value="value"
       :initial-items-per-page="initialItemsPerPage"
+      @update:initialItemsPerPage="$emit('update:initialItemsPerPage',$event)"
       :items-per-page-options="itemsPerPageOptions"
       @input="$emit('input', $event)"
       @selection-changed="$emit('selection-changed', $event)"

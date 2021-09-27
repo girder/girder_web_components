@@ -93,6 +93,9 @@ export default {
         this.$emit('input', val);
       },
     },
+    itemsPerPage() {
+      return this.options.itemsPerPage;
+    }
   },
 
   asyncComputed: {
@@ -158,6 +161,9 @@ export default {
     async options() {
       this.rows = await this.fetchPaginatedRows();
     },
+    itemsPerPage() {
+      this.$emit('update:initialItemsPerPage', this.options.itemsPerPage)
+    }
   },
 
   created() {
