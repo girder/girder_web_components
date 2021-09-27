@@ -95,7 +95,7 @@ export default {
     },
     itemsPerPage() {
       return this.options.itemsPerPage;
-    }
+    },
   },
 
   asyncComputed: {
@@ -162,8 +162,8 @@ export default {
       this.rows = await this.fetchPaginatedRows();
     },
     itemsPerPage() {
-      this.$emit('update:initialItemsPerPage', this.options.itemsPerPage)
-    }
+      this.$emit('update:initialItemsPerPage', this.options.itemsPerPage);
+    },
   },
 
   created() {
