@@ -93,9 +93,6 @@ export default {
         this.$emit('input', val);
       },
     },
-    itemsPerPageInternal() {
-      return this.options.itemsPerPage;
-    },
   },
 
   asyncComputed: {
@@ -161,8 +158,9 @@ export default {
     async options() {
       this.rows = await this.fetchPaginatedRows();
     },
-    itemsPerPageInternal() {
-      this.$emit('update:itemsPerPage', this.options.itemsPerPage);
+    // eslint-disable-next-line func-names
+    'options.itemsPerPage': function (val) {
+      this.$emit('update:itemsPerPage', val);
     },
   },
 
