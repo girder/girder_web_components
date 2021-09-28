@@ -48,7 +48,7 @@ export default {
       type: Array,
       default: () => [],
     },
-    initialItemsPerPage: {
+    itemsPerPage: {
       type: Number,
       default: 10,
     },
@@ -61,7 +61,7 @@ export default {
   data() {
     return {
       options: {
-        itemsPerPage: this.initialItemsPerPage,
+        itemsPerPage: this.itemsPerPage,
         page: 1,
       },
       internalRefreshCounter: 0,
@@ -93,7 +93,7 @@ export default {
         this.$emit('input', val);
       },
     },
-    itemsPerPage() {
+    itemsPerPageInternal() {
       return this.options.itemsPerPage;
     },
   },
@@ -161,8 +161,8 @@ export default {
     async options() {
       this.rows = await this.fetchPaginatedRows();
     },
-    itemsPerPage() {
-      this.$emit('update:initialItemsPerPage', this.options.itemsPerPage);
+    itemsPerPageInternal() {
+      this.$emit('update:itemsPerPage', this.options.itemsPerPage);
     },
   },
 
