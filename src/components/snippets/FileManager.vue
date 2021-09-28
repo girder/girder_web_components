@@ -86,7 +86,7 @@ export default Vue.extend({
       type: Function,
       default: async () => {},
     },
-    initialItemsPerPage: {
+    itemsPerPage: {
       type: Number,
       default: 10,
     },
@@ -200,8 +200,9 @@ export default Vue.extend({
       :draggable="dragEnabled"
       :root-location-disabled="rootLocationDisabled"
       :value="value"
-      :initial-items-per-page="initialItemsPerPage"
+      :items-per-page="itemsPerPage"
       :items-per-page-options="itemsPerPageOptions"
+      @update:itemsPerPage="$emit('update:itemsPerPage', $event)"
       @input="$emit('input', $event)"
       @selection-changed="$emit('selection-changed', $event)"
       @rowclick="$emit('rowclick', $event)"

@@ -337,7 +337,7 @@ describe('DataBrowser', () => {
           _modelType: 'folder',
           _id: 'fake_folder_id',
         },
-        initialItemsPerPage: 20,
+        itemsPerPage: 20,
         itemsPerPageOptions: [20, 30, 40],
       },
       provide: { girderRest },

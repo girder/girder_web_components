@@ -48,7 +48,7 @@ export default {
       type: Array,
       default: () => [],
     },
-    initialItemsPerPage: {
+    itemsPerPage: {
       type: Number,
       default: 10,
     },
@@ -61,7 +61,7 @@ export default {
   data() {
     return {
       options: {
-        itemsPerPage: this.initialItemsPerPage,
+        itemsPerPage: this.itemsPerPage,
         page: 1,
       },
       internalRefreshCounter: 0,
@@ -157,6 +157,10 @@ export default {
     // Not triggered by location options reset because deep==false
     async options() {
       this.rows = await this.fetchPaginatedRows();
+    },
+    // eslint-disable-next-line func-names
+    'options.itemsPerPage': function (val) {
+      this.$emit('update:itemsPerPage', val);
     },
   },
 
