@@ -251,9 +251,8 @@ const fileUploader = {
       const workerPool = [...new Array(WORKER_POOL_SIZE)];
       await Promise.all(workerPool.map(async () => {
         while (i < this.files.length) {
-          // must increment i before `await`, but after subscript operator
-          // eslint-disable-next-line no-plusplus
-          const file = this.files[i++];
+          const file = this.files[i];
+          i += 1;
           // eslint-disable-next-line no-await-in-loop
           results.push(await this.uploadFile({
             file, hookResult, dest, uploadCls,
