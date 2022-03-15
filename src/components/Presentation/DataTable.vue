@@ -138,11 +138,12 @@ export default {
               :color="props.isSelected ? 'accent' : ''"
               class="pr-2"
             >{{ $vuetify.icons.values[props.item.icon] }}</v-icon>
-            {{ props.item.name }}
             <slot
               v-bind="props"
-              name="row-widget"
-            />
+              name="row"
+            >
+              {{ props.item.name }}
+            </slot>
           </span>
         </td>
         <td class="text-right nobreak">
