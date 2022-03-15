@@ -281,10 +281,11 @@ export default Vue.extend({
             @dismiss="newFolderDialog = false"
           />
         </v-dialog>
-      </template><template #row-widget="props">
+      </template>
+      <template #row="props">
         <slot
           v-bind="props"
-          name="row-widget"
+          name="row"
         />
       </template>
     </girder-data-browser>

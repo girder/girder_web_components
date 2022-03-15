@@ -369,10 +369,11 @@ export default {
           </th>
         </tr>
       </thead>
-    </template><template #row-widget="props">
+    </template>
+    <template #row="props">
       <slot
         v-bind="props"
-        name="row-widget"
+        name="row"
       />
     </template>
   </girder-data-table>
