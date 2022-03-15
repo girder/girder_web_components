@@ -214,7 +214,15 @@
                 :upload-multiple="uploadMultiple"
                 :upload-enabled="uploadEnabled"
                 @dragend="dragend"
-              />
+              >
+                <!--
+                  Example usage of row item customization.
+                  This template can be omitted if no changes are needed.
+                -->
+                <template #row="props">
+                  <i>{{ props.item.name }}</i>
+                </template>
+              </girder-file-manager>
               <v-card
                 v-if="dragEnabled"
                 class="mt-4"
