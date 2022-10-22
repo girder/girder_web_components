@@ -25,6 +25,7 @@ const iconMap = {
   bitbucket: { dark: false, icon: 'bitbucket' },
   box: { dark: true, icon: 'box_com', color: '#0071f7' },
   globus: { dark: true, icon: 'globus', color: '#335a95' },
+  microsoft: { dark: true, icon: 'microsoft', color: '#00a1f1' },
 };
 export default {
   props: {
