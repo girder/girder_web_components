@@ -30,7 +30,7 @@
     "js-cookie": "^2.2.0",
     "markdown-it": "^12.3.2",
     "moment": "^2.29.4",
-    "qs": "^6.9.4",
+    "qs": "^6.9.7",
     "vue": "^2.6.12",
     "vue-async-computed": "^3.4.1",
     "vuetify": "^2.3.1"
