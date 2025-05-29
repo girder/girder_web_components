@@ -14,18 +14,18 @@ import { GirderAuthentication } from './Authentication';
 import { GirderFileManager } from './snippets';
 
 function registerComponents() {
-  Vue.component('girder-access-control', GirderAccessControl);
-  Vue.component('girder-breadcrumb', GirderBreadcrumb);
-  Vue.component('girder-data-browser', GirderDataBrowser);
-  Vue.component('girder-data-details', GirderDataDetails);
-  Vue.component('girder-markdown', GirderMarkdown);
-  Vue.component('girder-markdown-editor', GirderMarkdownEditor);
-  Vue.component('girder-search', GirderSearch);
-  Vue.component('girder-upload', GirderUpload);
-  Vue.component('girder-upsert-folder', GirderUpsertFolder);
-  Vue.component('girder-job-list', GirderJobList);
-  Vue.component('girder-authentication', GirderAuthentication);
-  Vue.component('girder-file-manager', GirderFileManager);
+  Vue.component('GirderAccessControl', GirderAccessControl);
+  Vue.component('GirderBreadcrumb', GirderBreadcrumb);
+  Vue.component('GirderDataBrowser', GirderDataBrowser);
+  Vue.component('GirderDataDetails', GirderDataDetails);
+  Vue.component('GirderMarkdown', GirderMarkdown);
+  Vue.component('GirderMarkdownEditor', GirderMarkdownEditor);
+  Vue.component('GirderSearch', GirderSearch);
+  Vue.component('GirderUpload', GirderUpload);
+  Vue.component('GirderUpsertFolder', GirderUpsertFolder);
+  Vue.component('GirderJobList', GirderJobList);
+  Vue.component('GirderAuthentication', GirderAuthentication);
+  Vue.component('GirderFileManager', GirderFileManager);
 }
 
 export * from './Job';

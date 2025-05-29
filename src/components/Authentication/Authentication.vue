@@ -41,11 +41,11 @@ import GirderRegistration from './Register.vue';
 import { OauthTokenPrefix, OauthTokenSuffix } from '../../rest';
 
 export default Vue.extend({
-  inject: ['girderRest'],
   components: {
     GirderLogin,
     GirderRegistration,
   },
+  inject: ['girderRest'],
   props: {
     /* Enable registration from this component? */
     register: {

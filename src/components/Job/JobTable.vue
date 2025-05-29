@@ -98,7 +98,8 @@ export default {
         </td>
       </tr>
     </template>
-    <template #footer.page-text="">
+    <template #footer>
+      <!-- changed from #footer.page-text="" -->
       <div class="v-datatable__actions__options">
         {{ pageRange.first }}-{{ pageRange.last }}
       </div>

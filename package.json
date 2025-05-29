@@ -26,36 +26,39 @@
   ],
   "dependencies": {
     "@mdi/font": "^5.3.45",
+    "@vue/babel-preset-app": "^5.0.8",
     "axios": "^0.21.2",
     "js-cookie": "^2.2.0",
     "markdown-it": "^12.3.2",
     "moment": "^2.29.4",
     "qs": "^6.9.4",
-    "vue": "^2.6.12",
+    "vue": "^2.7.0",
     "vue-async-computed": "^3.4.1",
-    "vuetify": "^2.3.1"
+    "vuetify": "^2.7.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.2",
-    "@vue/cli-plugin-babel": "^4.4.4",
-    "@vue/cli-plugin-eslint": "~4.4.4",
-    "@vue/cli-plugin-unit-jest": "^4.4.4",
-    "@vue/cli-service": "~4.4.4",
+    "@babel/core": "^7.21.0",
+    "@babel/eslint-parser": "^7.28.5",
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/cli-plugin-eslint": "^5.0.8",
+    "@vue/cli-plugin-unit-jest": "^5.0.8",
+    "@vue/cli-service": "^5.0.8",
     "@vue/eslint-config-airbnb": "^5.0.2",
     "@vue/test-utils": "1.0.0-beta.29",
     "axios-mock-adapter": "^1.18.1",
-    "babel-eslint": "^10.0.3",
-    "babel-jest": "^26.0.1",
-    "eslint": "^7.5.0",
-    "eslint-plugin-import": "^2.21.2",
-    "eslint-plugin-vue": "^6.1.2",
-    "sass": "^1.26.8",
-    "sass-loader": "^8.0.2",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^27.5.1",
+    "eslint": "^8.48.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "sass": "^1.70.0",
+    "sass-loader": "^12.6.0",
     "stylelint": "^13.6.1",
     "stylelint-config-standard": "^20.0.0",
-    "vue-cli-plugin-vuetify": "~2.0.5",
-    "vue-template-compiler": "^2.6.12",
-    "vuetify-loader": "^1.5.0"
+    "vue-cli-plugin-vuetify": "^2.5.3",
+    "vue-jest": "^3.0.7",
+    "vue-template-compiler": "^2.7.16",
+    "vuetify-loader": "^1.9.2"
   },
   "eslintConfig": {
     "root": true,
@@ -74,10 +77,11 @@
           "props": false
         }
       ],
-      "no-underscore-dangle": 0
+      "no-underscore-dangle": 0,
+      "vue/multi-word-component-names": 1
     },
     "parserOptions": {
-      "parser": "babel-eslint"
+      "parser": "@babel/eslint-parser"
     },
     "overrides": [
       {
@@ -102,6 +106,7 @@
     "not ie <= 8"
   ],
   "jest": {
+    "testEnvironment": "jsdom",
     "moduleFileExtensions": [
       "js",
       "jsx",

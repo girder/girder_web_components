@@ -17,7 +17,7 @@
         v-model="showUpsert"
         max-width="800px"
       >
-        <template v-slot:activator="{ on }">
+        <template #activator="{ on }">
           <v-btn
             icon="icon"
             v-on="on"
@@ -198,6 +198,7 @@ export default {
     GirderUpsertFolder,
   },
   mixins: [sizeFormatter, usernameFormatter],
+  inject: ['girderRest'],
   props: {
     value: {
       required: true,
@@ -217,7 +218,6 @@ export default {
       showUpsert: false,
     };
   },
-  inject: ['girderRest'],
   asyncComputed: {
     async details() {
       if (this.datum && this.datum.created) {

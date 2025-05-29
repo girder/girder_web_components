@@ -111,10 +111,10 @@ const otpRules = [
 ];
 
 export default {
-  inject: ['girderRest'],
   components: {
     GirderOauth,
   },
+  inject: ['girderRest'],
   props: {
     forceOtp: {
       type: Boolean,
