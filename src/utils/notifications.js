@@ -56,7 +56,8 @@ export default class NotificationBus extends Vue {
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     // Remove /api/v1 if present, as the WebSocket endpoint is at /notification/me
     const wsPath = apiRoot.replace(/\/api\/v1$/, '') || '';
-    return `${wsProtocol}//${window.location.host}${wsPath}/notification/me?${token}`;
+    console.log('Connecting using Token:', token);
+    return `${wsProtocol}//${window.location.host}${wsPath}/notification/me?token=${token}`;
   }
 
   _onWebSocketMessage(event) {
