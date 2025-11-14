@@ -2,36 +2,31 @@ import Vue from 'vue';
 
 export default class NotificationBus extends Vue {
   /**
-   * This class is a Vue instance that polls the Girder server for notification events
-   * and emits messages when they are received. It can use either long polling via the
-   * EventSource API, or normal polling.
+   * This class is a Vue instance that connects to the Girder server via WebSocket
+   * for notification events and emits messages when they are received.
    * @param $rest {girder.rest.RestClient} An axios instance used for communicating with Girder.
    * @param opts {Object} options for this instance.
-   * @param opts.EventSource {Object} A window.EventSource compliant interface. You should not
+   * @param opts.WebSocket {Object} A window.WebSocket compliant interface. You should not
    *     override this in normal usage, it's mostly exposed for injection in testing.
    * @param opts.listenToRestClient {boolean} If true, binds to the login and logout events
    *     of the RestClient instance to automatically enable and disable the stream.
-   * @param opts.pollingInterval {Number[]} An array of three numbers: minimum polling interval,
-   *     maximum polling interval, and step value, all in milliseconds. The polling rate will
-   *     fluctuate linearly between the min and max based on whether messages have been received
-   *     recently. Only used in standard polling mode.
-   * @param opts.withCredentials {boolean} Whether to set the withCredentials flag on the
-   *     EventSource instance when using long polling.
-   * @param opts.useEventSource {boolean} Whether to use long polling.
-   * @param opts.since {Date} Date threshold to use when fetching notifications.
+   * @param opts.reconnectInterval {Number} The interval in milliseconds to wait before
+   *     attempting to reconnect after a connection error. Defaults to 5000ms.
+   * @param opts.maxReconnectAttempts {Number} Maximum number of reconnection attempts before
+   *     giving up. Defaults to Infinity (retry indefinitely).
    */
   constructor($rest, {
-    EventSource = window.EventSource,
+    WebSocket = window.WebSocket,
     listenToRestClient = true,
-    pollingInterval = [500, 5000, 1000],
-    since = new Date(),
-    useEventSource = false,
-    withCredentials = true,
+    reconnectInterval = 5000,
+    maxReconnectAttempts = Infinity,
   } = {}) {
     super();
     Object.assign(this, {
-      $rest, EventSource, pollingInterval, since, useEventSource, withCredentials,
+      $rest, WebSocket, reconnectInterval, maxReconnectAttempts,
     });
+    this._reconnectAttempts = 0;
+    this.since = new Date();
 
     if (listenToRestClient) {
       $rest.$on('login', () => { this.connect(); });
@@ -51,21 +46,55 @@ export default class NotificationBus extends Vue {
     this.$emit('message', notification, this);
   }
 
-  _onSseMessage({ data }) {
-    this._emitNotification(JSON.parse(data));
+  _getWebSocketUrl() {
+    const token = this.$rest.token;
+    if (!token) {
+      throw new Error('No authentication token available');
+    }
+    // Convert HTTP/HTTPS URL to WebSocket URL
+    const apiRoot = this.$rest.apiRoot;
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    // Remove /api/v1 if present, as the WebSocket endpoint is at /notification/me
+    const wsPath = apiRoot.replace(/\/api\/v1$/, '') || '';
+    console.log('Connecting using Token:', token);
+    return `${wsProtocol}//${window.location.host}${wsPath}/notification/me?token=${token}`;
   }
 
-  _onSseError(e) {
-    // Fall back to polling on error. This could be made more sophisticated by
-    // distinguishing temporary failures, using exponential back-off, etc.
+  _onWebSocketMessage(event) {
+    try {
+      console.log('onWebSocketMessage', event);
+      const notification = JSON.parse(event.data);
+      this._emitNotification(notification);
+      // Reset reconnect attempts on successful message
+      this._reconnectAttempts = 0;
+    } catch (e) {
+      this.$emit('error', new Error(`Failed to parse notification: ${e.message}`), this);
+    }
+  }
+
+  _onWebSocketError(e) {
     this.$emit('error', e, this);
-    this.disconnect();
-    this.useEventSource = false;
-    this.connect();
+  }
+
+  _onWebSocketClose(event) {
+    this._websocket = null;
+    this.$emit('stop', this);
+    
+    // Attempt to reconnect if not a normal closure and we haven't exceeded max attempts
+    if (event.code !== 1000 && this._reconnectAttempts < this.maxReconnectAttempts) {
+      this._reconnectAttempts += 1;
+      setTimeout(() => {
+        if (this.$rest.token) {
+          this.connect();
+        }
+      }, this.reconnectInterval);
+    } else if (this._reconnectAttempts >= this.maxReconnectAttempts) {
+      this.$emit('error', new Error('Maximum reconnection attempts reached'), this);
+    }
   }
 
   get connected() {
-    return !!(this._eventSource || this._poller);
+    return !!(this._websocket && this._websocket.readyState === this.WebSocket.OPEN);
   }
 
   connect() {
@@ -73,54 +102,32 @@ export default class NotificationBus extends Vue {
       return;
     }
 
-    if (this.useEventSource && this.EventSource) {
-      const since = Math.ceil(+this.since / 1000);
-      const url = `${this.$rest.apiRoot}/notification/stream?since=${since}`;
-      this._eventSource = new this.EventSource(url, {
-        withCredentials: this.withCredentials,
-      });
-      this._eventSource.onmessage = this._onSseMessage.bind(this);
-      this._eventSource.onerror = this._onSseError.bind(this);
-      this.$emit('start', this);
-    } else {
-      this._poll();
+    if (!this.$rest.token) {
+      this.$emit('error', new Error('Cannot connect: no authentication token'), this);
+      return;
+    }
+
+    try {
+      const url = this._getWebSocketUrl();
+      this._websocket = new this.WebSocket(url);
+      this._websocket.onmessage = this._onWebSocketMessage.bind(this);
+      this._websocket.onerror = this._onWebSocketError.bind(this);
+      this._websocket.onclose = this._onWebSocketClose.bind(this);
+      this._websocket.onopen = () => {
+        this._reconnectAttempts = 0;
+        this.$emit('start', this);
+      };
+    } catch (e) {
+      console.error('connect error', e);
+      this.$emit('error', e, this);
     }
   }
 
   disconnect() {
-    this._stopPolling();
-    if (this._eventSource) {
-      this._eventSource.close();
-      this._eventSource = null;
-      this.$emit('stop', this);
+    if (this._websocket) {
+      this._websocket.close(1000); // Normal closure
+      this._websocket = null;
+      this._reconnectAttempts = 0;
     }
-  }
-
-  _poll(interval = 0) {
-    const [min, max, step] = this.pollingInterval;
-    let nextInterval;
-
-    this._poller = setTimeout(async () => {
-      try {
-        const { data } = await this.$rest.get(`/notification?since=${this.since.toISOString()}`);
-        data.forEach(this._emitNotification.bind(this));
-        if (data.length) {
-          nextInterval = min;
-        } else if (interval === 0) {
-          nextInterval = max;
-        } else {
-          nextInterval = Math.min(interval + step, max);
-        }
-      } catch (e) {
-        nextInterval = max;
-      } finally {
-        this._poll(nextInterval);
-      }
-    }, interval);
-  }
-
-  _stopPolling() {
-    clearTimeout(this._poller);
-    this._poller = null;
   }
 }
