@@ -12,10 +12,10 @@ const girderRest = new RestClient({
 });
 
 const notificationBus = new NotificationBus(girderRest, {
-  useEventSource: true,
 });
 
 girderRest.fetchUser().then((user) => {
+  console.log('user', user);
   if (user) {
     notificationBus.connect();
   }

@@ -2,11 +2,11 @@
   "name": "@girder/components",
   "version": "3.2.0",
   "scripts": {
-    "serve": "vue-cli-service serve demo/main.js",
-    "build": "vue-cli-service build --target lib --name girder src/index.js",
-    "test:unit": "vue-cli-service test:unit",
+    "serve": "NODE_OPTIONS=--openssl-legacy-provider vue-cli-service serve demo/main.js",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider vue-cli-service build --target lib --name girder src/index.js",
+    "test:unit": "NODE_OPTIONS=--openssl-legacy-provider vue-cli-service test:unit",
     "lint": "vue-cli-service lint --max-warnings=0 '*.js' src/ tests/ demo/",
-    "build:demo": "vue-cli-service build --dest _site/ demo/main.js",
+    "build:demo": "NODE_OPTIONS=--openssl-legacy-provider vue-cli-service build --dest _site/ demo/main.js",
     "lint:style": "stylelint 'src/**/*.vue' 'demo/**/*.vue'"
   },
   "browser": "dist/girder.umd.min.js",
