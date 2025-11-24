@@ -1,203 +1,225 @@
+<script>
+import { ref, inject } from "vue";
+import GirderOauth from "./OAuth.vue";
+
+export default {
+  name: "GirderLogin",
+
+  components: { GirderOauth },
+
+  props: {
+    forceOtp: { type: Boolean, default: false },
+    forgotPasswordUrl: { type: String, default: null },
+    forgotPasswordRoute: { type: Object, default: null },
+    hideForgotPassword: { type: Boolean, default: false },
+    oauthProviders: { type: Array, default: () => [] }
+  },
+
+  emits: ['forgotPassword'],
+
+  setup() {
+    // ---- Constants ----
+    const OTP_MAGIC_SUBSTRING =
+      "authentication must include a one-time password";
+
+    // ---- Injected client ----
+    const { rest } = inject("girder");
+
+    // ---- State ----
+    const username = ref("");
+    const password = ref("");
+    const otp = ref(null);
+    const otpFormVisible = ref(false);
+    const requiresEmailVerification = ref(false);
+    const inProgress = ref(false);
+
+    const alerts = ref({
+      error: "",
+      success: "",
+    });
+
+    const loginForm = ref(null);
+
+    // ---- Validation rules ----
+    const nonEmptyRules = [
+      (v) => !!v || "Item is required",
+    ];
+
+    const otpRules = [
+      (v) => {
+        const phrase = "6 digit number";
+        return (parseInt(v, 10) && String(v).length === 6) || phrase;
+      },
+    ];
+
+    // ---- Methods ----
+    const sendVerification = async () => {
+      await rest.post("user/verification", null, {
+        params: { login: username.value },
+      });
+
+      alerts.value.error = "";
+      alerts.value.success = "Verification email sent";
+      requiresEmailVerification.value = false;
+    };
+
+    const login = async () => {
+      const valid = await loginForm.value.validate();
+      if (!valid) {return;}
+
+      alerts.value.error = "";
+      alerts.value.success = "";
+      requiresEmailVerification.value = false;
+      inProgress.value = true;
+
+      try {
+        await rest.login(
+          username.value,
+          password.value,
+          otp.value
+        );
+
+        password.value = "";
+        otp.value = null;
+        otpFormVisible.value = false;
+      } catch (err) {
+        if (!err.response || err.response.status !== 401) {
+          alerts.value.error = "Unknown error.";
+          throw err;
+        }
+
+        const { message, extra } = err.response.data;
+
+        if (message?.includes(OTP_MAGIC_SUBSTRING)) {
+          otp.value = null;
+          otpFormVisible.value = true;
+          loginForm.value.resetValidation();
+        } else {
+          alerts.value.error = message || "Unauthorized.";
+
+          if (extra === "emailVerification") {
+            requiresEmailVerification.value = true;
+          }
+        }
+      } finally {
+        inProgress.value = false;
+      }
+    };
+
+    return {
+      username,
+      password,
+      otp,
+      otpFormVisible,
+      requiresEmailVerification,
+      inProgress,
+      alerts,
+      loginForm,
+      nonEmptyRules,
+      otpRules,
+      login,
+      sendVerification,
+    };
+  },
+};
+</script>
+
 <template>
   <div class="login-widget">
     <v-container>
       <v-alert
-        :value="!!alerts.error"
-        class="mt-0"
-        dismissible="dismissible"
-        transition="scale-transition"
+        v-if="!!alerts.error"
         type="error"
+        variant="tonal"
+        closable
+        class="mt-0"
+        :text="alerts.error"
       >
-        {{ alerts.error }}
+        <v-spacer />
         <v-btn
           v-if="requiresEmailVerification"
-          small
-          outlined
-          class="ml-3"
+          size="small"
+          variant="outlined"
+          text="Resend verification email"
           @click="sendVerification"
-        >
-          Resend verification email
-        </v-btn>
+        />
       </v-alert>
       <v-alert
         v-if="alerts.success"
-        :value="true"
-        class="mt-0"
-        dismissible="dismissible"
-        transition="scale-transition"
         type="success"
-      >
-        {{ alerts.success }}
-      </v-alert>
+        variant="tonal"
+        closable
+        class="mt-0"
+        :text="alerts.success"
+      />
+
+      <!-- Login Form -->
       <v-form
-        ref="login"
+        ref="loginForm"
         @submit.prevent="login"
       >
         <v-text-field
           v-if="!otpFormVisible || forceOtp"
           v-model="username"
           :rules="nonEmptyRules"
+          variant="solo-filled"
+          flat
           label="Username or e-mail"
-          autofocus="autofocus"
-          prepend-icon="$vuetify.icons.user"
-          type="text"
+          autocomplete="username"
+          prepend-inner-icon="mdi-account"
         />
+
         <v-text-field
           v-if="!otpFormVisible || forceOtp"
           v-model="password"
           :rules="nonEmptyRules"
-          type="password"
+          variant="solo-filled"
+          flat
           label="Password"
-          prepend-icon="$vuetify.icons.lock"
+          type="password"
+          autocomplete="current-password"
+          prepend-inner-icon="mdi-lock"
         />
+
         <v-text-field
           v-if="otpFormVisible || forceOtp"
           v-model="otp"
           :rules="otpRules"
+          variant="solo-filled"
           type="text"
           label="Authentication code"
-          prepend-icon="$vuetify.icons.otp"
+          prepend-inner-icon="mdi-shield-key"
         />
-        <v-card-actions>
+
+        <div class="d-flex">
           <v-btn
-            :disabled="inProgress"
             :loading="inProgress"
-            class="ml-0"
+            :disabled="inProgress"
             type="submit"
             color="primary"
-          >
-            <v-icon left="left">
-              $vuetify.icons.login
-            </v-icon>
-            {{ otpFormVisible ? 'Verify code' : 'Login' }}
-          </v-btn><template v-if="!hideForgotPassword">
+            rounded
+            prepend-icon="$login"
+            :text="otpFormVisible ? 'Verify code' : 'Login'"
+            variant="flat"
+          />
+          <v-spacer />
+          <template v-if="!hideForgotPassword">
             <v-spacer />
             <v-btn
               :to="forgotPasswordRoute"
               :href="forgotPasswordUrl"
-              text="text"
+              variant="text"
               color="primary"
-              @click="$emit('forgotpassword')"
-            >
-              Forgot Password?
-            </v-btn>
+              text="Forgot password?"
+              @click="$emit('forgotPassword')"
+            />
           </template>
-        </v-card-actions>
+        </div>
       </v-form>
-    </v-container><template v-if="oauthProviders && oauthProviders.length">
+    </v-container>
+    <template v-if="oauthProviders && oauthProviders.length">
       <v-divider />
       <girder-oauth :providers="oauthProviders" />
     </template>
   </div>
 </template>
-
-<script>
-import GirderOauth from './OAuth.vue';
-
-// Magic substring that, if present, indicates a user must supply an OTP
-const OTP_MAGIC_SUBSTRING = 'authentication must include a one-time password';
-
-// Validation rules
-const nonEmptyRules = [(v) => !!v || 'Item is required'];
-const otpRules = [
-  (v) => {
-    const phrase = '6 digit number';
-    try {
-      return (parseInt(v, 10) && String(v).length === 6) || phrase;
-    } catch (err) {
-      return phrase;
-    }
-  },
-];
-
-export default {
-  components: {
-    GirderOauth,
-  },
-  inject: ['girderRest'],
-  props: {
-    forceOtp: {
-      type: Boolean,
-      default: false,
-    },
-    forgotPasswordUrl: {
-      type: String,
-      default: null,
-    },
-    forgotPasswordRoute: {
-      type: Object,
-      default: null,
-    },
-    hideForgotPassword: {
-      type: Boolean,
-      default: false,
-    },
-    oauthProviders: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  data() {
-    return {
-      username: '',
-      password: '',
-      otp: null,
-      inProgress: false,
-      alerts: {
-        error: '',
-        success: '',
-      },
-      requiresEmailVerification: false,
-      nonEmptyRules,
-      otpRules,
-      otpFormVisible: false,
-    };
-  },
-  methods: {
-    async sendVerification() {
-      await this.girderRest.post('user/verification', null, {
-        params: {
-          login: this.username,
-        },
-      });
-      this.alerts.error = '';
-      this.alerts.success = 'Verification email sent';
-      this.requiresEmailVerification = false;
-    },
-    async login() {
-      if (!this.$refs.login.validate()) {
-        return;
-      }
-      this.alerts.error = '';
-      this.alerts.success = '';
-      this.requiresEmailVerification = false;
-      this.inProgress = true;
-      try {
-        await this.girderRest.login(this.username, this.password, this.otp);
-        this.password = '';
-        this.otp = null;
-        this.otpFormVisible = false;
-      } catch (err) {
-        if (!err.response || err.response.status !== 401) {
-          this.alerts.error = 'Unknown error.';
-          throw err;
-        } else {
-          const { message, extra } = err.response.data;
-          if (message && message.indexOf(OTP_MAGIC_SUBSTRING) >= 0) {
-            this.otp = null;
-            this.otpFormVisible = true;
-            this.$refs.login.resetValidation();
-          } else {
-            this.alerts.error = message || 'Unauthorized.';
-            if (extra === 'emailVerification') {
-              this.requiresEmailVerification = true;
-            }
-          }
-        }
-      } finally {
-        this.inProgress = false;
-      }
-    },
-  },
-};
-</script>

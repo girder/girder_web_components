@@ -1,106 +1,117 @@
+<script>
+import { ref, inject, watch } from 'vue';
+import GirderLogin from './Login';
+import GirderRegister from './Register';
+import { OauthTokenPrefix, OauthTokenSuffix } from '@/utils/restClient';
+
+export default {
+  name: 'GirderAuthentication',
+
+  components: {
+    GirderLogin,
+    GirderRegister,
+  },
+
+  props: {
+    register: { type: Boolean, default: false },
+    oauth: { type: Boolean, default: false },
+    forgotPasswordUrl: { type: String, default: null },
+    forgotPasswordRoute: { type: [Object, String], default: null },
+    forceOtp: { type: Boolean, default: false },
+    hideForgotPassword: { type: Boolean, default: false },
+  },
+
+  emits: ['forgotPassword'],
+
+  setup(props) {
+    // Inject Girder REST client
+    const { rest, apiRoot } = inject("girder");
+
+    // State
+    const activeTab = ref("login");
+    const oauthProviders = ref([]);
+
+    // Load OAuth providers automatically when props or client changes
+    watch(
+      () => [props.oauth, apiRoot],
+      async ([oauth]) => {
+        if (!oauth) {
+          oauthProviders.value = [];
+          return;
+        }
+
+        try {
+          const result = await rest.get("oauth/provider", {
+            params: {
+              redirect: `${window.location.href}${OauthTokenPrefix}{girderToken}${OauthTokenSuffix}`,
+              list: true,
+            },
+          });
+
+          oauthProviders.value = Array.isArray(result.data) ? result.data : [];
+        } catch {
+          oauthProviders.value = [];
+        }
+      },
+      { immediate: true }
+    );
+
+    return {
+      activeTab,
+      oauthProviders,
+    };
+  },
+};
+</script>
+
 <template>
-  <v-card class="girder-authentication-component">
-    <v-tabs
-      v-model="activeTab"
-      background-color="primary"
-      dark="dark"
-    >
-      <v-tabs-slider color="yellow" />
-      <v-tab key="login">
-        Log In
-      </v-tab>
-      <v-tab
-        v-if="register"
-        key="registration"
+  <v-card class="authentication">
+    <v-card-item>
+      <v-tabs
+        v-model="activeTab"
+        background-color="primary"
+        dark="dark"
       >
-        Register
-      </v-tab>
-    </v-tabs>
-    <v-tabs-items v-model="activeTab">
-      <v-tab-item key="login-box">
-        <girder-login
-          :oauth-providers="oauthProviders"
-          v-bind="{ forceOtp, forgotPasswordUrl, forgotPasswordRoute, hideForgotPassword }"
-          @forgotpassword="$emit('forgotpassword')"
+        <v-tab
+          text="Log In"
+          value="login"
         />
-      </v-tab-item>
-      <v-tab-item
-        v-if="register"
-        key="registration-box"
-      >
-        <girder-registration :oauth-providers="oauthProviders" />
-      </v-tab-item>
-    </v-tabs-items>
+        <v-tab
+          v-if="register"
+          text="Register"
+          value="registration"
+        />
+      </v-tabs>
+    </v-card-item>
+    <v-card-text>
+      <v-tabs-window v-model="activeTab">
+        <v-tabs-window-item value="login">
+          <girder-login
+            :oauth-providers="oauthProviders"
+            v-bind="{ forceOtp, forgotPasswordUrl, forgotPasswordRoute, hideForgotPassword }"
+            @forgot-password="$emit('forgotPassword')"
+          />
+        </v-tabs-window-item>
+        <v-tabs-window-item
+          v-if="register"
+          value="registration"
+        >
+          <girder-register :oauth-providers="oauthProviders" />
+        </v-tabs-window-item>
+      </v-tabs-window>
+    </v-card-text>
   </v-card>
 </template>
 
-<script>
-import Vue from 'vue';
-import GirderLogin from './Login.vue';
-import GirderRegistration from './Register.vue';
-import { OauthTokenPrefix, OauthTokenSuffix } from '../../rest';
+<style scoped lang="scss">
+.authentication {
+  :deep(.v-card-item) {
+    padding: 0;
+    background-color: rgb(var(--v-theme-surface-light));
+  }
 
-export default Vue.extend({
-  components: {
-    GirderLogin,
-    GirderRegistration,
-  },
-  inject: ['girderRest'],
-  props: {
-    /* Enable registration from this component? */
-    register: {
-      type: Boolean,
-      default: false,
-    },
-    /* Enable OAuth login from this component? */
-    oauth: {
-      type: Boolean,
-      default: false,
-    },
-    /* A full URL to be used as an anchor href to an external page. */
-    forgotPasswordUrl: {
-      type: String,
-      default: null,
-    },
-    /* A vue-router route path. */
-    forgotPasswordRoute: {
-      type: [Object, String],
-      default: null,
-    },
-    /* If you enforce 2FA, show that field automatically */
-    forceOtp: {
-      type: Boolean,
-      default: false,
-    },
-    hideForgotPassword: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      activeTab: null,
-    };
-  },
-  asyncComputed: {
-    async oauthProviders() {
-      if (this.oauth) {
-        try {
-          return (
-            await this.girderRest.get('oauth/provider', {
-              params: {
-                redirect: `${window.location.href}${OauthTokenPrefix}{girderToken}${OauthTokenSuffix}`,
-                list: true,
-              },
-            })
-          ).data;
-        } catch (e) {
-          return [];
-        }
-      } else {
-        return [];
-      }
-    },
-  },
-});
-</script>
+  :deep(.v-card-text) {
+    padding: 0;
+  }
+}
+</style>

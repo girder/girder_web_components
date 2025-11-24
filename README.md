@@ -5,78 +5,39 @@ It works with [data.kitware.com](https://data.kitware.com/).
 
 ## Usage Quickstart
 
-**This library only supports Vue 2.**
+**Latest version only support Vue3. For Vue2, [@girder/components v3.3.0](https://github.com/girder/girder_web_components/releases/tag/v3.3.0) should be used.**
 
 ### Installation
 
-[Vue CLI](https://cli.vuejs.org/) is required for building applications with Girder web components.  You will also need to install [Vue CLI Plugin Vuetify](https://next.vuetifyjs.com/en/getting-started/installation/#vue-cli-install).
-
-First, install Vuetify if you aren't already using it.
-
-``` bash
-vue add vuetify
-```
-
-For new projects, the `default` preset is good.  For established projects, choose `advanced` and reject pre-made templates for a less invasive install.  All other options are up to you.
-
-> **Note** the cli plugin install may modify package.json, vue.config.js, index.html, and several others.  Mostly, it just reorders your existing configuration, but be sure to review the changes carefully.
+[Vite](https://vite.dev/) is required for building applications with Girder web components.
 
 ```bash
 # Install GWC
 yarn add @girder/components
 # or
 npm install @girder/components
-
-# Install additional dev dependencies
-yarn add -D sass sass-loader@^7.3.1
 ```
-
-> **Note:** If you are building with custom webpack (without vue-cli-service), you should follow Vuetify's [Webpack install instructions](https://vuetifyjs.com/en/getting-started/quick-start/#webpack-install)
 
 ### Initialization
+The lib exports the [components](./src/components/) and a [plugin](./src/plugins/index.js) that initializes a [RestClient](./src/utils/restClient.js) and a [NotificationBus](./src/utils/notificationBus.js), provide them and register the vuetify configuration. It can optionally register all components.
 
-Encapsulating the configuration in another file (typically `src/plugins/girder.js`) is a good practice.
-
-```javascript
-/* src/plugins/girder.js */
-import Vue from 'vue';
-import Girder, { RestClient } from '@girder/components/src';
-
-// Install the Vue plugin that lets us use the components
-Vue.use(Girder);
-
-// This connects to another server if the VITE_API_ROOT
-// environment variable is set at build-time
-const apiRoot = import.meta.env.VITE_API_ROOT || 'http://localhost:8080/api/v1';
-
-// Create the axios-based client to be used for all API requests
-const girderRest = new RestClient({
-  apiRoot,
-});
-
-// This is passed to our Vue instance; it will be available in all components
-const GirderProvider = {
-  girderRest,
-};
-export default GirderProvider;
-```
-
-Reference the configuration from your application initialization (typically `src/main.js`):
+Example of application initialization using the plugin (typically `src/main.js`):
 
 ```javascript
 /* src/main.js */
-import GirderProvider from '@/plugins/girder';
-import { vuetify } from '@girder/components/src';
+import { createApp } from 'vue'
+import App from './App.vue'
 
-// ...
+import GirderPlugin from '@girder/components'
 
-new Vue({
-  provide: GirderProvider,
-  // Import and use vuetify config from girder/components without modification
-  // See below for how to inject your own config
-  vuetify,
-  // ...
-}).$mount('#app');
+const app = createApp(App)
+
+app.use(GirderPlugin, {
+  girder: {apiRoot: import.meta.env.VITE_API_ROOT},
+  notification: {useEventSource: true},
+  components: true // register all components
+})
+app.mount('#app')
 ```
 
 ### Using Components
@@ -84,13 +45,12 @@ new Vue({
 All components are prefixed `Girder`.
 
 #### A-la-carte (recommended)
-
-To use components individually, they should be imported by name from `@girder/components/src`, as this location will be stable across releases.
+In this case the plugin does not register all components, thus to use components individually, they should be imported by name from `@girder/components/`, as this location will be stable across releases.
 For instance:
 
 ```javascript
-import { GirderUpload } from '@girder/components/src'; // Good
-import { Upload } from '@girder/components/src/components/Upload.vue'; // Unsafe -- may move in the future
+import { GirderUpload } from '@girder/components/'; // Good
+import { Upload } from '@girder/components/src/components/Upload/Upload.vue'; // Unsafe -- may move in the future
 ```
 
 Since Girder web components uses Vuetify, your application must provide
@@ -105,109 +65,81 @@ For example, to create a login / registration widget in `src/App.vue`:
   <v-app>
     <v-content>
       <h1>Welcome {{ currentUserLogin }}</h1>
-      <GirderAuthentication register />
+      <GirderAuthentication />
     </v-content>
   </v-app>
 </template>
 
-<script>
-import { GirderAuthentication } from '@girder/components/src';
+<script setup>
+import { inject, computed } from 'vue';
+import { GirderAuthentication } from '@girder/components/';
 
-export default {
-  components: {
-    GirderAuthentication,
-  },
-
-  // Injecting is not necessary to use the component,
-  // but is required to access the results of API calls
-  inject: ['girderRest'],
-  computed: {
-    currentUserLogin() {
-      return this.girderRest.user ? this.girderRest.user.login : 'anonymous';
-    },
-  },
-};
+// Injecting 'rest' is not necessary to use the component,
+// but is required to access the results of API calls
+const { rest, user } = inject('girder');
+const currentUserLogin = computed(() => user.value ? user.value.login : 'anonymous');
 </script>
 ```
 
 #### Global registration
-
-You can register all components with the global scope and avoid individual imports.
-
-[See documentation for a list of component names.](https://gwc.girder.org/)
-
-```javascript
-import GirderProvider from '@/plugins/girder'; // same as above
-import { vuetify, registerComponents } from '@girder/components/src';
-
-// register all components globally, named `girder-{name}`
-registerComponents();
-
-new Vue({
-  provide: GirderProvider,
-  vuetify,
-}).$mount('#app');
-```
-
+In this case, the components are registered by the plugin, so they do not need to be imported.
 See [the demo app](demo/App.vue) for a more comprehensive example.
 
 ## Advanced Usage
 
 ### Customizing Vuetify Configuration
-
+Custom additional vuetify configuration can be passed to the plugin through the `vuetifyConfig` option.
 If your downstream application is also using Vuetify and needs to pass additional configuration
 options, it must be careful to coordinate with Girder web components.
 
-Additional Vuetify configuration should inherit from Girder web components' own configuration:
-
 ```javascript
-import { merge } from 'lodash';
-import { vuetifyConfig as girderVuetifyConfig } from '@girder/components/src';
+/* src/main.js */
+import { createApp } from 'vue'
+import App from './App.vue'
 
-const appVuetifyConfig = merge(girderVuetifyConfig, {
-  icons: {
-    values: {
-      myCustomIcon: 'mdi-custom-icon'
-    }
-  }
-});
+import GirderPlugin from '@girder/components'
+
+const app = createApp(App)
+
+app.use(GirderPlugin, {
+  girder: {apiRoot: import.meta.env.VITE_API_ROOT},
+  notification: {useEventSource: true},
+  vuetifyConfig: {icons: {aliases: {login: 'mdi-circle' }}}
+})
+app.mount('#app')
 ```
 
 > **Note:** You must use the mdi icon pack. Icon packs cannot be mixed.
 
-```javascript
-import Vuetify from 'vuetify/lib';
-import GirderProvider from '@/plugins/girder'; // same as above
-
-new Vue({
-  provide: GirderProvider,
-  vuetify: new Vuetify(appVuetifyConfig),
-}).$mount('#app');
-```
-
-> **Note:** Girder web components imports a-la-carte `vuetify/lib`, so you should
-> do the same to avoid building duplicate dependencies into your artifacts.
-
 ### Other installation methods
 
-It's not necessary to install Girder web components yourself, you can import the pre-built bundle
-into your page by including the following tags:
+It's not necessary to install Girder web components yourself, you can import the pre-built bundle.
+
+#### Using CDN/UMD
 
 ```html
-<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <script src="https://unpkg.com/@girder/components"></script>
-<link rel="stylesheet" href="https://unpkg.com/@girder/components/dist/girder.css">
+<link rel="stylesheet" href="https://unpkg.com/@girder/components/dist/style.css">
+<script>
+  const app = Vue.createApp({});
+  app.use(girder);
+  app.mount('#app');
+</script>
 ```
+This exposes the plugin under the global variable `girder`.
 
-This will expose all the library's components and utilities under the global variable `girder`, e.g.
-`girder.RestClient` and `girder.GirderUpload`.
+#### Using ESM
+```html
+<script type="module">
+import Gwc, { GirderUpload } from 'https://unpkg.com/@girder/components?module';
 
-> **Note:** If importing this library's UMD bundle via a ``<script>`` tag, the incantation for
-> installing the Vue plugin is slightly different:
->
-> ```javascript
-> Vue.use(girder.default);
-> ```
+const app = Vue.createApp({});
+app.use(Gwc);
+app.component('GirderUpload', GirderUpload);
+app.mount('#app');
+</script>
+```
 
 ## For developers
 
@@ -228,8 +160,6 @@ yarn lint:style
 # Run unit tests
 yarn test:unit
 ```
-
-> **Note**: sideEffects config for tree shaking is [informed by this issue](https://github.com/vuejs/vue-loader/issues/1435)
 
 ### Use an external Girder API
 

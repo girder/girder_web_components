@@ -1,385 +1,238 @@
 <script>
-import Vue from 'vue';
-import { DebounceCounter } from '../utils';
-import { usernameFormatter } from '../utils/mixins';
+import { useDebounceCounter } from '@/composables';
+import { formatUsername, getResourceIcon } from '@/utils';
+import { useElementBounding } from '@vueuse/core'
+import { computed, inject, ref, watch, useTemplateRef, reactive } from 'vue';
 
-export const SearchModeOptions = [
-  {
-    name: 'Prefix Search',
-    value: 'prefix',
-  },
-  {
-    name: 'Text Search',
-    value: 'text',
-  },
-];
-const DefaultSearchModeOption = SearchModeOptions[0].value;
+export const SearchModeOptions = ['prefix', 'text'];
+const DefaultSearchModeOption = SearchModeOptions[0];
 
-export const SearchTypeOptions = [
-  {
-    name: 'User',
-    value: 'user',
-  },
-  {
-    name: 'Folder',
-    value: 'folder',
-  },
-  {
-    name: 'Item',
-    value: 'item',
-  },
-];
-const DefaultSearchTypes = SearchTypeOptions.map((t) => t.value);
+export const SearchTypeOptions = ['user', 'folder', 'item'];
+const DefaultSearchTypes = SearchTypeOptions;
 
-export default Vue.extend({
-  mixins: [usernameFormatter],
-  inject: ['girderRest'],
+export default {
+  name: 'GirderSearch',
+
   props: {
-    hideSearchIcon: {
-      type: Boolean,
-      default: false,
-    },
-    hideOptionsMenu: {
-      type: Boolean,
-      default: false,
-    },
-    maxQuickResults: {
-      type: Number,
-      default: 6,
-    },
-    placeholder: {
-      type: String,
-      default: null,
-    },
-    searchModeOptions: {
-      type: Array,
-      default: () => SearchModeOptions,
-    },
-    searchMode: {
-      type: String,
-      default: null,
-    },
-    searchTypeOptions: {
-      type: Array,
-      default: () => SearchTypeOptions,
-    },
-    searchTypes: {
-      validator: (val) => Array.isArray(val) || val === null,
-      default: null,
-    },
-    showMore: {
-      type: Boolean,
-      default: false,
-    },
+    hideSearchIcon: { type: Boolean, default: false },
+    hideOptionsMenu: { type: Boolean, default: false },
+    maxQuickResults: { type: Number, default: 6 },
+    placeholder: { type: String, default: null },
+    searchModeOptions: { type: Array, default: () => SearchModeOptions },
+    searchMode: { type: String, default: null },
+    searchTypeOptions: { type: Array, default: () => SearchTypeOptions },
+    searchTypes: { validator: (val) => Array.isArray(val) || val === null, default: null },
+    showMore: { type: Boolean, default: false },
   },
-  data() {
+
+  emits: ['update:searchMode', 'update:searchTypes', 'select', 'error', 'moreResults'],
+
+  setup(props, ctx) {
+    // ---- Injected client ----
+    const { rest } = inject('girder');
+    
+    // ---- State ----
+    const searchField = reactive({
+      name: `girder-search-${Math.random()}`,
+      width: 0,
+      bottom: 0,
+      left: 0,
+    });
+    const bounding = useElementBounding(useTemplateRef(searchField.name));
+  
+    const searchText = ref(null);
+    const internalSearchMode = ref(props.searchMode || DefaultSearchModeOption);
+    const internalSearchTypes = ref(props.searchTypes || DefaultSearchTypes);
+    const searchResults = ref([]);
+    const openSearchResults = ref(false);
+
+    // ---- Composables ----
+    const { flag, inc, dec } = useDebounceCounter()
+
+    // ---- Computed ----
+    const loading = computed(() => flag.value);
+    const quickResults = computed(() => searchResults.value.slice(0, props.maxQuickResults));
+    const searchParams = computed(() => {
+      return { q: searchText.value, mode: internalSearchMode.value, types: JSON.stringify(internalSearchTypes.value), limit: props.maxQuickResults + 1 };}
+    );
+
+    // ---- Methods ----
+    async function computeSearchResults() {
+      let results = [];
+      inc();
+      try {
+        if (searchText.value) {
+          openSearchResults.value = true;
+          const { data } = await rest.get('resource/search', {
+            params: searchParams.value,
+          });
+          results = [].concat(...internalSearchTypes.value.map((t) => data[t]));
+        } else {
+          openSearchResults.value = false;
+        }
+      } catch (err) {
+        ctx.emit('error', err.message || 'Unknown error during search');
+      }
+      dec();
+      searchResults.value = results;
+    }
+
+    function selectResult(result) {
+      searchText.value = null;
+      ctx.emit('select', result);
+    }
+
+    // ---- Watchers ----
+    watch(
+      () => props.searchMode,
+      (val) => {
+        internalSearchMode.value = val;
+      },
+    );
+    watch(
+      () => props.searchTypes,
+      (val) => {
+        internalSearchTypes.value = val;
+      },
+    );
+    watch(
+      () => [
+        bounding.width.value,
+        bounding.bottom.value,
+        bounding.left.value
+      ],
+      ([width, bottom, left]) => {
+        searchField.width = width;
+        searchField.bottom = bottom;
+        searchField.left = left;
+      },
+      { immediate: true }
+    );
+
     return {
-      searchText: '',
-      lazySearchMode: this.searchMode || DefaultSearchModeOption,
-      lazySearchTypes: this.searchTypes || DefaultSearchTypes,
-      searchOptionsMenu: false,
+      internalSearchMode,
+      internalSearchTypes,
+      loading,
+      openSearchResults,
+      quickResults,
+      searchField,
+      searchParams,
+      searchText,
+      computeSearchResults,
+      formatUsername,
+      getResourceIcon,
+      selectResult,
     };
   },
-  computed: {
-    loading() {
-      return this.counter.flag;
-    },
-    quickResults() {
-      return this.searchResults.slice(0, this.maxQuickResults);
-    },
-    searchParams() {
-      return {
-        q: this.searchText,
-        mode: this.internalSearchMode,
-        types: JSON.stringify(this.internalSearchTypes),
-        // + 1 to determine if total results > maxQuickResults
-        limit: this.maxQuickResults + 1,
-      };
-    },
-    internalSearchMode: {
-      get() {
-        return this.lazySearchMode;
-      },
-      set(val) {
-        this.lazySearchMode = val;
-        this.$emit('update:searchMode', val);
-      },
-    },
-    internalSearchTypes: {
-      get() {
-        return this.lazySearchTypes;
-      },
-      set(val) {
-        this.lazySearchTypes = val;
-        this.$emit('update:searchTypes', val);
-      },
-    },
-  },
-  watch: {
-    searchMode(val) {
-      this.lazySearchMode = val || DefaultSearchModeOption;
-    },
-    searchTypes(val) {
-      this.lazySearchTypes = val || DefaultSearchTypes;
-    },
-  },
-  asyncComputed: {
-    searchResults: {
-      default: [],
-      async get() {
-        let results = [];
-        this.counter.inc();
-        try {
-          if (this.searchText) {
-            const { data } = await this.girderRest.get('resource/search', {
-              params: this.searchParams,
-            });
-            results = [].concat(...this.internalSearchTypes.map((t) => data[t]));
-          }
-        } catch (err) {
-          this.$emit('error', err.message || 'Unknown error during search');
-        }
-        this.counter.dec();
-        return results;
-      },
-    },
-  },
-  beforeCreate() {
-    this.counter = new DebounceCounter();
-  },
-  methods: {
-    selectResult(result) {
-      this.searchText = '';
-      this.$emit('select', result);
-    },
-  },
-});
+};
 </script>
 
 <template>
-  <v-row
-    class="align-center girder-searchbar"
-    no-gutters
-  >
-    <v-icon
-      v-if="!hideSearchIcon"
-      class="mr-3 mdi-24px"
-      color="white"
-    >
-      $vuetify.icons.search
-    </v-icon>
+  <div class="data-search">
+    <v-text-field
+      :ref="searchField.name"
+      v-model="searchText"
+      :placeholder="placeholder"
+      variant="solo-filled"
+      flat
+      hide-details
+      clearable
+      prepend-inner-icon="$search"
+      :loading="loading"
+      @update:model-value="computeSearchResults"
+      @update:focused="val => {if (val && !!searchText) { openSearchResults=true }}"
+    />
     <v-menu
-      :open-on-click="false"
-      :value="searchText"
-      :nudge-bottom="6"
-      offset-y
-      content-class="girder-searchbar-menu"
-      transition="slide-y-transition"
+      v-model="openSearchResults"
+      :target="[searchField.left, searchField.bottom]"
+      stick-to-target
+      offset="12"
+      location="bottom"
+      :width="searchField.width"
     >
-      <template #activator="{ on }">
-        <v-text-field
-          v-model="searchText"
-          :placeholder="placeholder"
-          :name="`girder-search-${Math.random()}`"
-          solo
-          hide-details
-          clearable
-          auto
-          v-on="on"
-        />
-      </template>
-      <v-list dense="dense">
+      <v-list>
         <v-list-item
           v-for="result in quickResults"
-          v-show="!loading"
           :key="result._id"
+          :title="result.name || formatUsername(result)"
           @click="selectResult(result)"
         >
-          <slot
-            v-bind="result"
-            name="searchresult"
-          >
-            <v-list-item-action class="mr-2">
-              <v-icon>{{ $vuetify.icons.values[result._modelType] }}</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>{{ result.name || formatUsername(result) }}</v-list-item-title>
-            </v-list-item-content>
-          </slot>
-        </v-list-item>
-        <v-list-item v-show="searchText && quickResults.length === 0 && !loading">
-          <slot
-            v-bind="{ searchText }"
-            name="noresult"
-          >
-            <v-list-item-action>
-              <v-icon>$vuetify.icons.alert</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>No results found for query '{{ searchText }}'</v-list-item-title>
-              <v-list-item-subtitle>
-                Modify search parameters or refine your query.
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </slot>
+          <template #prepend>
+            <v-icon :icon="getResourceIcon(result)" />
+          </template>
         </v-list-item>
         <v-list-item
-          v-show="!loading && showMore && searchResults.length > maxQuickResults"
-          @click="$emit('moreresults', searchParams)"
+          v-if="searchText && quickResults.length === 0"
+          :title="`No results found for query '${searchText}'`"
+          subtitle="Modify search parameters or refine your query"
         >
-          <v-list-item-action>
-            <v-icon>$vuetify.icons.more</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>More</v-list-item-title>
-          </v-list-item-content>
+          <template #prepend>
+            <v-icon icon="$alert" />
+          </template>
         </v-list-item>
         <v-list-item
-          v-for="i in Math.round(maxQuickResults / 2)"
-          v-show="loading"
-          :key="`skeleton-${i}`"
+          v-if="showMore && searchResults.length > maxQuickResults"
+          title="Show more results"
+          @click="$emit('moreResults', searchParams)"
         >
-          <v-list-item-action>
-            <v-icon class="grey--text text--lighten-1">
-              $vuetify.icons.circle
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title
-              :style="{ maxWidth: (70 + (4 * (i % 3))) + '%', height: '12px' }"
-              class="skeleton skeleton--text mb-2"
-            />
-            <v-list-item-subtitle
-              :style="{ maxWidth: (50 - (4 * (i % 2))) + '%', height: '6px' }"
-              class="skeleton skeleton--text"
-            />
-          </v-list-item-content>
+          <template #prepend>
+            <v-icon icon="$more" />
+          </template>
         </v-list-item>
       </v-list>
     </v-menu>
-    <v-menu
-      v-if="!hideOptionsMenu"
-      v-model="searchOptionsMenu"
-      :close-on-content-click="false"
-      offset-y
-      left
-      content-class="girder-search-arrow-menu"
+    <v-btn
+      icon
+      variant="flat"
     >
-      <template #activator="{ on }">
-        <v-btn
-          icon="icon"
-          v-on="on"
-        >
-          <v-icon class="mdi-24px">
-            $vuetify.icons.settings
-          </v-icon>
-        </v-btn>
-      </template>
-      <v-card>
-        <v-card-actions>
-          <v-col
-            class="pa-0 flex-column"
-            no-gutters="no-gutters"
-          >
-            <v-radio-group
+      <v-icon icon="$settings" />
+      <v-menu
+        v-if="!hideOptionsMenu"
+        activator="parent"
+        :close-on-content-click="false"
+        offset="12"
+        stick-to-target
+        @update:model-value="val => {if (!val) computeSearchResults()}"
+      >
+        <v-card>
+          <div class="pa-3 d-flex flex-column align-center">
+            <v-btn-toggle
               v-model="internalSearchMode"
-              class="my-2"
-              hide-details="hide-details"
+              mandatory
+              @update:model-value="$emit('update:searchMode', $event);"
             >
-              <v-radio
+              <v-btn
                 v-for="mode in searchModeOptions"
-                :key="mode.value"
-                :label="mode.name"
-                :value="mode.value"
-                class="mb-1"
+                :key="mode"
+                :text="mode"
+                :value="mode"
+                size="small"
               />
-            </v-radio-group>
-            <v-divider />
-            <v-checkbox
-              v-for="searchType in searchTypeOptions"
-              :key="searchType.value"
+            </v-btn-toggle>
+            <v-divider class="my-3" />
+            <v-btn-toggle
               v-model="internalSearchTypes"
-              :label="searchType.name"
-              :value="searchType.value"
-              class="mt-1"
-              hide-details
-            />
-          </v-col>
-        </v-card-actions>
-      </v-card>
-    </v-menu>
-  </v-row>
+              multiple
+              @update:model-value="$emit('update:searchTypes', $event);"
+            >
+              <v-btn
+                v-for="searchType in searchTypeOptions"
+                :key="searchType"
+                :text="searchType"
+                :value="searchType"
+                size="small"
+              />
+            </v-btn-toggle>
+          </div>
+        </v-card>
+      </v-menu>
+    </v-btn>
+  </div>
 </template>
 
 <style lang="scss">
-.girder-searchbar {
-  .v-text-field .v-input__control {
-    min-height: 40px;
-  }
-
-  .v-menu__activator * {
-    cursor: text !important;
-  }
-}
-</style>
-
-<style lang="scss" scoped>
-.girder-searchbar-menu {
-  .skeleton.skeleton--text {
-    background: linear-gradient(270deg, #e0e0e0, #c7c7c7, #e0e0e0);
-    background-size: 600% 600%;
-    animation: SkeletonShimmer 2s ease infinite;
-
-    @keyframes SkeletonShimmer {
-      0% {
-        background-position: 0% 51%;
-      }
-
-      50% {
-        background-position: 100% 50%;
-      }
-
-      100% {
-        background-position: 0% 51%;
-      }
-    }
-  }
-}
-
-// Consider factor out into common stylesheet if we are to use this elsewhere.
-.girder-search-arrow-menu {
-  transform: translateY(10px);
-  // Override to make the arrow visible
-  overflow: visible;
-  contain: inherit;
-
-  // Remove any shadow that is made visible by above two style overrides
-  :first-child {
-    box-shadow: none;
-  }
-
-  &::before {
-    content: " ";
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid white;
-    right: 16px;
-    top: -8px;
-    position: absolute;
-  }
-
-  &.theme--light {
-    &::before {
-      border-bottom-color: white;
-    }
-  }
-
-  &.theme--dark {
-    &::before {
-      border-bottom-color: #424242;
-    }
-  }
+.data-search {
+  display: flex;
+  align-items: center;
 }
 </style>
