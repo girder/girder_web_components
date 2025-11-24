@@ -18,8 +18,7 @@ function wrapMock(callback, status = 200, reply = {}) {
     try {
       callback(config);
       return [status, reply];
-    } catch (err) {
-      console.error(err); // eslint-disable-line no-console
+    } catch (_err) {
       return [400];
     }
   };

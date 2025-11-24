@@ -42,9 +42,9 @@ describe('NotificationBus', () => {
       type: 'A.B',
     };
 
-    bus.$on('message', message);
-    bus.$on('message:A', messageA);
-    bus.$on('message:A.B', messageAB);
+    bus.on('message', message);
+    bus.on('message:A', messageA);
+    bus.on('message:A.B', messageAB);
     expect(bus.connected).toBe(false);
 
     mock.onGet(/notification/).reply(200, [notification]);
@@ -72,8 +72,8 @@ describe('NotificationBus', () => {
       type: 'test',
       updated: new Date(),
     };
-    bus.$on('message', message);
-    bus.$on('error', error);
+    bus.on('message', message);
+    bus.on('error', error);
 
     expect(bus._eventSource).toBeUndefined();
     bus.connect();
