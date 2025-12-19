@@ -33,6 +33,7 @@ const DefaultSearchTypes = SearchTypeOptions.map((t) => t.value);
 
 export default Vue.extend({
   mixins: [usernameFormatter],
+  inject: ['girderRest'],
   props: {
     hideSearchIcon: {
       type: Boolean,
@@ -71,7 +72,6 @@ export default Vue.extend({
       default: false,
     },
   },
-  inject: ['girderRest'],
   data() {
     return {
       searchText: '',

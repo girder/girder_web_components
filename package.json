@@ -1,12 +1,12 @@
 {
   "name": "@girder/components",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "scripts": {
-    "serve": "vue-cli-service serve demo/main.js",
-    "build": "vue-cli-service build --target lib --name girder src/index.js",
-    "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint --max-warnings=0 '*.js' src/ tests/ demo/",
-    "build:demo": "vue-cli-service build --dest _site/ demo/main.js",
+    "serve": "vite",
+    "build": "vite build",
+    "test:unit": "jest",
+    "build:demo": "BUILD_DEMO=true vite build",
+    "lint": "eslint --max-warnings=0 'src/**/*.{js,vue}' 'tests/**/*.{js,vue}' 'demo/**/*.{js,vue}'",
     "lint:style": "stylelint 'src/**/*.vue' 'demo/**/*.vue'"
   },
   "browser": "dist/girder.umd.min.js",
@@ -16,9 +16,7 @@
   "files": [
     "/dist/",
     "/src/",
-    "/types/",
-    "/babel.config.js",
-    "/vue.config.js"
+    "/types/"
   ],
   "sideEffects": [
     "*.vue",
@@ -26,70 +24,50 @@
   ],
   "dependencies": {
     "@mdi/font": "^5.3.45",
+    "@vue/babel-preset-app": "^5.0.8",
     "axios": "^0.21.2",
     "js-cookie": "^2.2.0",
     "markdown-it": "^12.3.2",
     "moment": "^2.29.4",
+    "postcss": "^8.5.6",
     "qs": "^6.9.4",
-    "vue": "^2.6.12",
+    "vue": "^2.7.16",
     "vue-async-computed": "^3.4.1",
-    "vuetify": "^2.3.1"
+    "vuetify": "^2.7.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.2",
-    "@vue/cli-plugin-babel": "^4.4.4",
-    "@vue/cli-plugin-eslint": "~4.4.4",
-    "@vue/cli-plugin-unit-jest": "^4.4.4",
-    "@vue/cli-service": "~4.4.4",
-    "@vue/eslint-config-airbnb": "^5.0.2",
+    "@babel/core": "^7.28.5",
+    "@babel/eslint-parser": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@vitejs/plugin-vue2": "^1.1.2",
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/cli-plugin-eslint": "^5.0.8",
+    "@vue/cli-plugin-unit-jest": "^5.0.8",
+    "@vue/cli-service": "^5.0.8",
     "@vue/test-utils": "1.0.0-beta.29",
     "axios-mock-adapter": "^1.18.1",
-    "babel-eslint": "^10.0.3",
-    "babel-jest": "^26.0.1",
-    "eslint": "^7.5.0",
-    "eslint-plugin-import": "^2.21.2",
-    "eslint-plugin-vue": "^6.1.2",
-    "sass": "^1.26.8",
-    "sass-loader": "^8.0.2",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^27.5.1",
+    "eslint": "7.32.0",
+    "eslint-config-prettier": "^8.10.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-vue": "^7.20.0",
+    "jest": "^27.5.1",
+    "jest-transform-stub": "^2.0.0",
+    "prettier": "^3.6.2",
+    "sass": "^1.94.2",
+    "sass-loader": "^12.6.0",
     "stylelint": "^13.6.1",
     "stylelint-config-standard": "^20.0.0",
-    "vue-cli-plugin-vuetify": "~2.0.5",
-    "vue-template-compiler": "^2.6.12",
-    "vuetify-loader": "^1.5.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "browser": true,
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/recommended",
-      "@vue/airbnb"
-    ],
-    "rules": {
-      "no-param-reassign": [
-        "error",
-        {
-          "props": false
-        }
-      ],
-      "no-underscore-dangle": 0
-    },
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "overrides": [
-      {
-        "files": [
-          "**/__tests__/*.{j,t}s?(x)",
-          "**/tests/unit/**/*.spec.{j,t}s?(x)"
-        ],
-        "env": {
-          "jest": true
-        }
-      }
-    ]
+    "unplugin-vue-components": "^0.26.0",
+    "vite": "^3.0.6",
+    "vite-plugin-env-compatible": "^2.0.1",
+    "vue-cli-plugin-vuetify": "^2.5.3",
+    "vue-eslint-parser": "^10.2.0",
+    "vue-jest": "^3.0.7",
+    "vue-template-compiler": "^2.7.16",
+    "vuetify-loader": "^1.9.2"
   },
   "postcss": {
     "plugins": {
@@ -102,6 +80,7 @@
     "not ie <= 8"
   ],
   "jest": {
+    "testEnvironment": "jsdom",
     "moduleFileExtensions": [
       "js",
       "jsx",
@@ -110,8 +89,8 @@
     ],
     "transform": {
       "^.+\\.vue$": "vue-jest",
-      ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
-      "^.+\\.jsx?$": "babel-jest"
+      "^.+\\.js$": "babel-jest",
+      ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
     },
     "transformIgnorePatterns": [
       "<rootDir>/node_modules/(?!(vuetify)/)"

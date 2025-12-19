@@ -5,11 +5,11 @@ import JobTable from './JobTable.vue';
 import FilterForm from './FilterForm.vue';
 
 export default {
-  inject: ['girderRest', 'notificationBus'],
   components: {
     JobTable,
     FilterForm,
   },
+  inject: ['girderRest', 'notificationBus'],
   data() {
     return {
       jobFilter: {

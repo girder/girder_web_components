@@ -18,7 +18,7 @@ describe('Markdown Editor', () => {
     });
     const newText = 'a string';
     await flushPromises();
-    expect(wrapper.contains(Markdown)).toBe(true);
+    expect(wrapper.find(Markdown).exists()).toBe(true);
     wrapper.setProps({ text: newText });
     await flushPromises();
     expect(wrapper.emitted().changed.length).toBe(1);

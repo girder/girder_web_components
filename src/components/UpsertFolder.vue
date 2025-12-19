@@ -11,6 +11,7 @@ export default {
     GirderBreadcrumb,
     GirderMarkdownEditor,
   },
+  inject: ['girderRest'],
   props: {
     location: {
       type: Object,
@@ -30,7 +31,6 @@ export default {
       default: () => {},
     },
   },
-  inject: ['girderRest'],
   data() {
     return {
       name: '',
