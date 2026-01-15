@@ -2,6 +2,7 @@ node_modules/
 /coverage/
 /dist/
 /_site/
+.vscode
 
 # local env files
 .env.local

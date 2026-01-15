@@ -1,61 +1,77 @@
 version: 2
+
 jobs:
   test:
     docker:
-      - image: circleci/node:10
+      - image: cimg/node:20.19.6
     steps:
       - checkout
+
       - restore_cache:
           name: Restore Yarn Package Cache
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
+
       - run: yarn
+
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
+
       - persist_to_workspace:
           root: /home/circleci
           paths:
             - project
+
       - run: yarn lint --no-fix
       - run: yarn lint:style
-      # --runInBand https://discuss.circleci.com/t/babel-7-jest-results-in-timeout/25383
-      # https://jestjs.io/docs/en/troubleshooting.html#tests-are-extremely-slow-on-docker-and-or-continuous-integration-ci-server
+
+      # Jest performance notes:
+      # https://discuss.circleci.com/t/babel-7-jest-results-in-timeout/25383
+      # https://jestjs.io/docs/troubleshooting#tests-are-extremely-slow-on-docker-and-or-continuous-integration-ci-server
       - run: yarn test:unit --coverage --coverageReporters html --runInBand
+
       - store_artifacts:
           path: coverage/
 
   deploy:
     docker:
-      - image: circleci/node:10
+      - image: cimg/node:20.19.6
     steps:
       - attach_workspace:
           at: /home/circleci
+
       - run: yarn build:demo
+
       - add_ssh_keys:
           fingerprints:
             - "eb:dc:cd:0a:f4:99:56:3f:79:f7:22:a2:6c:21:56:c7"
+
       - deploy:
           command: .circleci/pages-deploy.sh
 
   publish:
     docker:
-      - image: circleci/node:10
+      - image: cimg/node:20.19.6
     steps:
       - attach_workspace:
           at: /home/circleci
+
       - run: yarn build
+
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > ~/.npmrc
+
       - add_ssh_keys:
           fingerprints:
             - "eb:dc:cd:0a:f4:99:56:3f:79:f7:22:a2:6c:21:56:c7"
+
       - deploy:
-          shell: bash
           name: Publish package
+          shell: bash
           command: .circleci/npmjs-publish.sh
 
 workflows:

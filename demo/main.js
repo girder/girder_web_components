@@ -8,7 +8,7 @@ import App from './App.vue';
 Vue.use(GirderPlugin);
 
 const girderRest = new RestClient({
-  apiRoot: process.env.VUE_APP_API_ROOT,
+  apiRoot: import.meta.env.VITE_API_ROOT || 'https://data.kitware.com/api/v1',
 });
 
 const notificationBus = new NotificationBus(girderRest, {

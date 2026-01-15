@@ -87,10 +87,10 @@
 import GirderOauth from './OAuth.vue';
 
 export default {
-  inject: ['girderRest'],
   components: {
     GirderOauth,
   },
+  inject: ['girderRest'],
   props: {
     oauthProviders: {
       type: Array,

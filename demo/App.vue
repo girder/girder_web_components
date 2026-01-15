@@ -320,7 +320,6 @@ import NavLink from './NavLink.vue';
 
 export default Vue.extend({
   name: 'App',
-  inject: ['girderRest'],
 
   components: {
     Headline,
@@ -335,6 +334,7 @@ export default Vue.extend({
     GirderUpload,
     GirderUpsertFolder,
   },
+  inject: ['girderRest'],
 
   data() {
     return {

@@ -29,8 +29,8 @@ describe('Authentication', () => {
       provide: { girderRest: {} },
       sync: false,
     });
-    expect(wrapper.contains(Register)).toBe(false);
-    expect(wrapper.contains(Oauth)).toBe(false);
+    expect(wrapper.find(Register).exists()).toBe(false);
+    expect(wrapper.find(Oauth).exists()).toBe(false);
   });
 
   it('renders registration when toggled on', () => {
@@ -45,7 +45,7 @@ describe('Authentication', () => {
       provide: { girderRest: {} },
       sync: false,
     });
-    expect(wrapper.contains(Register)).toBe(true);
+    expect(wrapper.find(Register).exists()).toBe(true);
   });
 
   it('fetches Oauth Providers if Oauth is enabled', async () => {

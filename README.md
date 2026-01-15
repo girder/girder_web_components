@@ -45,9 +45,9 @@ import Girder, { RestClient } from '@girder/components/src';
 // Install the Vue plugin that lets us use the components
 Vue.use(Girder);
 
-// This connects to another server if the VUE_APP_API_ROOT
+// This connects to another server if the VITE_API_ROOT
 // environment variable is set at build-time
-const apiRoot = process.env.VUE_APP_API_ROOT || 'http://localhost:8080/api/v1';
+const apiRoot = import.meta.env.VITE_API_ROOT || 'http://localhost:8080/api/v1';
 
 // Create the axios-based client to be used for all API requests
 const girderRest = new RestClient({
@@ -234,10 +234,10 @@ yarn test:unit
 ### Use an external Girder API
 
 To build the demo app against an external Girder API, set the
-`VUE_APP_API_ROOT` environment variable. For example:
+`VITE_API_ROOT` environment variable. For example:
 
 ```bash
-export VUE_APP_API_ROOT=https://data.kitware.com/api/v1
+export VITE_API_ROOT=https://data.kitware.com/api/v1
 yarn serve
 ```
 
