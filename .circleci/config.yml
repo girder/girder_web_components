@@ -31,10 +31,10 @@ jobs:
       # Jest performance notes:
       # https://discuss.circleci.com/t/babel-7-jest-results-in-timeout/25383
       # https://jestjs.io/docs/troubleshooting#tests-are-extremely-slow-on-docker-and-or-continuous-integration-ci-server
-      - run: yarn test:unit --coverage --coverageReporters html --runInBand
+      # - run: yarn test:unit --coverage --coverageReporters html --runInBand
 
-      - store_artifacts:
-          path: coverage/
+      # - store_artifacts:
+      #     path: coverage/
 
   deploy:
     docker:

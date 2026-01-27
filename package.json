@@ -1,117 +1,61 @@
 {
   "name": "@girder/components",
-  "version": "3.3.0",
+  "version": "4.0.0",
+  "type": "module",
   "scripts": {
     "serve": "vite",
     "build": "vite build",
     "test:unit": "jest",
     "build:demo": "BUILD_DEMO=true vite build",
-    "lint": "eslint --max-warnings=0 'src/**/*.{js,vue}' 'tests/**/*.{js,vue}' 'demo/**/*.{js,vue}'",
-    "lint:style": "stylelint 'src/**/*.vue' 'demo/**/*.vue'"
+    "lint": "eslint . --ext .js,.vue --max-warnings=0",
+    "lint:style": "stylelint --config stylelint.config.mjs \"src/**/*.{vue,css,scss}\" \"demo/**/*.{vue,css,scss}\""
   },
-  "browser": "dist/girder.umd.min.js",
-  "module": "src/index.js",
-  "main": "src/index.js",
-  "types": "types/index.d.ts",
+  "main": "dist/girder.umd.js",
+  "module": "dist/girder.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/girder.es.js",
+      "require": "./dist/girder.umd.js"
+    },
+    "./style.css": "./dist/components.css"
+  },
   "files": [
-    "/dist/",
-    "/src/",
-    "/types/"
+    "dist/",
+    "src/"
   ],
   "sideEffects": [
-    "*.vue",
     "*.css"
   ],
   "dependencies": {
-    "@mdi/font": "^5.3.45",
-    "@vue/babel-preset-app": "^5.0.8",
-    "axios": "^0.21.2",
-    "js-cookie": "^2.2.0",
-    "markdown-it": "^12.3.2",
+    "@fontsource/roboto": "5.2.7",
+    "@mdi/font": "^7.4.47",
+    "@vueuse/core": "^14.1.0",
+    "axios": "^1.7.0",
+    "js-cookie": "^3.0.5",
+    "markdown-it": "^14.0.0",
+    "mitt": "^3.0.1",
     "moment": "^2.29.4",
-    "postcss": "^8.5.6",
-    "qs": "^6.9.4",
-    "vue": "^2.7.16",
-    "vue-async-computed": "^3.4.1",
-    "vuetify": "^2.7.2"
+    "qs": "^6.12.0",
+    "vite-svg-loader": "^5.1.0",
+    "vue": "^3.5.21",
+    "vuetify": "^3.10.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.5",
-    "@babel/eslint-parser": "^7.28.5",
-    "@babel/preset-env": "^7.28.5",
-    "@vitejs/plugin-vue2": "^1.1.2",
-    "@vue/cli-plugin-babel": "^5.0.8",
-    "@vue/cli-plugin-eslint": "^5.0.8",
-    "@vue/cli-plugin-unit-jest": "^5.0.8",
-    "@vue/cli-service": "^5.0.8",
-    "@vue/test-utils": "1.0.0-beta.29",
-    "axios-mock-adapter": "^1.18.1",
-    "babel-core": "^7.0.0-bridge.0",
-    "babel-jest": "^27.5.1",
-    "eslint": "7.32.0",
-    "eslint-config-prettier": "^8.10.0",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-prettier": "4.2.1",
-    "eslint-plugin-vue": "^7.20.0",
-    "jest": "^27.5.1",
-    "jest-transform-stub": "^2.0.0",
-    "prettier": "^3.6.2",
-    "sass": "^1.94.2",
-    "sass-loader": "^12.6.0",
-    "stylelint": "^13.6.1",
-    "stylelint-config-standard": "^20.0.0",
-    "unplugin-vue-components": "^0.26.0",
-    "vite": "^3.0.6",
-    "vite-plugin-env-compatible": "^2.0.1",
-    "vue-cli-plugin-vuetify": "^2.5.3",
-    "vue-eslint-parser": "^10.2.0",
-    "vue-jest": "^3.0.7",
-    "vue-template-compiler": "^2.7.16",
-    "vuetify-loader": "^1.9.2"
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ],
-  "jest": {
-    "testEnvironment": "jsdom",
-    "moduleFileExtensions": [
-      "js",
-      "jsx",
-      "json",
-      "vue"
-    ],
-    "transform": {
-      "^.+\\.vue$": "vue-jest",
-      "^.+\\.js$": "babel-jest",
-      ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
-    },
-    "transformIgnorePatterns": [
-      "<rootDir>/node_modules/(?!(vuetify)/)"
-    ],
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1",
-      "\\.css$": "<rootDir>/tests/mocks/stub.js",
-      "^vuetify/lib$": "vuetify",
-      "^vuetify/lib/(.*)": "vuetify/es5/$1"
-    },
-    "snapshotSerializers": [
-      "jest-serializer-vue"
-    ],
-    "testMatch": [
-      "**/tests/unit/**/*.spec.js"
-    ]
-  },
-  "license": "Apache-2.0",
-  "stylelint": {
-    "extends": [
-      "stylelint-config-standard"
-    ]
+    "@vitejs/plugin-vue": "^6.0.1",
+    "eslint": "^9.35.0",
+    "eslint-config-vuetify": "^4.2.0",
+    "eslint-plugin-unused-imports": "^4.3.0",
+    "globals": "^17.0.0",
+    "postcss": "^8",
+    "postcss-html": "^1.8.0",
+    "sass-embedded": "^1.92.1",
+    "stylelint": "^16.26.1",
+    "stylelint-config-recommended-scss": "^16.0.2",
+    "stylelint-config-recommended-vue": "^1.6.1",
+    "stylelint-config-standard": "^39.0.1",
+    "typescript": "^5",
+    "vite": "^7.1.5",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-plugin-vuetify": "^2.1.2"
   }
 }

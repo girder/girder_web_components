@@ -9,5 +9,4 @@ export {
   GirderOAuth,
   GirderRegister,
 };
-
 export default GirderAuthentication;

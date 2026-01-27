@@ -52,8 +52,8 @@ describe('Upload module', () => {
 
     try {
       await upload.start();
-    } catch (e) {
-      error = e;
+    } catch (err) {
+      error = err;
     }
     expect(error).toBeInstanceOf(Error);
 
@@ -79,8 +79,8 @@ describe('Upload module', () => {
 
     try {
       await upload.start();
-    } catch (e) {
-      error = e;
+    } catch (err) {
+      error = err;
     }
     expect(error).toBeInstanceOf(Error);
     expect(error.response.data.message).toBe('Internal error');

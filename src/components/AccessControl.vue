@@ -1,109 +1,105 @@
 <script>
 import { stringify } from 'qs';
-
-import { createLocationValidator } from '../utils';
-import Breadcrumb from './Breadcrumb.vue';
-import Search from './Search.vue';
+import { createLocationValidator } from '@/utils';
+import GirderBreadcrumb from './Breadcrumb.vue';
+import GirderSearch from './Search.vue';
+import { computed, ref, watch, inject } from 'vue';
 
 export default {
-  name: 'AccessControl',
+  name: 'GirderAccessControl',
+
   components: {
-    Breadcrumb,
-    Search,
+    GirderBreadcrumb,
+    GirderSearch,
   },
-  inject: ['girderRest'],
+
   props: {
-    model: {
-      type: Object,
-      required: true,
-      validator: (model) => createLocationValidator(false)(model) && model._modelType !== 'user',
-    },
+    model: { type: Object, required: true, validator: (model) => createLocationValidator(false)(model) && model._modelType !== 'user' },
     hasPermission: { type: Boolean, required: false, default: false },
   },
-  data() {
-    return {
-      public_: false,
-      access: null,
-      recursive: false,
-      loading: false,
-    };
-  },
-  computed: {
-    groupsAndUsers() {
-      if (!this.access) {
-        return [];
-      }
-      return [...this.access.groups, ...this.access.users];
-    },
-    permissions() {
-      return [
-        {
-          text: 'Can view',
-          value: 0,
-        },
-        {
-          text: 'Can edit',
-          value: 1,
-        },
-        {
-          text: 'Is owner',
-          value: 2,
-        },
-      ];
-    },
-    publicText() {
-      if (this.public_) {
-        return 'Anyone can view this folder';
-      }
-      return 'Access is required to view this folder';
-    },
-    recursiveText() {
-      if (this.recursive) {
-        return 'Also set this permissions on all subfolders';
-      }
-      return 'Apply permissions only to this folder';
-    },
-  },
-  watch: {
-    model() {
-      this.getAccessControlData();
-    },
-    access(value) {
-      this.$emit('update:hasPermission', !!value);
-    },
-  },
-  created() {
-    if (this.model) {
-      this.getAccessControlData();
-    }
-  },
-  methods: {
-    async getAccessControlData() {
-      this.access = null;
-      this.loading = true;
-      this.public_ = this.model.public;
+
+  emits: ['update:modelAccess', 'update:hasPermission', 'close'],
+
+  setup(props, ctx) {
+    // ---- Injected Client ----
+    const { rest } = inject('girder');
+
+    // ---- State ----
+    const publicModel = ref(false);
+    const access = ref(null);
+    const recursive = ref(false);
+    const loading = ref(false);
+    
+    // ---- Computed ----
+    const groupsAndUsers = computed(() => access.value ? [...access.value.groups, ...access.value.users] : []);
+    const permissions = computed(() => [
+      { title: 'Can view', value: 0 },
+      { title: 'Can edit', value: 1 },
+      { title: 'Is owner', value: 2 },
+    ]);
+    const publicText = computed(() => publicModel.value ? 'Anyone can view this folder' : 'Access is required to view this folder')
+    const recursiveText = computed(() => recursive.value ? 'Also set this permissions on all subfolders' : 'Apply permissions only to this folder');
+    
+    // ---- Methods ----
+    async function getAccessControlData() {
+      const { model } = props;
+      access.value = null;
+      loading.value = true;
+      publicModel.value = model.public;
       try {
-        const { data: access } = await this.girderRest.get(`${this.model._modelType}/${this.model._id}/access`);
-        this.access = access;
-      } catch (ex) {
-        this.access = null;
+        const { data } = await rest.get(`${model._modelType}/${model._id}/access`);
+        access.value = data;
+      } catch (_err) {
+        access.value = null;
       }
-      this.loading = false;
-    },
-    remove(model) {
-      let index = this.access.groups.indexOf(model);
-      if (index !== -1) {
-        this.access.groups.splice(index, 1);
+      loading.value = false;
+    }
+
+    async function save() {
+      const groupAndUserAccess = {
+        users: access.value.users.map(({ id, level, flags }) => ({
+          id,
+          level,
+          flags,
+        })),
+        groups: access.value.groups.map(({ id, level, flags }) => ({
+          id,
+          level,
+          flags,
+        })),
+      };
+      const data = {
+        access: JSON.stringify(groupAndUserAccess),
+        public: publicModel.value,
+        publicFlags: [],
+        recurse: recursive.value,
+        progress: true,
+      };
+
+      const { model } = props
+      await rest.put(
+        `${model._modelType}/${model._id}/access`,
+        stringify(data),
+      );
+      ctx.emit('update:modelAccess', model);
+      ctx.emit('close');
+    }
+
+    function remove(model) {
+      const groupIndex = access.value.groups.indexOf(model);
+      if (groupIndex !== -1) {
+        access.value.groups.splice(groupIndex, 1);
         return;
       }
-      index = this.access.users.indexOf(model);
-      if (index !== -1) {
-        this.access.users.splice(index, 1);
+      const userIndex = access.value.users.indexOf(model);
+      if (userIndex !== -1) {
+        access.value.users.splice(userIndex, 1);
       }
-    },
-    groupOrUserSelected(selectedModel) {
-      if (!this.groupsAndUsers.find((model) => model.id === selectedModel._id)) {
-        this.access[`${selectedModel._modelType}s`].push({
+    }
+
+    function groupOrUserSelected(selectedModel) {
+      if (!groupsAndUsers.value.find((model) => model.id === selectedModel._id)) {
+        access.value[`${selectedModel._modelType}s`].push({
           flags: [],
           id: selectedModel._id,
           level: 0,
@@ -114,129 +110,117 @@ export default {
             selectedModel.login || selectedModel.description,
         });
       }
-    },
-    async save() {
-      const access = {
-        users: this.access.users.map(({ id, level, flags }) => ({
-          id,
-          level,
-          flags,
-        })),
-        groups: this.access.groups.map(({ id, level, flags }) => ({
-          id,
-          level,
-          flags,
-        })),
-      };
-      const data = {
-        access: JSON.stringify(access),
-        public: this.public_,
-        publicFlags: [],
-        recurse: this.recursive,
-        progress: true,
-      };
-      await this.girderRest.put(
-        `${this.model._modelType}/${this.model._id}/access`,
-        stringify(data),
-      );
-      this.$emit('model-access-changed', this.model);
-      this.$emit('close');
-    },
+    }
+
+    // ---- Watchers ----
+    watch(
+      () => props.model,
+      (val) => {if (val) {getAccessControlData()}},
+      { immediate: true, deep: false }
+    );
+    watch(
+      () => access.value,
+      (val) => ctx.emit('update:hasPermission', !!val),
+    );
+    return {
+      publicModel,
+      access,
+      recursive,
+      loading,
+      publicText,
+      recursiveText,
+      groupsAndUsers,
+      permissions,
+      save,
+      groupOrUserSelected,
+      remove,
+    };
   },
 };
 </script>
 
 <template>
-  <v-card class="px-3 py-2 access-control">
-    <v-card-title>
-      <div>
-        <div class="title">
-          Access control
-        </div>
-        <breadcrumb
+  <v-card class="access-control">
+    <v-card-item title="Access Control">
+      <v-card-subtitle>
+        <girder-breadcrumb
           :location="model"
           readonly="readonly"
           no-root="no-root"
         />
-      </div>
-    </v-card-title>
-    <v-card-text class="pt-0">
-      <v-switch
-        v-model="public_"
-        :hint="publicText"
-        class="mb-4"
-        label="Public"
-        persistent-hint="persistent-hint"
-      />
-      <v-subheader>Users / Groups</v-subheader>
-      <transition
-        name="height"
-        mode="out-in"
-      >
-        <v-list
-          v-if="groupsAndUsers.length"
-          class="group-user"
-          two-line="two-line"
-        >
-          <transition-group name="height2">
-            <v-list-item
-              v-for="resource of groupsAndUsers"
-              :key="resource.id"
-            >
-              <v-list-item-action class="mr-5">
-                <v-icon>{{ $vuetify.icons.values[resource.login?'user':'group'] }}</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>{{ resource.name }}</v-list-item-title>
-                <v-list-item-subtitle>
-                  {{ resource.login||resource.description }}
-                </v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action class="mr-5">
-                <v-select
-                  v-model="resource.level"
-                  :items="permissions"
-                  class="level"
-                  light="light"
-                  solo="solo"
-                  hide-details="hide-details"
-                  dense="dense"
-                />
-              </v-list-item-action>
-              <v-list-item-action class="mr-5">
-                <v-btn
-                  icon="icon"
-                  @click="remove(resource)"
-                >
-                  <v-icon>mdi-minus-circle</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </v-list-item>
-          </transition-group>
-        </v-list>
-        <div
-          v-if="!groupsAndUsers.length && !loading"
-          class="mt-1 mb-2"
-        >
-          Empty
-        </div>
-      </transition>
-      <v-subheader>Grant access</v-subheader>
-      <search
+      </v-card-subtitle>
+    </v-card-item>
+    <v-card-text>
+      <girder-search
         :search-type-options="[{ name: 'User', value: 'user'}, { name: 'Group', value: 'group'}]"
         :search-types="['user', 'group']"
         class="search mb-3"
-        hide-search-icon="hide-search-icon"
         placeholder="User or group name"
         @select="groupOrUserSelected"
       />
-      <v-switch
-        v-model="recursive"
-        :hint="recursiveText"
-        class="mt-0"
-        label="Include subfolders"
-        persistent-hint="persistent-hint"
-      />
+      <v-list
+        v-if="groupsAndUsers.length"
+        max-height="400px"
+      >
+        <v-list-item
+          v-for="resource in groupsAndUsers"
+          :key="resource.id"
+          :title="resource.name"
+          :subtitle="resource.login || resource.description"
+        >
+          <template #prepend>
+            <v-icon :icon="resource.login ? '$user' : '$group'" />
+          </template>
+          <template #append>
+            <v-select
+              v-model="resource.level"
+              :items="permissions"
+              :item-props="true"
+              class="level"
+              variant="solo-filled"
+              flat
+              hide-details
+              density="compact"
+              width="200px"
+            />
+            <v-btn
+              v-tooltip="'Delete'"
+              icon="$delete"
+              variant="text"
+              @click="remove(resource)"
+            />
+          </template>
+        </v-list-item>
+        <v-list-item
+          v-if="!groupsAndUsers.length && !loading"
+          title="No access granted yet"
+        />
+      </v-list>
+      <div class="d-flex pb-2">
+        <v-switch
+          v-model="publicModel"
+          :hint="publicText"
+          label="Public"
+          persistent-hint
+          density="compact"
+          width="50%"
+          color="primary"
+          class="ma-3"
+          prepend-icon="$lock"
+        />
+        <v-switch
+          v-model="recursive"
+          :hint="recursiveText"
+          label="Include subfolders"
+          persistent-hint
+          density="compact"
+          width="50%"
+          color="primary"
+          class="ma-3"
+          prepend-icon="$folderMultiple"
+        />
+        <v-spacer />
+      </div>
     </v-card-text>
     <slot
       v-bind="{ save, loading }"
@@ -245,66 +229,27 @@ export default {
       <v-card-actions>
         <v-spacer />
         <v-btn
-          text="text"
+          text="Cancel"
           @click="$emit('close')"
-        >
-          Cancel
-        </v-btn>
+        />
         <v-btn
+          text="Save"
           color="primary"
-          depressed="depressed"
           @click="save"
-        >
-          Save
-        </v-btn>
+        />
       </v-card-actions>
     </slot>
   </v-card>
 </template>
 
-<style lang="scss" scoped>
-.v-subheader {
-  padding-left: 0;
-  height: unset;
-}
+<style scoped lang="scss">
+.access-control {
+  :deep(.v-card-item) {
+    background-color: rgb(var(--v-theme-surface-light));
+  }
 
-.v-input.v-input--switch .v-input__slot {
-  margin-bottom: 6px;
-}
-
-.v-list.group-user {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.height-enter-active,
-.height-leave-active {
-  transition: all 0.3s;
-  max-height: 400px !important;
-  overflow-y: hidden;
-}
-
-.height-enter,
-.height-leave-to {
-  opacity: 0;
-  max-height: 0 !important;
-}
-
-.height2-enter-active,
-.height2-leave-active {
-  transition: all 0.2s;
-  max-height: 72px !important;
-  overflow-y: hidden;
-}
-
-.height2-enter,
-.height2-leave-to {
-  opacity: 0;
-  min-height: 0 !important;
-  max-height: 0 !important;
-}
-
-.level {
-  max-width: 150px;
+  :deep(.v-card-text) {
+    padding: 16px;
+  }
 }
 </style>
