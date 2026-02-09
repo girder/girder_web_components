@@ -93,8 +93,8 @@ describe('S3 upload behavior', () => {
     });
     try {
       await upload.start();
-    } catch (e) {
-      error = e;
+    } catch (err) {
+      error = err;
     }
     expect(error).toBeInstanceOf(Error);
     expect((await upload.resume())._id).toBe('789');
@@ -109,9 +109,9 @@ describe('S3 upload behavior', () => {
 
     mock.onPost('file').replyOnce(200, S3_MULTIPART_INIT_RESP);
     mock.onPost('file/chunk').reply(200, S3_MULTIPART_CHUNK_RESP);
-    mock.onPost('file/completion').reply(200, {
-      _id: '789',
-      s3FinalizeRequest: S3_MULTIPART_FINALIZE_RESP,
+    mock.onPost('file/completion').reply(() => {
+      finalized = true;
+      return [200, { _id: '789' }];
     });
 
     // Fail once at multipart initialization
@@ -151,22 +151,22 @@ describe('S3 upload behavior', () => {
 
     try {
       await upload.start();
-    } catch (e) {
-      error = e;
+    } catch (err) {
+      error = err;
     }
     expectError(S3_MULTIPART_INIT_RESP.s3.request);
 
     try {
       await upload.resume();
-    } catch (e) {
-      error = e;
+    } catch (err) {
+      error = err;
     }
     expectError(S3_MULTIPART_CHUNK_RESP.s3.request);
 
     try {
       await upload.resume();
-    } catch (e) {
-      error = e;
+    } catch (err) {
+      error = err;
     }
     expectError(S3_MULTIPART_FINALIZE_RESP);
 

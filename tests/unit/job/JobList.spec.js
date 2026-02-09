@@ -22,7 +22,7 @@ describe('JobList.vue', () => {
   let app;
 
   async function waitForResponses(wrapper) {
-    await Promise.all([ /* eslint-disable no-underscore-dangle */
+    await Promise.all([  
       wrapper.vm._async_computed$jobs,
       wrapper.vm._async_computed$typeAndStatusList,
       wrapper.vm.$nextTick(),

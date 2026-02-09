@@ -1,45 +1,51 @@
-import { defineConfig } from 'vite';
-import { fileURLToPath } from 'url'
-import vue from '@vitejs/plugin-vue2';
-import envCompatible from 'vite-plugin-env-compatible';
+import dts from 'vite-plugin-dts';
+import svgLoader from 'vite-svg-loader';
+import Vue from '@vitejs/plugin-vue';
+import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 
-// not needed after moving to vue3
-import { VuetifyResolver } from "unplugin-vue-components/resolvers";
-import Components from "unplugin-vue-components/vite";
+import { defineConfig } from 'vite';
+import { fileURLToPath, URL } from 'node:url';
 
 const isDemo = process.env.BUILD_DEMO === 'true';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  plugins: [
+    svgLoader(),
+    Vue({
+      template: { transformAssetUrls },
+    }),
+    // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#readme
+    Vuetify({
+      autoImport: true,
+    }),
+    dts({
+      insertTypesEntry: true,
+    }),
+  ],
+  optimizeDeps: {
+    exclude: [
+      'vuetify',
+    ],
+  },
+  define: { 'process.env': {} },
   resolve: {
     alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url)),
-        vue: 'vue/dist/vue.esm.js',
+      '@': fileURLToPath(new URL('src', import.meta.url)),
     },
     extensions: [
-      '.mjs',
       '.js',
-      '.ts',
-      '.jsx',
-      '.tsx',
       '.json',
-      '.vue'
-    ]
+      '.jsx',
+      '.mjs',
+      '.ts',
+      '.tsx',
+      '.vue',
+    ],
   },
-  plugins: [
-    vue({ jsx: true }),
-    envCompatible(),
-    Components({
-      resolvers: [VuetifyResolver()],
-      // Don't exclude girder web components
-      exclude: [
-        /[\\/]node_modules[\\/](?!(@girder[\\/]components[\\/]|\.pnpm[\\/]@girder.*))/,
-        /[\\/]\.git[\\/]/,
-        /[\\/]\.nuxt[\\/]/,
-      ],
-    })
-  ],
-  base: '/',
+  server: {
+    port: 3000,
+  },
   build: isDemo
     ? {
         outDir: '_site',
@@ -67,5 +73,5 @@ export default defineConfig({
     },
     sourcemap: true,
     minify: true
-  }
+  },
 })

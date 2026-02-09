@@ -1,169 +1,175 @@
 <script>
 import { stringify } from 'qs';
 import GirderBreadcrumb from './Breadcrumb.vue';
-import GirderMarkdownEditor from './MarkdownEditor.vue';
-import { createLocationValidator } from '../utils';
+import GirderMarkdownEditor from './MarkdownEditor';
+import { createLocationValidator } from '@/utils';
+import { computed, inject, onMounted, ref } from 'vue';
 
 const GIRDER_FOLDER_ENDPOINT = 'folder';
 
 export default {
+  name: 'GirderUpsertFolder',
+
   components: {
     GirderBreadcrumb,
     GirderMarkdownEditor,
   },
-  inject: ['girderRest'],
+
   props: {
-    location: {
-      type: Object,
-      required: true,
-      validator: createLocationValidator(false),
-    },
-    edit: {
-      type: Boolean,
-      default: false,
-    },
-    preUpsert: {
-      type: Function,
-      default: () => {},
-    },
-    postUpsert: {
-      type: Function,
-      default: () => {},
-    },
+    location: { type: Object, required: true, validator: createLocationValidator(false) },
+    edit: { type: Boolean, default: false },
+    preUpsert: { type: Function, default: () => {} },
+    postUpsert: { type: Function, default: () => {} },
   },
-  data() {
-    return {
-      name: '',
-      description: '',
-      error: '',
-    };
-  },
-  computed: {
-    append() {
-      return this.edit ? [] : [this.name || 'New Folder'];
-    },
-  },
-  mounted() {
-    if (this.edit) {
-      this.loadFolder(this.location._id);
-    }
-  },
-  methods: {
-    async upsert() {
-      this.error = '';
+
+  emits: ['dismiss', 'done', 'error'],
+
+  setup(props, ctx) {
+    // ---- Injected client ----
+    const { rest } = inject('girder');
+
+    // ---- State ----
+    const folderName = ref('');
+    const folderDescription = ref('');
+    const error = ref(null);
+
+    // ---- Computed ----
+    const append = computed(() => props.edit ? [] : [{name: folderName.value || 'New Folder', type: 'folder'}]);
+    
+    // ---- Methods ----
+    async function upsert() {
+      const { edit, location, preUpsert, postUpsert } = props;
+      error.value = null;
       try {
-        await this.preUpsert();
-        if (this.edit) {
-          await this.girderRest.put(
-            `${GIRDER_FOLDER_ENDPOINT}/${this.location._id}`,
+        await preUpsert();
+        if (edit) {
+          await rest.put(
+            `${GIRDER_FOLDER_ENDPOINT}/${location._id}`,
             stringify({
-              name: this.name,
-              description: this.description,
+              name: folderName.value,
+              description: folderDescription.value,
             }),
           );
         } else {
-          await this.girderRest.post(
+          await rest.post(
             GIRDER_FOLDER_ENDPOINT,
             stringify({
-              parentType: this.location._modelType,
-              parentId: this.location._id,
-              name: this.name,
-              description: this.description,
+              parentType: location._modelType,
+              parentId: location._id,
+              name: folderName.value,
+              description: folderDescription.value,
               reuseExisting: false,
             }),
           );
         }
-        await this.postUpsert();
-        this.name = '';
-        this.description = '';
-        this.$emit('done');
-      } catch (error) {
-        this.$emit('error', { type: 'upsert', error });
-        this.setError(error);
+        await postUpsert();
+        folderName.value = '';
+        folderDescription.value = '';
+        ctx.emit('done');
+      } catch (upsertError) {
+        ctx.emit('error', { type: 'upsert', upsertError });
+        setError(upsertError);
       }
-    },
-    async loadFolder(id) {
-      this.error = '';
+    }
+
+    async function loadFolder(id) {
+      error.value = null;
       try {
-        const { data } = await this.girderRest.get(`${GIRDER_FOLDER_ENDPOINT}/${id}`);
-        this.name = data.name;
-        this.description = data.description;
-      } catch (error) {
-        this.$emit('error', { type: 'load', error });
-        this.setError(error);
+        const { data } = await rest.get(`${GIRDER_FOLDER_ENDPOINT}/${id}`);
+        folderName.value = data.name;
+        folderDescription.value = data.description;
+      } catch (loadFolderError) {
+        ctx.emit('error', { type: 'load', loadFolderError });
+        setError(loadFolderError);
       }
-    },
-    setError(err) {
+    }
+
+    function setError(err) {
       if (err.response) {
         const { data = {} } = err.response;
         const { type = 'unknown', message, field = 'unknown' } = data;
-        this.error = `${type} error on ${field}: ${message || err.message}`;
+        error.value = `${type} error on ${field}: ${message || err.message}`;
       } else {
-        this.error = `Unknown error: ${err.message}`;
+        error.value = `Unknown error: ${err.message}`;
       }
-    },
+    }
+
+    // ---- LifeCycle ----
+    onMounted(() => {
+      if (props.edit) {
+        loadFolder(props.location._id);
+      }
+    });
+
+    return {
+      append,
+      folderName,
+      folderDescription,
+      error,
+      upsert,
+    };
   },
 };
 </script>
 
 <template>
   <v-form @submit.prevent="upsert">
-    <v-card flat="flat">
-      <v-row
-        class="pa-2 flex-column"
-        no-gutters="no-gutters"
-      >
-        <slot name="header">
-          <v-card-title
-            class="pb-0"
-            primary-title="primary-title"
-          >
-            <h5 class="display-1" />{{ edit ? 'Edit Folder' : 'Create New Folder' }}
-          </v-card-title>
-        </slot>
-        <v-card-text>
-          <v-text-field
-            ref="folderName"
-            v-model="name"
-            autofocus="autofocus"
-            label="Folder Name"
-          />
+    <v-card class="upsert-folder">
+      <v-card-item :title="edit ? 'Edit Folder' : 'Create New Folder'">
+        <v-card-subtitle>
           <girder-breadcrumb
             v-bind="{ location, append }"
             class="mb-3"
             readonly="readonly"
           />
-          <girder-markdown-editor
-            v-model="description"
-            label="Description (Optional)"
-          />
-          <v-alert
-            :value="!!error"
-            type="error"
-            dismissible="dismissible"
-            transition="scale-transition"
-          >
-            {{ error }}
-          </v-alert>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            text="text"
-            @click="$emit('dismiss')"
-          >
-            Cancel
-          </v-btn>
-          <v-btn
-            :disabled="!name"
-            depressed="depressed"
-            color="primary"
-            type="submit"
-          >
-            {{ edit ? 'Save Changes' : 'Create Folder' }}
-          </v-btn>
-        </v-card-actions>
-      </v-row>
+        </v-card-subtitle>
+      </v-card-item>
+        
+      <v-card-text>
+        <v-text-field
+          v-model="folderName"
+          label="Folder Name"
+          variant="solo-filled"
+          flat
+        />
+        <girder-markdown-editor
+          v-model="folderDescription"
+          label="Description (Optional)"
+        />
+        <v-alert
+          v-if="!!error"
+          type="error"
+          dismissible="dismissible"
+          transition="scale-transition"
+          title="Error"
+          :text="error"
+        />
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          text="Cancel"
+          @click="$emit('dismiss')"
+        />
+        <v-btn
+          :disabled="!folderName"
+          color="primary"
+          :text="edit ? 'Save Changes' : 'Create Folder'"
+          type="submit"
+        />
+      </v-card-actions>
     </v-card>
   </v-form>
 </template>
+
+<style scoped lang="scss">
+.upsert-folder {
+  :deep(.v-card-item) {
+    background-color: rgb(var(--v-theme-surface-light));
+  }
+
+  :deep(.v-card-text) {
+    padding: 16px;
+  }
+}
+</style>
