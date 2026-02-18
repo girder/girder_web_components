@@ -50,9 +50,6 @@ export default defineConfig({
     ? {
         outDir: '_site',
         emptyOutDir: true,
-        rollupOptions: {
-          input: 'demo/main.js',
-        },
       }
     : {
     lib: {
