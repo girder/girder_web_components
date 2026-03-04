@@ -62,7 +62,7 @@ export default {
 
     const statusMessage = computed(() => {
       if (uploading.value) {
-        return `${formatSize(totalProgress.value)} / ${formatSize(totalSize.value)} (${formatSize(totalProgressPercent.value)}%)`;
+        return `${formatSize(totalProgress.value)} / ${formatSize(totalSize.value)} (${Math.round(totalProgressPercent.value)}%)`;
       }
       return `${files.value.length} selected (${formatSize(totalSize.value)} total)`;
     });
