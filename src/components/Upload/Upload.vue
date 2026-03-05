@@ -61,10 +61,10 @@ export default {
     );
 
     const statusMessage = computed(() => {
-      if (uploading) {
-        return `${formatSize(totalProgress)} / ${formatSize(totalSize)} (${formatSize(totalProgressPercent)}%)`;
+      if (uploading.value) {
+        return `${formatSize(totalProgress.value)} / ${formatSize(totalSize.value)} (${Math.round(totalProgressPercent.value)}%)`;
       }
-      return `${files.length} selected (${formatSize(totalSize)} total)`;
+      return `${files.value.length} selected (${formatSize(totalSize.value)} total)`;
     });
 
     function startUpload() {
@@ -108,7 +108,7 @@ export default {
         </div>
         <v-progress-linear
           v-if="uploading"
-          :value="totalProgressPercent"
+          :model-value="totalProgressPercent"
           :indeterminate="indeterminate"
           height="20"
         />
