@@ -205,7 +205,7 @@ export default {
     async function fetchPaginatedCollectionOrUserRows(type) {
       rowsLoading.value = true;
 
-      const { page, itemsPerPage } = props.options;
+      const { page, itemsPerPage } = internalOptions.value;
       const { data } = await rest.get(type, {
         params: {
           limit: itemsPerPage >= 0 ? itemsPerPage : null,
@@ -339,6 +339,7 @@ export default {
     :server-items-length="serverItemsLength"
     :loading="rowsLoading"
     :selectable="isSelectable"
+    :items-per-page-options="itemsPerPageOptions"
     class="data-browser"
     @row-click="rowClick"
     @row-right-click="$emit('rowRightClick', $event)"
