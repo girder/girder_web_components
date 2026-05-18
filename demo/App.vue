@@ -316,7 +316,7 @@ function postUpload() {
                 ref="file-manager"
                 v-model:selected="selected"
                 v-model:location="location"
-                :items-per-page-options="[10, 20, -1]"
+                :items-per-page-options="[10, 20]"
                 :drag-enabled="dragEnabled"
                 :new-folder-enabled="newFolderEnabled"
                 :selectable="selectable"

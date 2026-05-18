@@ -11,10 +11,11 @@ export default {
     draggable: {type: Boolean, default: false},
     loading: {type: Boolean, default: false},
     options: {type: Object, default: () => ({
-      itemsPerPage: 10,
+        itemsPerPage: 10,
         page: 1
       })
     },
+    itemsPerPageOptions: { type: Array, default: () => [10, 25, 50] },
     selectable: {type: Boolean, default: false},
     selected: {type: Array, default: () => []},
   },
@@ -115,6 +116,7 @@ export default {
     :items-length="serverItemsLength"
     :loading="loading"
     :items-per-page="options.itemsPerPage"
+    :items-per-page-options="itemsPerPageOptions"
     :page="options.page"
     hover
     item-value="_id"
