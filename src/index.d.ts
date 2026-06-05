@@ -145,11 +145,15 @@ export class NotificationBus {
     gr: RestClient,
     args?: {
       EventSource?: EventSource
+      WebSocket?: WebSocket
       listenToRestClient?: boolean
       pollingInterval?: number[]
       since?: Date
       useEventSource?: boolean
+      useWebSocket?: boolean
       withCredentials?: boolean
+      reconnectInterval?: number
+      maxReconnectAttempts?: number
     }
   )
 

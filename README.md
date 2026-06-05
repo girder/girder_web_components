@@ -34,7 +34,7 @@ const app = createApp(App)
 
 app.use(GirderPlugin, {
   girder: {apiRoot: import.meta.env.VITE_API_ROOT},
-  notification: {useEventSource: true},
+  notifications: {useEventSource: true}, // Girder 3; use useWebSocket: true for Girder 5
   components: true // register all components
 })
 app.mount('#app')
@@ -87,6 +87,46 @@ See [the demo app](demo/App.vue) for a more comprehensive example.
 
 ## Advanced Usage
 
+### Real-time notifications (Girder 3 vs Girder 5)
+
+Girder web components can receive server push notifications through the
+[`NotificationBus`](./src/utils/notificationBus.js). The transport depends on
+which Girder version your API server runs:
+
+| Girder version | Transport | Plugin option |
+| --- | --- | --- |
+| Girder 3 | Server-Sent Events (`/notification/stream`) | `notifications: { useEventSource: true }` |
+| Girder 5 | WebSocket (`/notifications/me?token=…`) | `notifications: { useWebSocket: true }` |
+
+**Girder 3 (EventSource)** uses long-polling over SSE. If the stream fails, the
+bus falls back to HTTP polling automatically.
+
+**Girder 5 (WebSocket)** connects to the ASGI notification channel documented
+in the [Girder 5 migration guide](https://girder.readthedocs.io/en/stable/migration-guide.html#overhaul-of-notifications-system-switch-from-wsgi-to-asgi).
+The user must be authenticated (a Girder token is required). On unexpected
+disconnects the bus retries with exponential backoff controlled by
+`reconnectInterval` and `maxReconnectAttempts`.
+
+```javascript
+/* Girder 3 */
+app.use(GirderPlugin, {
+  girder: { apiRoot: import.meta.env.VITE_API_ROOT },
+  notifications: { useEventSource: true },
+})
+
+/* Girder 5 */
+app.use(GirderPlugin, {
+  girder: { apiRoot: import.meta.env.VITE_API_ROOT },
+  notifications: { useWebSocket: true },
+})
+```
+
+When using WebSockets, ensure your reverse proxy forwards the `Upgrade` header
+(see [Girder deployment docs](https://girder.readthedocs.io/en/stable/deployment.html)).
+
+If neither `useEventSource` nor `useWebSocket` is set, the bus uses standard
+HTTP polling against `/notification`.
+
 ### Customizing Vuetify Configuration
 Custom additional vuetify configuration can be passed to the plugin through the `vuetifyConfig` option.
 If your downstream application is also using Vuetify and needs to pass additional configuration
@@ -103,7 +143,7 @@ const app = createApp(App)
 
 app.use(GirderPlugin, {
   girder: {apiRoot: import.meta.env.VITE_API_ROOT},
-  notification: {useEventSource: true},
+  notifications: {useEventSource: true},
   vuetifyConfig: {icons: {aliases: {login: 'mdi-circle' }}}
 })
 app.mount('#app')

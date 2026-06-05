@@ -7,7 +7,8 @@ const app = createApp(App)
 
 app.use(GirderPlugin, {
     girder: {apiRoot: import.meta.env.VITE_API_ROOT},
-    notification: {useEventSource: true},
+    // useEventSource for Girder 3; useWebSocket for Girder 5
+    notifications: {useEventSource: true},
     components: true,
 })
 app.mount('#app')

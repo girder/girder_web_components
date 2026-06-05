@@ -5,7 +5,9 @@ import vuetify from './vuetify';
 /**
  * @typedef {Object} GwcPluginOptions
  * @property {Object} [girder] - Configuration for the Girder Rest Client
- * @property {Object} [notifications] - Configuration for the Girder Notification Bus
+ * @property {Object} [notifications] - Configuration for the Girder Notification Bus.
+ *   Set `useEventSource: true` for Girder 3 Server-Sent Events, or `useWebSocket: true`
+ *   for Girder 5 WebSocket notifications.
  * @property {Boolean} [components] - Register all components
  * @property {Object} [vuetifyConfig] - Custom vuetify config
  */
