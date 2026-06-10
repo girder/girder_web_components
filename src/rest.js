@@ -125,7 +125,7 @@ export default class RestClient extends Vue {
     try {
       await this.delete('user/authentication');
     } catch (err) {
-      if (err.response.status !== 401) {
+      if (!err.response || err.response.status !== 401) {
         throw err;
       }
     } finally {
