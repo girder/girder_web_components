@@ -2,6 +2,7 @@ import axios_ from 'axios';
 import cookies from 'js-cookie';
 import { stringify } from 'qs';
 import Vue from 'vue';
+import legacyGirderParamsSerializer from './utils/legacyGirderParamsSerializer';
 
 const GirderTokenLength = 64;
 export const OauthTokenPrefix = '#girderToken=';
@@ -53,7 +54,8 @@ export default class RestClient extends Vue {
   constructor({
     apiRoot = '/api/v1',
     token = cookies.get('girderToken') || setCookieFromHash(window.location),
-    axios = axios_.create(),
+    // Axios 1.x bracket-encodes nested params; Girder jsonParam expects JSON strings.
+    axios = axios_.create({ paramsSerializer: legacyGirderParamsSerializer }),
     authenticateWithCredentials = false,
     useGirderAuthorizationHeader = false,
     setLocalCookie = true,
