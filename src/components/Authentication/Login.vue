@@ -1,6 +1,7 @@
 <script>
-import { ref, inject } from "vue";
+import { ref } from "vue";
 import GirderOauth from "./OAuth.vue";
+import useGirderLogin from "@/composables/login";
 
 export default {
   name: "GirderLogin",
@@ -18,25 +19,7 @@ export default {
   emits: ['forgotPassword'],
 
   setup() {
-    // ---- Constants ----
-    const OTP_MAGIC_SUBSTRING =
-      "authentication must include a one-time password";
-
-    // ---- Injected client ----
-    const { rest } = inject("girder");
-
-    // ---- State ----
-    const username = ref("");
-    const password = ref("");
-    const otp = ref(null);
-    const otpFormVisible = ref(false);
-    const requiresEmailVerification = ref(false);
-    const inProgress = ref(false);
-
-    const alerts = ref({
-      error: "",
-      success: "",
-    });
+    const auth = useGirderLogin();
 
     const loginForm = ref(null);
 
@@ -53,72 +36,30 @@ export default {
     ];
 
     // ---- Methods ----
-    const sendVerification = async () => {
-      await rest.post("user/verification", null, {
-        params: { login: username.value },
-      });
-
-      alerts.value.error = "";
-      alerts.value.success = "Verification email sent";
-      requiresEmailVerification.value = false;
-    };
-
     const login = async () => {
-      const valid = await loginForm.value.validate();
+      // Vuetify 3 resolves validate() to { valid, errors }
+      const { valid } = await loginForm.value.validate();
       if (!valid) {return;}
 
-      alerts.value.error = "";
-      alerts.value.success = "";
-      requiresEmailVerification.value = false;
-      inProgress.value = true;
-
-      try {
-        await rest.login(
-          username.value,
-          password.value,
-          otp.value
-        );
-
-        password.value = "";
-        otp.value = null;
-        otpFormVisible.value = false;
-      } catch (err) {
-        if (!err.response || err.response.status !== 401) {
-          alerts.value.error = "Unknown error.";
-          throw err;
-        }
-
-        const { message, extra } = err.response.data;
-
-        if (message?.includes(OTP_MAGIC_SUBSTRING)) {
-          otp.value = null;
-          otpFormVisible.value = true;
-          loginForm.value.resetValidation();
-        } else {
-          alerts.value.error = message || "Unauthorized.";
-
-          if (extra === "emailVerification") {
-            requiresEmailVerification.value = true;
-          }
-        }
-      } finally {
-        inProgress.value = false;
+      const result = await auth.login();
+      if (result === "otp") {
+        loginForm.value.resetValidation();
       }
     };
 
     return {
-      username,
-      password,
-      otp,
-      otpFormVisible,
-      requiresEmailVerification,
-      inProgress,
-      alerts,
+      username: auth.username,
+      password: auth.password,
+      otp: auth.otp,
+      otpFormVisible: auth.otpRequired,
+      requiresEmailVerification: auth.requiresEmailVerification,
+      inProgress: auth.inProgress,
+      alerts: auth.alerts,
       loginForm,
       nonEmptyRules,
       otpRules,
       login,
-      sendVerification,
+      sendVerification: auth.sendVerification,
     };
   },
 };

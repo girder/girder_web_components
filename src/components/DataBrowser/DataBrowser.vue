@@ -1,17 +1,12 @@
 <script>
-import { ref, computed, watch, inject } from 'vue';
+import { ref, computed, watch } from 'vue';
 import GirderDataTable from './DataTable.vue';
+import useDataBrowser from '@/composables/dataBrowser';
 import {
   createLocationValidator,
   getLocationType,
-  getSingularLocationTypeName,
   isRootLocation,
-  formatSize,
-  getResourceIcon,
 } from '@/utils';
-
-const GIRDER_FOLDER_ENDPOINT = 'folder';
-const GIRDER_ITEM_ENDPOINT = 'item';
 
 export default {
   name: "GirderDataBrowser",
@@ -36,6 +31,9 @@ export default {
       })
     },
     itemsPerPageOptions: { type: Array, default: () => [10, 25, 50] },
+    // Object with count() and list() methods, see createRestDataSource.
+    // Read once when the component is created.
+    dataSource: { type: Object, default: null },
   },
 
   emits: [
@@ -51,34 +49,6 @@ export default {
   ],
 
   setup(props, ctx) {
-    // ---- Injected client ----
-    const { rest, user } = inject("girder");
-
-    // ---- State ----
-    const internalRefreshCounter = ref(0);
-    const rows = ref([]);
-    const rowsLoading = ref(false);
-    const counts = ref({
-      nFolders: 0,
-      nItems: 0,
-      nUsers: 0,
-      nCollections: 0,
-    });
-    const internalSelected = ref(props.selected);
-    const internalOptions= ref(props.options);
-
-    // ---- Computed ----
-    const isSelectable = computed(
-      () =>
-        props.selectable &&
-        props.location &&
-        !isRootLocation(props.location),
-    );
-    
-    const serverItemsLength = computed(() =>
-      Object.values(counts.value).reduce((a, b) => a + b, 0),
-    );
-
     // ---- Validation ----
     if (!createLocationValidator(!props.rootLocationDisabled)(props.location)) {
       if (!props.rootLocationDisabled) {
@@ -90,7 +60,31 @@ export default {
         'Location is not valid: must not be empty and have an _id',
       );
     }
-  
+
+    // ---- State ----
+    const internalSelected = ref(props.selected);
+    const internalOptions = ref(props.options);
+
+    const {
+      rows,
+      loading: rowsLoading,
+      counts,
+      serverItemsLength,
+      refresh: refreshRows,
+    } = useDataBrowser({
+      location: () => props.location,
+      options: internalOptions,
+      source: props.dataSource || undefined,
+    });
+
+    // ---- Computed ----
+    const isSelectable = computed(
+      () =>
+        props.selectable &&
+        props.location &&
+        !isRootLocation(props.location),
+    );
+
     // ---- Methods ----
     function rowClick(row) {
       ctx.emit('rowClick', row, props.location);
@@ -111,186 +105,14 @@ export default {
 
     function refresh() {
       internalSelected.value = [];
-      internalRefreshCounter.value++;
-    }
-
-    async function fetchPaginatedRows() {
-      if (counts.value.nFolders || counts.value.nItems) {
-        return fetchPaginatedFolderRows();
-      }
-
-      const type = getLocationType(props.location);
-      if (['users', 'collections'].includes(type)) {
-        return fetchPaginatedCollectionOrUserRows(
-          getSingularLocationTypeName(props.location),
-        );
-      }
-
-      if (type === 'root') {
-        return generateRootRows();
-      }
-
-      return [];
-    }
-
-    async function fetchPaginatedFolderRows() {
-      rowsLoading.value = true;
-
-      const { nFolders, nItems } = counts.value;
-      const { page, itemsPerPage } = internalOptions.value;
-      const location = props.location;
-
-      let folderNotPublic = false;
-      if (!location.created && location._modelType === 'folder') {
-        folderNotPublic = !(await rest.get(`folder/${location._id}`)).data
-          .public;
-      }
-
-      const promises = [];
-
-      const folderOffset =
-        itemsPerPage === -1 ? 0 : (page - 1) * itemsPerPage;
-
-      const foldersLeft = Math.max(nFolders - folderOffset, 0);
-      if (foldersLeft > 0) {
-        promises.push(
-          rest.get(GIRDER_FOLDER_ENDPOINT, {
-            params: {
-              parentType: location._modelType,
-              parentId: location._id,
-              limit: itemsPerPage === -1 ? 0 : itemsPerPage,
-              offset: folderOffset,
-            },
-          }),
-        );
-      }
-
-      const itemOffset = Math.max(folderOffset - nFolders, 0);
-      const itemsLeft = Math.max(nItems - itemOffset, 0);
-
-      if (
-        itemsLeft > 0 &&
-        (itemsPerPage === -1 || itemsPerPage - foldersLeft > 0)
-      ) {
-        promises.push(
-          rest.get(GIRDER_ITEM_ENDPOINT, {
-            params: {
-              folderId: location._id,
-              limit:
-                itemsPerPage === -1
-                  ? 0
-                  : itemsPerPage - foldersLeft,
-              offset: itemOffset,
-            },
-          }),
-        );
-      }
-
-      const rowsData = (await Promise.all(promises))
-        .flatMap((r) => r.data)
-        .map((item) => ({
-          ...item,
-          humanSize: item.size ? formatSize(item.size) : '',
-          icon: getResourceIcon(item),
-          notPublic:
-            item._modelType === 'folder'
-              ? !item.public
-              : folderNotPublic,
-        }));
-
-      rowsLoading.value = false;
-      return rowsData;
-    }
-
-    async function fetchPaginatedCollectionOrUserRows(type) {
-      rowsLoading.value = true;
-
-      const { page, itemsPerPage } = internalOptions.value;
-      const { data } = await rest.get(type, {
-        params: {
-          limit: itemsPerPage >= 0 ? itemsPerPage : null,
-          offset: (page - 1) * itemsPerPage,
-        },
-      });
-
-      rowsLoading.value = false;
-      return data.map((item) => ({
-        ...item,
-        name:
-          item._modelType === 'user'
-            ? `${item.firstName} ${item.lastName}`
-            : item.name,
-        humanSize: item.size ? formatSize(item.size) : '',
-        icon: getResourceIcon(item),
-      }));
-    }
-
-    function generateRootRows() {
-      const rows = [{ type: 'collections', name: 'Collections', icon: '$collection' }];
-      if (rest.user) {
-        rows.push({ type: 'users', name: 'Users', icon: '$user' });
-      }
-      return rows;
-    }
-
-    function getResourceType(type) {
-      return type === 'collections' ? 'collection' : type === 'users' ? 'user' : '';
-    }
-
-    async function fetchCounts() {
-      const base = {
-        nFolders: 0,
-        nItems: 0,
-        nUsers: 0,
-        nCollections: 0,
-      };
-
-      const type = getLocationType(props.location);
-      const { _id } = props.location;
-
-      try {
-        if (['folder', 'user', 'collection'].includes(type)) {
-          const { data } = await rest.get(`${type}/${_id}/details`);
-          counts.value = {
-            ...base,
-            nFolders: data.nFolders || 0,
-            nItems: data.nItems || 0,
-          };
-          return;
-        }
-
-        if (type === 'users' || type === 'collections') {
-          const { data } = await rest.get(
-            `${getResourceType(type)}/details`,
-          );
-          const key = Object.keys(data)[0];
-          counts.value = { ...base, [key]: Object.values(data)[0] };
-          return;
-        }
-
-        if (type === 'root') {
-          counts.value = { ...base, nUsers: 1, nCollections: 1 };
-          return;
-        }
-
-        counts.value = base;
-      } catch (_err) {
-        counts.value = base;
-      }
+      refreshRows();
     }
 
     // ---- Watchers ----
     watch(
-      [internalRefreshCounter, () => props.location, () => user],
-      fetchCounts,
-      { immediate: true },
-    );
-
-    watch(
       () => props.location,
       (location) => {
         if (createLocationValidator(!props.rootLocationDisabled)(location)) {
-          internalOptions.value.page = 1;
           internalSelected.value = [];
         }
       },
@@ -309,10 +131,6 @@ export default {
         internalOptions.value = val;
       },
     );
-
-    watch([counts, internalOptions], async () => {
-      rows.value = await fetchPaginatedRows();
-    });
 
     return {
       internalOptions,

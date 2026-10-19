@@ -1,4 +1,4 @@
-import { DefineComponent, Plugin } from 'vue'
+import { ComputedRef, DefineComponent, MaybeRef, MaybeRefOrGetter, Plugin, Ref } from 'vue'
 import { AxiosInstance, AxiosResponse } from 'axios'
 
 export type GirderModelType = 'item' | 'folder' | 'file' | 'user' | 'collection'
@@ -102,10 +102,6 @@ export const GirderSearch: DefineComponent
 export const GirderUpsertFolder: DefineComponent
 
 export const GoogleIcon: DefineComponent
-export const GirderBreadcrumb: DefineComponent
-export const GirderFileManager: DefineComponent
-export const GirderSearch: DefineComponent
-export const GirderUpsertFolder: DefineComponent
 
 
 export class RestClient {
@@ -213,6 +209,102 @@ export class DebounceCounter {
   _toggleFlag(val: boolean): void
 }
 
+
+export interface DataBrowserOptions {
+  page: number
+  itemsPerPage: number
+  [key: string]: any
+}
+
+export interface DataBrowserCounts {
+  nFolders: number
+  nItems: number
+  nUsers: number
+  nCollections: number
+}
+
+export interface DataBrowserRow extends Partial<GirderModel> {
+  name: string
+  icon?: string
+  humanSize?: string
+  notPublic?: boolean
+}
+
+export interface GirderDataSource<
+  TCounts extends object = Record<string, number>,
+  TRow = DataBrowserRow,
+> {
+  /** Counts for a location. The total number of rows is the sum of the values. */
+  count(location: Location): Promise<TCounts>
+  /** Rows of one page. `counts` is the last result of `count()`. */
+  list(
+    location: Location,
+    params: { page: number, itemsPerPage: number, counts: TCounts },
+  ): Promise<TRow[]>
+}
+
+export function createRestDataSource(rest: RestClient): GirderDataSource<DataBrowserCounts>
+
+export interface UseDataBrowserParams {
+  location: MaybeRefOrGetter<Location>
+  options?: Ref<DataBrowserOptions> | DataBrowserOptions
+  source?: GirderDataSource<any, any>
+  rest?: RestClient
+  user?: Ref<GirderModel | null>
+}
+
+export interface UseDataBrowserReturn {
+  rows: Ref<DataBrowserRow[]>
+  loading: Ref<boolean>
+  error: Ref<unknown>
+  counts: Ref<Record<string, number>>
+  serverItemsLength: ComputedRef<number>
+  options: Ref<DataBrowserOptions>
+  refresh(): void
+}
+
+export function useDataBrowser(params: UseDataBrowserParams): UseDataBrowserReturn
+
+export type GirderLoginResult = 'success' | 'otp' | 'error'
+
+export interface UseGirderLoginReturn {
+  user: Ref<GirderModel | null>
+  username: Ref<string>
+  password: Ref<string>
+  otp: Ref<string | null>
+  otpRequired: Ref<boolean>
+  requiresEmailVerification: Ref<boolean>
+  inProgress: Ref<boolean>
+  alerts: Ref<{ error: string, success: string }>
+  login(): Promise<GirderLoginResult>
+  logout(): Promise<void>
+  sendVerification(): Promise<void>
+}
+
+export function useGirderLogin(params?: { rest?: RestClient }): UseGirderLoginReturn
+
+export interface UseSelectionParams {
+  multiple?: MaybeRef<boolean>
+  selectableTypes?: MaybeRef<string[] | null>
+}
+
+export interface UseSelectionReturn<T extends { _id?: string } = GirderModel> {
+  selected: Ref<T[]>
+  selectedIds: ComputedRef<(string | undefined)[]>
+  canSelect(item: T): boolean
+  isSelected(item: T): boolean
+  select(item: T): void
+  deselect(item: T): void
+  toggle(item: T): void
+  allSelected(items: T[]): boolean
+  toggleAll(items: T[]): void
+  clear(): void
+}
+
+export function useSelection<T extends { _id?: string } = GirderModel>(
+  selected?: Ref<T[]> | T[],
+  params?: UseSelectionParams,
+): UseSelectionReturn<T>
 
 export function hasWriteAccess(resource: GirderModel): boolean
 export function hasAdminAccess(resource: GirderModel): boolean

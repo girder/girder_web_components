@@ -1,5 +1,6 @@
 <script>
-  import { computed } from 'vue'
+import { computed } from 'vue';
+import useSelection from '@/composables/selection';
 import { getLocationType, isRootLocation } from '@/utils';
 
 export default {
@@ -31,25 +32,23 @@ export default {
   ],
 
   setup(props, ctx) {
-    const selectedIds = computed(() => props.selected.map(item => item._id));
-  
+    // The selection is owned by the parent: changes are emitted, never
+    // applied to the prop.
+    const selection = useSelection(computed({
+      get: () => props.selected,
+      set: (val) => ctx.emit('update:selected', val),
+    }));
+    const { selectedIds } = selection;
+
     // ---- Methods ----
     function toggleSelect(rowProps) {
-      let internalSelected = props.selected;
-      if (rowProps.isSelected(rowProps.internalItem)) {
-        // remove item
-        internalSelected = internalSelected.filter(i => i._id !== rowProps.item._id);
-        rowProps.toggleSelect(rowProps.internalItem, rowProps.index, false);
-      } else {
-        // add item
-        internalSelected.push(rowProps.item);
-        rowProps.toggleSelect(rowProps.internalItem, rowProps.index, true);
-      }
-      ctx.emit('update:selected', internalSelected)
+      const wasSelected = selection.isSelected(rowProps.item);
+      rowProps.toggleSelect(rowProps.internalItem, rowProps.index, !wasSelected);
+      selection.toggle(rowProps.item);
     }
 
     function toggleSelectAll(topProps) {
-      ctx.emit('update:selected', topProps.allSelected ? [] : topProps.items);
+      selection.toggleAll(topProps.items);
     }
   
     function handleRowClick({ shiftKey }, rowProps) {

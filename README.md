@@ -111,6 +111,82 @@ app.mount('#app')
 
 > **Note:** You must use the mdi icon pack. Icon packs cannot be mixed.
 
+### Headless composables
+
+The logic of the browsing, login and selection components is also available as
+composables, without any rendering. They can be used to build a custom UI on top
+of Girder web components, with or without Vuetify.
+
+- `useDataBrowser({ location, options })`: rows of a location, counts,
+  pagination (`options.page`, `options.itemsPerPage`), `loading`, `error` and `refresh()`.
+- `useGirderLogin()`: `username`, `password`, `otp`, `otpRequired`, `alerts`,
+  `inProgress`, `login()`, `logout()` and `sendVerification()`. `login()` resolves
+  to `'success'`, `'otp'` (a one-time password is required) or `'error'`.
+- `useSelection(selected, { multiple, selectableTypes })`: `selected`,
+  `selectedIds`, `isSelected()`, `toggle()`, `toggleAll()`, `clear()`. The selection
+  array is never mutated in place, so `selected` can be a writable computed that
+  emits `update:selected`.
+
+By default, the composables use the REST client provided by the plugin. A
+`RestClient` can also be passed with the `rest` parameter.
+
+```html
+<script setup>
+import { ref } from 'vue';
+import { useDataBrowser, useSelection } from '@girder/components';
+
+const location = ref({ type: 'root' });
+const { rows, loading, options } = useDataBrowser({ location });
+const { selected, toggle, isSelected } = useSelection([], { selectableTypes: ['item'] });
+
+function open(row) {
+  if (row._modelType === 'item') {
+    toggle(row);
+  } else {
+    location.value = row;
+  }
+}
+</script>
+
+<template>
+  <ul :aria-busy="loading">
+    <li v-for="row in rows" :key="row._id || row.type" @click="open(row)">
+      {{ isSelected(row) ? '[x]' : '[ ]' }} {{ row.name }}
+    </li>
+  </ul>
+</template>
+```
+
+#### Custom data source
+
+`useDataBrowser` and `GirderDataBrowser` read rows through a data source. The
+default one, `createRestDataSource(rest)`, calls the Girder REST API from the
+browser. Another source can be passed, for instance to list the hierarchy
+through a backend that queries Girder on behalf of the page:
+
+```javascript
+const source = {
+  // Counts for a location: the total number of rows is the sum of the values.
+  async count(location) {
+    const response = await fetch(`/my-backend/count?id=${location._id}`);
+    return response.json(); // e.g. { nFolders: 3, nItems: 12 }
+  },
+  // Rows of one page; counts is the last result of count().
+  async list(location, { page, itemsPerPage, counts }) {
+    const response = await fetch(
+      `/my-backend/list?id=${location._id}&page=${page}&limit=${itemsPerPage}`,
+    );
+    return response.json();
+  },
+};
+
+const { rows } = useDataBrowser({ location, source });
+```
+
+```html
+<GirderDataBrowser :location="location" :data-source="source" />
+```
+
 ### Other installation methods
 
 It's not necessary to install Girder web components yourself, you can import the pre-built bundle.

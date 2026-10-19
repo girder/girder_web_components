@@ -6,3 +6,4 @@ export { default as RestClient } from './restClient';
 export * from './accessHelpers';
 export * from './girderHelpers';
 export * from './formatHelpers';
+export { default as createRestDataSource } from './restDataSource';
