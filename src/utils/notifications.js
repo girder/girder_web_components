@@ -47,12 +47,12 @@ export default class NotificationBus extends Vue {
   }
 
   _getWebSocketUrl() {
-    const token = this.$rest.token;
+    const { token } = this.$rest;
     if (!token) {
       throw new Error('No authentication token available');
     }
     // Convert HTTP/HTTPS URL to WebSocket URL
-    const apiRoot = this.$rest.apiRoot;
+    const { apiRoot } = this.$rest;
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     // Remove /api/v1 if present, as the WebSocket endpoint is at /notification/me
     const wsPath = apiRoot.replace(/\/api\/v1$/, '') || '';
@@ -79,7 +79,7 @@ export default class NotificationBus extends Vue {
   _onWebSocketClose(event) {
     this._websocket = null;
     this.$emit('stop', this);
-    
+
     // Attempt to reconnect if not a normal closure and we haven't exceeded max attempts
     if (event.code !== 1000 && this._reconnectAttempts < this.maxReconnectAttempts) {
       this._reconnectAttempts += 1;

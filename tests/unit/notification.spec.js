@@ -28,8 +28,11 @@ class MockWebSocket {
   }
 
   static CONNECTING = 0;
+
   static OPEN = 1;
+
   static CLOSING = 2;
+
   static CLOSED = 3;
 
   // Helper method to simulate connection opening
@@ -161,14 +164,14 @@ describe('NotificationBus', () => {
 
     expect(bus.connected).toBe(false);
     expect(dumbBus.connected).toBe(false);
-    
+
     rc.token = 'test-token';
     rc.$emit('login', { _id: '123' });
     expect(bus._websocket).toBeDefined();
     mockWs._simulateOpen();
     expect(bus.connected).toBe(true);
     expect(dumbBus.connected).toBe(false);
-    
+
     rc.$emit('logout');
     expect(bus.connected).toBe(false);
   });

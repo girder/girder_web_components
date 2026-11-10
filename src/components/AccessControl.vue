@@ -26,9 +26,20 @@ export default {
       access: null,
       recursive: false,
       loading: false,
+      // Whether the current user had owner access when the access list was loaded
+      wasOwner: false,
+      confirmOwnerLoss: false,
     };
   },
   computed: {
+    /**
+     * True when the pending changes would take away the current user's own
+     * owner access (by removing or demoting their entry, or that of the
+     * group(s) that granted it). Site admins are never affected.
+     */
+    losingOwnership() {
+      return this.wasOwner && !!this.access && !this.isOwner(this.access);
+    },
     groupsAndUsers() {
       if (!this.access) {
         return [];
@@ -84,11 +95,26 @@ export default {
       this.public_ = this.model.public;
       try {
         const { data: access } = await this.girderRest.get(`${this.model._modelType}/${this.model._id}/access`);
+        this.wasOwner = this.isOwner(access);
         this.access = access;
       } catch (ex) {
+        this.wasOwner = false;
         this.access = null;
       }
       this.loading = false;
+    },
+    /**
+     * Whether the given access list grants the current user owner access,
+     * either directly or through one of their groups.
+     */
+    isOwner(access) {
+      const { user } = this.girderRest;
+      if (!user || user.admin) {
+        return false;
+      }
+      const groupIds = user.groups || [];
+      return access.users.some(({ id, level }) => id === user._id && level >= 2)
+        || access.groups.some(({ id, level }) => groupIds.includes(id) && level >= 2);
     },
     remove(model) {
       let index = this.access.groups.indexOf(model);
@@ -116,6 +142,17 @@ export default {
       }
     },
     async save() {
+      if (this.losingOwnership) {
+        this.confirmOwnerLoss = true;
+        return;
+      }
+      await this.doSave();
+    },
+    async confirmSave() {
+      this.confirmOwnerLoss = false;
+      await this.doSave();
+    },
+    async doSave() {
       const access = {
         users: this.access.users.map(({ id, level, flags }) => ({
           id,
@@ -237,7 +274,58 @@ export default {
         label="Include subfolders"
         persistent-hint="persistent-hint"
       />
+      <v-alert
+        v-if="losingOwnership"
+        class="owner-loss-warning mt-4 mb-0"
+        type="warning"
+        dense="dense"
+        outlined="outlined"
+      >
+        These changes remove your own owner access to this {{ model._modelType }}.
+      </v-alert>
     </v-card-text>
+    <v-dialog
+      v-model="confirmOwnerLoss"
+      max-width="500"
+    >
+      <v-card class="owner-loss-dialog">
+        <v-card-title>Give up your owner access?</v-card-title>
+        <v-card-text>
+          <p>
+            You are removing or lowering your own <b>Is owner</b> permission on
+            the {{ model._modelType }} <b>{{ model.name }}</b>.
+          </p>
+          <p>
+            Only owners can manage access control. If you save these changes, you
+            will no longer be able to open or edit the access control settings for
+            this {{ model._modelType }}<span v-if="recursive"> or its subfolders</span>,
+            and you will not be able to undo this yourself.
+          </p>
+          <p class="mb-0">
+            To regain owner access, another owner or a site administrator would
+            have to grant it back to you.
+          </p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            class="owner-loss-cancel"
+            text="text"
+            @click="confirmOwnerLoss = false"
+          >
+            Go back
+          </v-btn>
+          <v-btn
+            class="owner-loss-confirm"
+            color="warning"
+            depressed="depressed"
+            @click="confirmSave"
+          >
+            Remove my owner access
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <slot
       v-bind="{ save, loading }"
       name="card-actions"

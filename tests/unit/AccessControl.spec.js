@@ -159,4 +159,101 @@ describe('AccessControl', () => {
     expect(wrapper.emitted('model-access-changed')).toBeTruthy();
     expect(wrapper.emitted('close')).toBeTruthy();
   });
+
+  describe('own owner access', () => {
+    const mountAs = async (user, access) => {
+      girderRest.user = user;
+      mock.onGet('/folder/fake_folder_id/access').replyOnce(200, access);
+      const wrapper = shallowMount(AccessControl, {
+        localVue,
+        vuetify,
+        propsData: {
+          model: {
+            _id: 'fake_folder_id',
+            _modelType: 'folder',
+            name: 'a_folder',
+            public: false,
+          },
+        },
+        provide: { girderRest },
+      });
+      await flushPromises();
+      return wrapper;
+    };
+    const me = {
+      _id: 'my_id', login: 'me', admin: false, groups: ['my_group_id'],
+    };
+    const entry = (id, level) => ({
+      flags: [], id, level, name: id,
+    });
+
+    afterEach(() => {
+      girderRest.user = null;
+    });
+
+    it('asks for confirmation before saving a demotion of self', async () => {
+      const wrapper = await mountAs(me, {
+        groups: [],
+        users: [entry('my_id', 2), entry('other_id', 2)],
+      });
+      expect(wrapper.vm.losingOwnership).toBe(false);
+      expect(wrapper.find('.owner-loss-warning').exists()).toBe(false);
+
+      wrapper.vm.access.users[0].level = 1;
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.losingOwnership).toBe(true);
+      expect(wrapper.find('.owner-loss-warning').exists()).toBe(true);
+
+      // Saving only opens the confirmation; no request is made
+      await wrapper.vm.save();
+      expect(wrapper.vm.confirmOwnerLoss).toBe(true);
+      expect(mock.history.put.length).toBe(0);
+      expect(wrapper.emitted('close')).toBeFalsy();
+
+      mock.onPut('/folder/fake_folder_id/access').replyOnce(200, {});
+      await wrapper.vm.confirmSave();
+      expect(wrapper.vm.confirmOwnerLoss).toBe(false);
+      expect(mock.history.put.length).toBe(1);
+      expect(wrapper.emitted('close')).toBeTruthy();
+    });
+
+    it('warns when removing self', async () => {
+      const wrapper = await mountAs(me, {
+        groups: [],
+        users: [entry('my_id', 2)],
+      });
+      wrapper.vm.remove(wrapper.vm.access.users[0]);
+      expect(wrapper.vm.losingOwnership).toBe(true);
+    });
+
+    it('does not warn while a group still grants owner access', async () => {
+      const wrapper = await mountAs(me, {
+        groups: [entry('my_group_id', 2)],
+        users: [entry('my_id', 2)],
+      });
+      wrapper.vm.remove(wrapper.vm.access.users[0]);
+      expect(wrapper.vm.losingOwnership).toBe(false);
+      wrapper.vm.access.groups[0].level = 0;
+      expect(wrapper.vm.losingOwnership).toBe(true);
+    });
+
+    it('does not warn site admins or changes to other users', async () => {
+      let wrapper = await mountAs({ ...me, admin: true }, {
+        groups: [],
+        users: [entry('my_id', 2)],
+      });
+      wrapper.vm.remove(wrapper.vm.access.users[0]);
+      expect(wrapper.vm.losingOwnership).toBe(false);
+
+      wrapper = await mountAs(me, {
+        groups: [],
+        users: [entry('my_id', 2), entry('other_id', 2)],
+      });
+      wrapper.vm.remove(wrapper.vm.access.users[1]);
+      expect(wrapper.vm.losingOwnership).toBe(false);
+      mock.onPut('/folder/fake_folder_id/access').replyOnce(200, {});
+      await wrapper.vm.save();
+      expect(mock.history.put.length).toBe(1);
+    });
+  });
 });
