@@ -8,7 +8,7 @@ export default function useGirderClient(options = {}) {
     const state = reactive({
         apiRoot: restClient.apiRoot,
         user: restClient.user,
-        token: restClient.toke
+        token: restClient.token
     });
 
     restClient.on('userLoggedIn', user => {
